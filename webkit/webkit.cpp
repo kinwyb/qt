@@ -83,7 +83,6 @@
 #include <QSize>
 #include <QSizeF>
 #include <QString>
-#include <QStringList>
 #include <QStyle>
 #include <QStyleOption>
 #include <QStyleOptionGraphicsItem>
@@ -2719,7 +2718,6 @@ public:
 	QSize sizeHint() const { return *static_cast<QSize*>(callbackQWebInspector_SizeHint(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool close() { return callbackQWebInspector_Close(this) != 0; };
 	bool focusNextPrevChild(bool next) { return callbackQWebInspector_FocusNextPrevChild(this, next) != 0; };
-	bool nativeEvent(const QByteArray & eventType, void * message, long * result) { return callbackQWebInspector_NativeEvent(this, const_cast<QByteArray*>(&eventType), message, *result) != 0; };
 	void actionEvent(QActionEvent * event) { callbackQWebInspector_ActionEvent(this, event); };
 	void changeEvent(QEvent * event) { callbackQWebInspector_ChangeEvent(this, event); };
 	void contextMenuEvent(QContextMenuEvent * event) { callbackQWebInspector_ContextMenuEvent(this, event); };
@@ -2972,11 +2970,6 @@ char QWebInspector_CloseDefault(void* ptr)
 char QWebInspector_FocusNextPrevChildDefault(void* ptr, char next)
 {
 		return static_cast<QWebInspector*>(ptr)->QWebInspector::focusNextPrevChild(next != 0);
-}
-
-char QWebInspector_NativeEventDefault(void* ptr, void* eventType, void* message, long result)
-{
-		return static_cast<QWebInspector*>(ptr)->QWebInspector::nativeEvent(*static_cast<QByteArray*>(eventType), message, &result);
 }
 
 void QWebInspector_ActionEventDefault(void* ptr, void* event)
@@ -4936,7 +4929,6 @@ public:
 	QVariant inputMethodQuery(Qt::InputMethodQuery property) const { return *static_cast<QVariant*>(callbackQWebView_InputMethodQuery(const_cast<void*>(static_cast<const void*>(this)), property)); };
 	void print(QPrinter * printer) const { callbackQWebView_Print(const_cast<void*>(static_cast<const void*>(this)), printer); };
 	bool close() { return callbackQWebView_Close(this) != 0; };
-	bool nativeEvent(const QByteArray & eventType, void * message, long * result) { return callbackQWebView_NativeEvent(this, const_cast<QByteArray*>(&eventType), message, *result) != 0; };
 	void actionEvent(QActionEvent * event) { callbackQWebView_ActionEvent(this, event); };
 	void closeEvent(QCloseEvent * event) { callbackQWebView_CloseEvent(this, event); };
 	void Signal_CustomContextMenuRequested(const QPoint & pos) { callbackQWebView_CustomContextMenuRequested(this, const_cast<QPoint*>(&pos)); };
@@ -5564,11 +5556,6 @@ void* QWebView___children_newList(void* ptr)
 char QWebView_CloseDefault(void* ptr)
 {
 		return static_cast<QWebView*>(ptr)->QWebView::close();
-}
-
-char QWebView_NativeEventDefault(void* ptr, void* eventType, void* message, long result)
-{
-		return static_cast<QWebView*>(ptr)->QWebView::nativeEvent(*static_cast<QByteArray*>(eventType), message, &result);
 }
 
 void QWebView_ActionEventDefault(void* ptr, void* event)
