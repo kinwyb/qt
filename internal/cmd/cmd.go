@@ -87,6 +87,9 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 	case "linux", "android", "rpi1", "rpi2", "rpi3":
 		image = target
 
+	case "android-emulator":
+		image = "android"
+
 	default:
 		switch system {
 		case "darwin":
@@ -244,7 +247,7 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 		case "ios-simulator":
 			target = "ios"
 		case "android-emulator":
-			target = "android" //TODO:
+			target = "android"
 		}
 
 		upCmd := exec.Command("vagrant", "up", "--no-provision", target)
@@ -366,6 +369,16 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 	case "darwin":
 		ldFlags = []string{"-w", fmt.Sprintf("-r=%v", filepath.Join(utils.QT_DARWIN_DIR(), "lib"))}
 		out = filepath.Join(depPath, fmt.Sprintf("%v.app/Contents/MacOS/%v", name, name))
+		env = map[string]string{
+			"PATH":   os.Getenv("PATH"),
+			"GOPATH": utils.GOPATH(),
+			"GOROOT": runtime.GOROOT(),
+
+			"GOOS":   "darwin",
+			"GOARCH": "amd64",
+
+			"CGO_ENABLED": "1",
+		}
 
 	case "windows":
 		ldFlags = []string{"-s", "-w", "-H=windowsgui"}
@@ -408,6 +421,22 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 	case "linux":
 		ldFlags = []string{"-s", "-w"}
 		out = filepath.Join(depPath, name)
+		env = map[string]string{
+			"PATH":   os.Getenv("PATH"),
+			"GOPATH": utils.GOPATH(),
+			"GOROOT": runtime.GOROOT(),
+
+			"GOOS":   "linux",
+			"GOARCH": utils.GOARCH(),
+
+			"CGO_ENABLED": "1",
+		}
+
+		if arm, ok := os.LookupEnv("GOARM"); ok {
+			env["GOARM"] = arm
+			env["CC"] = os.Getenv("CC")
+			env["CXX"] = os.Getenv("CXX")
+		}
 
 	case "rpi1", "rpi2", "rpi3":
 		tags = []string{target}
@@ -432,5 +461,10 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			env["GOARM"] = "6"
 		}
 	}
+
+	env["CGO_CFLAGS_ALLOW"] = utils.CGO_CFLAGS_ALLOW()
+	env["CGO_CXXFLAGS_ALLOW"] = utils.CGO_CXXFLAGS_ALLOW()
+	env["CGO_LDFLAGS_ALLOW"] = utils.CGO_LDFLAGS_ALLOW()
+
 	return env, tags, ldFlags, out
 }

@@ -29,8 +29,8 @@ func Check(target string, docker, vagrant bool) {
 
 	vars := [][]string{
 		{"GOOS", runtime.GOOS},
-		{"GOARCH", runtime.GOARCH},
-		{"GOVERSION", runtime.Version()},
+		{"GOARCH", utils.GOARCH()},
+		{"GOVERSION", runtime.Version()}, //TODO: differentiate between runtime and compile time version
 		{"GOROOT", runtime.GOROOT()},
 		{"GOPATH", utils.MustGoPath()},
 		{"GOBIN", utils.GOBIN()},

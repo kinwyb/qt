@@ -157,14 +157,15 @@ func cppFunctionBodyWithGuards(function *parser.Function) string {
 	} else {
 		switch {
 		case
-			function.Fullname == "QMenu::setAsDockMenu":
+			function.Fullname == "QMenu::setAsDockMenu", function.Fullname == "QSysInfo::macVersion", function.Fullname == "QSysInfo::MacintoshVersion":
 			{
 				return fmt.Sprintf("#ifdef Q_OS_OSX\n%v%v\n#endif", cppFunctionBody(function), cppFunctionBodyFailed(function))
 			}
 
 		case
 			function.Fullname == "QProcess::nativeArguments", function.Fullname == "QProcess::setNativeArguments",
-			function.Fullname == "QAbstractEventDispatcher::registerEventNotifier", function.Fullname == "QAbstractEventDispatcher::unregisterEventNotifier":
+			function.Fullname == "QAbstractEventDispatcher::registerEventNotifier", function.Fullname == "QAbstractEventDispatcher::unregisterEventNotifier",
+			function.Fullname == "QSysInfo::windowsVersion":
 			{
 				return fmt.Sprintf("#ifdef Q_OS_WIN\n%v%v\n#endif", cppFunctionBody(function), cppFunctionBodyFailed(function))
 			}
@@ -497,7 +498,7 @@ func cppFunctionBodyInternal(function *parser.Function) string {
 									return fmt.Sprintf("%v<%v>", parser.CleanValue(function.Container), strings.TrimPrefix(function.Output, "const "))
 								}
 								if strings.HasSuffix(function.Name, "_setList") {
-									if len(function.Parameters) == 2 {
+									if len(function.Parameters) == 3 {
 										return fmt.Sprintf("%v<%v,%v>", parser.CleanValue(function.Container), function.Parameters[0].Value, strings.TrimPrefix(function.Parameters[1].Value, "const "))
 									}
 									return fmt.Sprintf("%v<%v>", parser.CleanValue(function.Container), strings.TrimPrefix(function.Parameters[0].Value, "const "))
