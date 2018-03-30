@@ -1,4 +1,5 @@
 FROM therecipe/qt:linux
+LABEL maintainer therecipe
 
 
 RUN df -h
@@ -33,5 +34,9 @@ RUN cd $HOME/openssl-1.0.2k && ./Configure shared android-armv7 && make build_li
 RUN $GOPATH/bin/qtsetup check android
 RUN $GOPATH/bin/qtsetup generate android
 RUN $GOPATH/bin/qtsetup install android
-
 RUN $GOPATH/bin/qtdeploy build android $GOPATH/src/github.com/therecipe/qt/internal/examples/androidextras/jni | true
+
+RUN $GOPATH/bin/qtsetup check android-emulator
+RUN $GOPATH/bin/qtsetup generate android-emulator
+RUN $GOPATH/bin/qtsetup install android-emulator
+RUN $GOPATH/bin/qtdeploy build android-emulator $GOPATH/src/github.com/therecipe/qt/internal/examples/androidextras/jni | true

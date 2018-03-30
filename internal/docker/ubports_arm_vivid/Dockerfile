@@ -1,4 +1,5 @@
 FROM clickable/ubuntu-sdk:15.04-armhf
+LABEL maintainer therecipe
 
 
 RUN df -h
@@ -31,11 +32,15 @@ ENV CC arm-linux-gnueabihf-gcc
 ENV CXX arm-linux-gnueabihf-g++
 
 
-ENV QT_QMAKE_DIR /usr/lib/arm-linux-gnueabihf/qt5/bin/
+RUN ln -s /usr/lib/x86_64-linux-gnu/qt5/bin/rcc /usr/lib/arm-linux-gnueabihf/qt5/bin/ 
+RUN ln -s /usr/lib/x86_64-linux-gnu/qt5/bin/moc /usr/lib/arm-linux-gnueabihf/qt5/bin/ 
 
 
 ENV QT_PKG_CONFIG true
-RUN $GOPATH/bin/qtsetup prep linux
-RUN $GOPATH/bin/qtsetup check linux
-RUN $GOPATH/bin/qtsetup generate linux
-RUN $GOPATH/bin/qtsetup install linux
+ENV QT_UBPORTS true
+ENV QT_UBPORTS_ARCH arm
+ENV QT_UBPORTS_VERSION vivid
+RUN $GOPATH/bin/qtsetup prep ubports
+RUN $GOPATH/bin/qtsetup check ubports
+RUN $GOPATH/bin/qtsetup generate ubports
+RUN $GOPATH/bin/qtsetup install ubports
