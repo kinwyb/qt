@@ -6,21 +6,18 @@ import (
 	"github.com/therecipe/qt/internal/examples/showcases/sia/files/controller"
 )
 
-func init() { filesButtonTemplate_QmlRegisterType2("FilesTemplate", 1, 0, "ButtonTemplate") }
+func init() { buttonTemplate_QmlRegisterType2("FilesTemplate", 1, 0, "ButtonTemplate") }
 
-type filesButtonTemplate struct { //TODO: fix name clash
+type buttonTemplate struct {
 	quick.QQuickItem
 
 	_ func() `constructor:"init"`
 
-	_ func(string) `signal:"clicked"`
+	_ func(string) `signal:"clicked,->(controller.ButtonController)"`
 }
 
-func (t *filesButtonTemplate) init() {
-	c := cfiles.ButtonController
-	if c == nil {
-		c = cfiles.NewFilesButtonController(nil)
+func (t *buttonTemplate) init() {
+	if controller.ButtonController == nil {
+		controller.NewButtonController(nil)
 	}
-
-	t.ConnectClicked(c.Clicked)
 }

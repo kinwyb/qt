@@ -155,6 +155,13 @@ func createProject(module, path, target string, mode int, libs []string) {
 	if module == "build_ios" {
 		proPath = filepath.Join(path, "..", "..", fmt.Sprintf("%v.pro", filepath.Base(path)))
 	}
+
+	if utils.QT_UBPORTS() {
+		proPath = strings.Replace(proPath, "/../", "/", -1)
+		proPath = strings.Replace(proPath, "/", "_", -1)
+		proPath = filepath.Join("/home", "user", proPath)
+	}
+
 	utils.Save(proPath, fmt.Sprintf("QT += %v", strings.Join(out, " ")))
 }
 
@@ -164,14 +171,22 @@ func createMakefile(module, path, target string, mode int) {
 		proPath = filepath.Join(path, "..", "..", fmt.Sprintf("%v.pro", filepath.Base(path)))
 	}
 
-	cmd := exec.Command(utils.ToolPath("qmake", target), "-o", "Mfile", proPath)
+	mPath := "Mfile"
+	if utils.QT_UBPORTS() {
+		proPath = strings.Replace(proPath, "/../", "/", -1)
+		proPath = strings.Replace(proPath, "/", "_", -1)
+		proPath = filepath.Join("/home", "user", proPath)
+		mPath = proPath + mPath
+	}
+
+	cmd := exec.Command(utils.ToolPath("qmake", target), "-o", mPath, proPath)
 	cmd.Dir = path
 	switch target {
 	case "darwin":
 		cmd.Args = append(cmd.Args, []string{"-spec", "macx-clang", "CONFIG+=x86_64"}...)
 	case "windows":
 		cmd.Args = append(cmd.Args, []string{"-spec", "win32-g++"}...)
-	case "linux", "ubports":
+	case "linux":
 		cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++"}...)
 	case "ios":
 		cmd.Args = append(cmd.Args, []string{"-spec", "macx-ios-clang", "CONFIG+=iphoneos", "CONFIG+=device"}...)
@@ -200,6 +215,20 @@ func createMakefile(module, path, target string, mode int) {
 		cmd.Args = append(cmd.Args, []string{"-spec", "devices/linux-rasp-pi2-g++"}...)
 	case "rpi3":
 		cmd.Args = append(cmd.Args, []string{"-spec", "devices/linux-rpi3-g++"}...)
+	case "ubports":
+		if utils.QT_UBPORTS_ARCH() == "arm" {
+			if utils.QT_UBPORTS_VERSION() == "vivid" {
+				cmd.Args = append(cmd.Args, []string{"-spec", "ubuntu-arm-gnueabihf-g++"}...)
+			} else {
+				cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++"}...)
+			}
+		} else {
+			if utils.QT_UBPORTS_VERSION() == "vivid" {
+				cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++-64"}...)
+			} else {
+				cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++"}...)
+			}
+		}
 	}
 
 	if utils.QT_DEBUG_QML() {
@@ -209,7 +238,7 @@ func createMakefile(module, path, target string, mode int) {
 	}
 
 	if (target == "android" || target == "android-emulator") && runtime.GOOS == "windows" {
-		//TODO: -->
+		//TODO: use os.Setenv instead? -->
 		utils.SaveExec(filepath.Join(cmd.Dir, "qmake.bat"), fmt.Sprintf("set ANDROID_NDK_ROOT=%v\r\nset ANDROID_NDK_HOST=windows-x86_64\r\n%v", utils.ANDROID_NDK_DIR(), strings.Join(cmd.Args, " ")))
 		cmd = exec.Command(".\\qmake.bat")
 		cmd.Dir = path
@@ -218,6 +247,10 @@ func createMakefile(module, path, target string, mode int) {
 		//<--
 	} else {
 		utils.RunCmdOptional(cmd, fmt.Sprintf("run qmake for %v on %v", target, runtime.GOOS))
+	}
+
+	if utils.QT_UBPORTS() {
+		utils.Save(filepath.Join(path, "Mfile"), utils.Load(mPath))
 	}
 
 	utils.RemoveAll(proPath)
@@ -229,10 +262,10 @@ func createMakefile(module, path, target string, mode int) {
 			pPath := filepath.Join(path, fmt.Sprintf("%v%v.cpp", filepath.Base(path), suf))
 			if (utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) && utils.ExistsFile(pPath) {
 				if content := utils.Load(pPath); !strings.Contains(content, "+build windows") {
-					utils.Save(pPath, "// +build windows\n"+content)
+					utils.Save(pPath, "// +build windows\r\n"+content)
 				}
 			}
-			if mode == MOC || mode == RCC || !(utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) {
+			if mode == MOC || mode == RCC || !(utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) || (!strings.HasPrefix(module, "Q") && strings.Contains(pPath, "_qml_")) {
 				utils.RemoveAll(pPath)
 			}
 		}
@@ -368,6 +401,9 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 		fmt.Fprintf(bb, "#cgo LDFLAGS: -Wl,-syslibroot,%v/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/%v -mios-simulator-version-min=10.0\n", utils.XCODE_DIR(), utils.IPHONESIMULATOR_SDK_DIR())
 	}
 
+	fmt.Fprintf(bb, "#cgo CFLAGS: -Wno-unused-parameter -Wno-unused-variable -Wno-return-type\n")
+	fmt.Fprintf(bb, "#cgo CXXFLAGS: -Wno-unused-parameter -Wno-unused-variable -Wno-return-type\n")
+
 	fmt.Fprint(bb, "*/\nimport \"C\"\n")
 
 	out, err := format.Source(bb.Bytes())
@@ -427,6 +463,7 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 			if (utils.QT_MSYS2() && utils.QT_MSYS2_ARCH() == "amd64") || utils.QT_MXE_ARCH() == "amd64" {
 				tmp = strings.Replace(tmp, " -Wl,-s ", " ", -1)
 			}
+			tmp = strings.Replace(tmp, ",console ", ",windows ", -1)
 		case "ios":
 			if strings.HasSuffix(file, "darwin_arm.go") {
 				tmp = strings.Replace(tmp, "arm64", "armv7", -1)
@@ -490,4 +527,38 @@ func cgoFileNames(module, path, target string, mode int) []string {
 		o = append(o, fmt.Sprintf("%vcgo_%v_%v.go", pFix, strings.Replace(target, "-", "_", -1), sFix))
 	}
 	return o
+}
+
+func ParseCgo(module, target string) (string, string) {
+	utils.Log.WithField("module", module).WithField("target", target).Debug("parse cgo for shared lib")
+
+	tmp := utils.LoadOptional(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
+	if tmp != "" {
+
+		tmp = strings.Split(tmp, "/*")[1]
+		tmp = strings.Split(tmp, "*/")[0]
+
+		tmp = strings.Replace(tmp, "#cgo CFLAGS: ", "", -1)
+		tmp = strings.Replace(tmp, "#cgo CXXFLAGS: ", "", -1)
+		tmp = strings.Replace(tmp, "#cgo LDFLAGS: ", "", -1)
+		tmp = strings.Replace(tmp, "\n", " ", -1)
+
+		switch target {
+		case "darwin":
+			return "clang++", fmt.Sprintf("%v -Wl,-S -Wl,-x -install_name @rpath/%[2]v/lib%[2]v.so -undefined dynamic_lookup -shared -o lib%[2]v.so %[2]v.cpp", tmp, module)
+		}
+	}
+
+	return "", tmp
+}
+
+func ReplaceCgo(module, target string) {
+	utils.Log.WithField("module", module).WithField("target", target).Debug("replace cgo for shared lib")
+
+	tmp := utils.LoadOptional(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
+	if tmp != "" {
+		pre := strings.Split(tmp, "/*")[0]
+		past := strings.Split(tmp, "*/")[1]
+		utils.Save(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]), fmt.Sprintf("%v/*\n#cgo CFLAGS: -I.\n#cgo LDFLAGS: -L. -l%v -Wl,-rpath,%v\n*/%v", pre, module, utils.GoQtPkgPath(), past))
+	}
 }

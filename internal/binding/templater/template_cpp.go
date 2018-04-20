@@ -110,7 +110,7 @@ func CppTemplate(module string, mode int, target, tags string) []byte {
 									ty = fmt.Sprintf("type%v", hex.EncodeToString(tHash.Sum(nil)[:3]))
 								}
 
-								fmt.Fprintf(bb, "Q_PROPERTY(%v %v READ %v WRITE set%v NOTIFY %vChanged)\n", ty, p.Name,
+								fmt.Fprintf(bb, "Q_PROPERTY(%v PREPRO%v READ %v WRITE set%v NOTIFY %vChanged)\n", ty, p.Name,
 									func() string {
 										if p.Output == "bool" && !strings.HasPrefix(strings.ToLower(p.Name), "is") {
 											return "is" + strings.Title(p.Name)
@@ -457,7 +457,7 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 #define private public
 
 #include "%v.h"
-#include "_cgo_export.h"
+%v
 
 `,
 		buildTags(module, false, mode, tags),
@@ -486,6 +486,18 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 
 					return goModule(module)
 				}
+			}
+		}(),
+
+		func() string {
+			switch module {
+			case "QtAndroidExtras", "QtSailfish":
+				return "#include \"_cgo_export.h\""
+			default:
+				if utils.QT_DYNAMIC_SETUP() {
+					return "#include \"_obj/_cgo_export.h\""
+				}
+				return "#include \"_cgo_export.h\""
 			}
 		}(),
 	)
@@ -551,6 +563,12 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 				}
 			}
 
+			if c, ok := parser.State.ClassMap[class]; ok {
+				if strings.Contains(c.Pkg, "/vendor/") {
+					continue
+				}
+			}
+
 			fmt.Fprintf(bb, "#include <%v>\n", class)
 
 			if mode == MOC {
@@ -607,6 +625,39 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 	fmt.Fprint(bb, "\n")
 
 	bb.Write(input)
+
+	//TODO: regexp
+	if mode == MOC {
+		pre := bb.String()
+		bb.Reset()
+		libsm := make(map[string]struct{}, 0)
+		for _, c := range parser.State.ClassMap {
+			if c.Pkg != "" && c.IsSubClassOfQObject() {
+				libsm[c.Module] = struct{}{}
+			}
+		}
+
+		var libs []string
+		for k := range libsm {
+			libs = append(libs, k)
+		}
+		libs = append(libs, module)
+
+		for _, c := range parser.SortedClassesForModule(strings.Join(libs, ","), true) {
+			hName := c.Hash()
+			sep := []string{" ", "\t", "\n", "\r", "(", ")", ":", ";", "*", "<", ">", "&", "~", "{", "}", "[", "]", "_", "callback"}
+			for _, p := range sep {
+				for _, s := range sep {
+					if s == "callback" {
+						continue
+					}
+					pre = strings.Replace(pre, p+c.Name+s, p+c.Name+hName+s, -1)
+				}
+			}
+		}
+		pre = strings.Replace(pre, "PREPRO", "", -1)
+		bb.WriteString(pre)
+	}
 
 	return bb.Bytes()
 }

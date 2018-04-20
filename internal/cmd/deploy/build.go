@@ -2,6 +2,8 @@ package deploy
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -14,7 +16,7 @@ import (
 	"github.com/therecipe/qt/internal/utils"
 )
 
-func build(mode, target, path, ldFlagsCustom, tagsCustom, name, depPath string, fast bool) {
+func build(mode, target, path, ldFlagsCustom, tagsCustom, name, depPath string, fast, comply bool) {
 	env, tags, ldFlags, out := cmd.BuildEnv(target, name, depPath)
 	if (!fast || utils.QT_STUB()) && !utils.QT_FAT() {
 		tags = append(tags, "minimal")
@@ -54,6 +56,12 @@ func build(mode, target, path, ldFlagsCustom, tagsCustom, name, depPath string, 
 		cmd.Args = append(cmd.Args, "-i")
 	}
 
+	if comply {
+		utils.MkdirAll(depPath + "_obj")
+		cmd.Env = append(cmd.Env, fmt.Sprintf("GOTMPDIR=%v", depPath+"_obj"))
+		cmd.Args = append(cmd.Args, "-a", "-x", "-work")
+	}
+
 	cmd.Args = append(cmd.Args, fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
 
 	if target != runtime.GOOS {
@@ -80,6 +88,45 @@ func build(mode, target, path, ldFlagsCustom, tagsCustom, name, depPath string, 
 	}
 
 	utils.RemoveAll(filepath.Join(path, "cgo_main_wrapper.go"))
+
+	if comply {
+		dirs, err := ioutil.ReadDir(depPath + "_obj")
+		if err != nil {
+			utils.Log.WithError(err).Error("failed to read object dir")
+		}
+
+		var randname string
+		for _, dir := range dirs {
+			if strings.HasPrefix(dir.Name(), "go-build") {
+				randname = dir.Name()
+				os.Rename(filepath.Join(depPath+"_obj", dir.Name()), depPath+"_objreal")
+				utils.RemoveAll(depPath + "_obj")
+				os.Rename(depPath+"_objreal", depPath+"_obj")
+				break
+			}
+		}
+
+		walkFn := func(fpath string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			switch info.Name() {
+			case "_pkg_.a":
+			case "importcfg.link":
+				pre := utils.Load(fpath)
+				pre = strings.Replace(pre, filepath.Join(depPath+"_obj", randname), ".", -1)
+				utils.Save(fpath, pre)
+			default:
+				if !info.IsDir() || info.Name() == "exe" {
+					utils.RemoveAll(fpath)
+				}
+			}
+			return nil
+		}
+		filepath.Walk(depPath+"_obj", walkFn)
+
+		utils.SaveExec(filepath.Join(depPath+"_obj", "relink.sh"), relink(env, target))
+	}
 }
 
 func build_sailfish(mode, target, path, ldFlagsCustom, name, depPath string) {

@@ -3,8 +3,8 @@ package dialog
 import (
 	"github.com/therecipe/qt/core"
 
-	fcdialog "github.com/therecipe/qt/internal/examples/showcases/sia/files/dialog/controller"
-	wcdialog "github.com/therecipe/qt/internal/examples/showcases/sia/wallet/dialog/controller"
+	fcontroller "github.com/therecipe/qt/internal/examples/showcases/sia/files/dialog/controller"
+	wcontroller "github.com/therecipe/qt/internal/examples/showcases/sia/wallet/dialog/controller"
 )
 
 type filesDialogTemplate struct {
@@ -12,23 +12,19 @@ type filesDialogTemplate struct {
 
 	_ func() `constructor:"init"`
 
-	_ func(cident string) `signal:"show"`
-	_ func(bool)          `signal:"blur"`
+	_ func(cident string) `signal:"show,<-(fcontroller.Controller)"`
+	_ func(bool)          `signal:"blur,->(fcontroller.Controller)"`
 }
 
 func (t *filesDialogTemplate) init() {
-	c := fcdialog.Controller
-	if c == nil {
-		c = fcdialog.NewFilesDialogController(nil)
+	if fcontroller.Controller == nil {
+		fcontroller.NewDialogController(nil)
 	}
-
-	c.ConnectShow(t.show)
-	t.ConnectBlur(c.Blur)
 }
 
 func (t *filesDialogTemplate) show(cident string) {
-	if fcdialog.Controller.IsLocked() {
-		wcdialog.Controller.Show("unlock")
+	if fcontroller.Controller.IsLocked() {
+		wcontroller.Controller.Show("unlock")
 	} else {
 		t.Show(cident)
 	}

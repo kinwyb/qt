@@ -1,11 +1,16 @@
-package subsub
+package subsubcustom
 
-import "github.com/therecipe/qt/core"
+import "github.com/therecipe/qt/gui"
+
+var SubSubTestStructInstance *SubSubTestStruct
 
 type SubSubTestStruct struct {
-	core.QObject //TODO: gui.QWindow
+	gui.QWindow
 
 	_ func() `constructor:"Init"`
+
+	_ func(string) `signal:"subPropertySignal"`
+	_ func(string) `slot:"subPropertySlot"`
 
 	_ string `property:"subsubProperty"`
 
@@ -13,5 +18,6 @@ type SubSubTestStruct struct {
 }
 
 func (s *SubSubTestStruct) Init() {
+	SubSubTestStructInstance = s
 	s.SubSubConstructorProperty++
 }

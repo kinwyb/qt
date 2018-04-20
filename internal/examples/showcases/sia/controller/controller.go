@@ -29,6 +29,8 @@ type controller struct {
 func (c *controller) init() {
 	Controller = c
 
+	c.SetLocked(false) //TODO:
+
 	go c.loop()
 }
 

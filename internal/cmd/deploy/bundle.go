@@ -230,7 +230,7 @@ func bundle(mode, target, path, name, depPath string) {
 			utils.RunCmd(deploy, fmt.Sprintf("depoy %v on %v", target, runtime.GOOS))
 
 			var libraryPath = filepath.Join(utils.QT_MSYS2_DIR(), "bin")
-			for _, d := range []string{"libbz2-1", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libicudt58", "libicuin58", "libicuuc58", "libpcre2-16-0"} {
+			for _, d := range []string{"libbz2-1", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libicudt61", "libicuin61", "libicuuc61", "libpcre2-16-0"} {
 				utils.RunCmdOptional(exec.Command(copyCmd, filepath.Join(libraryPath, fmt.Sprintf("%v.dll", d)), depPath), fmt.Sprintf("copy %v for %v on %v", d, target, runtime.GOOS))
 			}
 
@@ -468,7 +468,7 @@ func bundle(mode, target, path, name, depPath string) {
 			t = "x86_64"
 		}
 
-		utils.Save(filepath.Join(depPath, "c_main_wrapper_"+t+".cpp"), "#include \"libgo.h\"\nint main(int argc, char *argv[]) { go_main_wrapper(); }")
+		utils.Save(filepath.Join(depPath, "c_main_wrapper_"+t+".cpp"), ios_c_main_wrapper())
 		cmd := exec.Command("xcrun", "clang++", "c_main_wrapper_"+t+".cpp", target+"_plugin_import.cpp", target+"_qml_plugin_import.cpp", "-o", "build/main", "-u", "_qt_registerPlatformPlugin", "-Wl,-e,_qt_main_wrapper", "-I../..", "-L.", "-lgo")
 		cmd.Args = append(cmd.Args, templater.GetiOSClang(target, t, depPath)...)
 		cmd.Dir = depPath
@@ -500,7 +500,7 @@ func bundle(mode, target, path, name, depPath string) {
 
 		if utils.QT_SAILFISH() {
 			utils.RemoveAll(filepath.Join("/home", "user", target))
-			copy(strings.Replace(strings.Replace(depPath, utils.MustGoPath(), "/media/sf_GOPATH/", -1), "\\", "/", -1), filepath.Join("/home", "user", target))
+			copy(strings.Replace(depPath, "\\", "/", -1), filepath.Join("/home", "user", target))
 
 			arch, template := "i486", "i486-meego-linux-gnu"
 			if target == "sailfish" {
@@ -509,9 +509,9 @@ func bundle(mode, target, path, name, depPath string) {
 
 			pack := exec.Command("mb2", "-t", template, "build")
 			pack.Dir = filepath.Join("/home", "user", target)
-			utils.RunCmd(pack, fmt.Sprintf("failed to deploy for %v (%v) on %v", target, arch, runtime.GOOS))
+			utils.RunCmd(pack, fmt.Sprintf("deploy for %v (%v) on %v", target, arch, runtime.GOOS))
 
-			copy(filepath.Join("/home", "user", target, "RPMS")+"/.", strings.Replace(strings.Replace(depPath, utils.MustGoPath(), "/media/sf_GOPATH/", -1), "\\", "/", -1))
+			copy(filepath.Join("/home", "user", target, "RPMS")+"/.", strings.Replace(depPath, "\\", "/", -1))
 		} else {
 			err := sailfish_ssh("2222", "mersdk", "cd", "/home/mersdk", "&&", "rm", "-R", target)
 			if err != nil {
@@ -553,7 +553,7 @@ func bundle(mode, target, path, name, depPath string) {
 
 		click := exec.Command("click", "build", "--no-validate", depPath)
 		click.Dir = depPath
-		utils.RunCmd(click, fmt.Sprintf("failed to deploy for %v (%v) on %v", target, utils.QT_UBPORTS_ARCH(), runtime.GOOS))
+		utils.RunCmd(click, fmt.Sprintf("deploy for %v (%v) on %v", target, utils.QT_UBPORTS_ARCH(), runtime.GOOS))
 	}
 
 	if utils.QT_DOCKER() {

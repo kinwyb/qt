@@ -1,4 +1,4 @@
-package ctop
+package controller
 
 import (
 	"github.com/therecipe/qt/core"
@@ -9,12 +9,8 @@ import (
 type colorController struct {
 	core.QObject
 
-	_ func() `constructor:"init"`
-
-	_ func() `signal:"change"`
+	_ func() `signal:"change,auto"`
 }
 
-func (c *colorController) init() {
-	//lazy binding to the (qml singleton) theme controller
-	c.ConnectChange(func() { ctheme.Controller.Change() })
-}
+//lazy binding to the (qml singleton) theme controller
+func (c *colorController) change() { controller.Controller.Change() }

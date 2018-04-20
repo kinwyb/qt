@@ -11,22 +11,18 @@ type dialogTemplate struct {
 
 	_ func() `constructor:"init"`
 
-	_ func(cident string) `signal:"show"`
-	_ func(bool)          `signal:"blur"`
+	_ func(cident string) `signal:"show,<-(controller.Controller)"`
+	_ func(bool)          `signal:"blur,->(controller.Controller)"`
 }
 
 func (t *dialogTemplate) init() {
-	c := cdialog.Controller
-	if c == nil {
-		c = cdialog.NewDialogController(nil)
+	if controller.Controller == nil {
+		controller.NewDialogController(nil)
 	}
-
-	c.ConnectShow(t.show)
-	t.ConnectBlur(c.Blur)
 }
 
 func (t *dialogTemplate) show(cident string) {
-	if cdialog.Controller.IsLocked() {
+	if controller.Controller.IsLocked() {
 		t.Show("unlock")
 	} else {
 		t.Show(cident)

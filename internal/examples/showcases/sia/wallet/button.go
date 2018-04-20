@@ -6,21 +6,18 @@ import (
 	"github.com/therecipe/qt/internal/examples/showcases/sia/wallet/controller"
 )
 
-func init() { walletButtonTemplate_QmlRegisterType2("WalletTemplate", 1, 0, "ButtonTemplate") }
+func init() { buttonTemplate_QmlRegisterType2("WalletTemplate", 1, 0, "ButtonTemplate") }
 
-type walletButtonTemplate struct { //TODO: fix name clash
+type buttonTemplate struct {
 	quick.QQuickItem
 
 	_ func() `constructor:"init"`
 
-	_ func(string) `signal:"clicked"`
+	_ func(string) `signal:"clicked,->(controller.ButtonController)"`
 }
 
-func (t *walletButtonTemplate) init() {
-	c := cwallet.ButtonController
-	if c == nil {
-		c = cwallet.NewWalletButtonController(nil)
+func (t *buttonTemplate) init() {
+	if controller.ButtonController == nil {
+		controller.NewButtonController(nil)
 	}
-
-	t.ConnectClicked(c.Clicked)
 }

@@ -3,24 +3,16 @@ package dialog
 import (
 	"github.com/therecipe/qt/widgets"
 
-	"github.com/therecipe/qt/internal/examples/showcases/sia/files/dialog/controller"
+	_ "github.com/therecipe/qt/internal/examples/showcases/sia/files/dialog/controller"
 )
 
 type folderUploadTemplate struct {
 	filesDialogTemplate
 
-	_ func() `constructor:"init"`
+	_ func(string) `signal:"uploadFolder,->(controller.Controller)"`
 
-	_ func(string)         `signal:"uploadFolder"`
-	_ func(string, string) `signal:"download"`
-}
-
-func (t *folderUploadTemplate) init() {
-	t.ConnectUploadFolder(cdialog.Controller.UploadFolder)
-	t.ConnectShow(t.show)
-
-	t.ConnectDownload(cdialog.Controller.Download)
-	cdialog.Controller.ConnectShowDownload(t.showDownload)
+	_ func(string, string) `signal:"download,->(controller.Controller)"`
+	_ func(string)         `signal:"showDownload,<-(controller.Controller)"`
 }
 
 func (t *folderUploadTemplate) show(cident string) {

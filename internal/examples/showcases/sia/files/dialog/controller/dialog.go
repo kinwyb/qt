@@ -1,4 +1,4 @@
-package cdialog
+package controller
 
 import (
 	"os"
@@ -7,47 +7,39 @@ import (
 
 	"github.com/therecipe/qt/core"
 
-	"github.com/therecipe/qt/internal/examples/showcases/sia/controller"
-	"github.com/therecipe/qt/internal/examples/showcases/sia/view/controller"
+	maincontroller "github.com/therecipe/qt/internal/examples/showcases/sia/controller"
+	_ "github.com/therecipe/qt/internal/examples/showcases/sia/view/controller"
 )
 
-var Controller *filesDialogController
+var Controller *dialogController
 
-type filesDialogController struct { //TODO: fix name clash
+type dialogController struct {
 	core.QObject
 
 	_ func() `constructor:"init"`
 
 	_ func(cident string) `signal:"show"`
 	_ func(string)        `signal:"showDownload"`
-	_ func(bool)          `signal:"blur"`
+	_ func(bool)          `signal:"blur,->(controller.Controller)"`
 
-	_ func([]string)       `signal:"uploadFiles"`
-	_ func(string)         `signal:"uploadFolder"`
-	_ func(string, string) `signal:"download"`
+	_ func([]string)       `signal:"uploadFiles,auto"`
+	_ func(string)         `signal:"uploadFolder,auto"`
+	_ func(string, string) `signal:"download,auto"`
 
-	_ func() bool `slot:"isLocked"`
+	_ func() bool `slot:"isLocked,->(maincontroller.Controller)"`
 }
 
-func (c *filesDialogController) init() {
+func (c *dialogController) init() {
 	Controller = c
-
-	c.ConnectBlur(cview.Controller.Blur)
-
-	c.ConnectUploadFiles(c.uploadFiles)
-	c.ConnectUploadFolder(c.uploadFolder)
-	c.ConnectDownload(c.download)
-
-	c.ConnectIsLocked(controller.Controller.IsLocked)
 }
 
-func (c *filesDialogController) uploadFiles(files []string) {
+func (c *dialogController) uploadFiles(files []string) {
 	for _, f := range files {
-		go controller.Client.RenterUploadPost("/renter/upload/"+filepath.Base(f), "source="+f, 1, 1) //TODO: dataPieces, parityPieces ?
+		go maincontroller.Client.RenterUploadPost("/renter/upload/"+filepath.Base(f), "source="+f, 1, 1) //TODO: dataPieces, parityPieces ?
 	}
 }
 
-func (c *filesDialogController) uploadFolder(source string) {
+func (c *dialogController) uploadFolder(source string) {
 	var files []string
 	filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -66,9 +58,9 @@ func (c *filesDialogController) uploadFolder(source string) {
 	c.uploadFiles(files)
 }
 
-func (c *filesDialogController) download(name, path string) {
+func (c *dialogController) download(name, path string) {
 	go func() {
-		err := controller.Client.RenterDownloadGet(name, path, 0, 1, true) //TODO: offset, lenght, async ?
+		err := maincontroller.Client.RenterDownloadGet(name, path, 0, 1, true) //TODO: offset, lenght, async ?
 		if err != nil {
 			println("Could not download file:", err.Error())
 		}

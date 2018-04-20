@@ -8,21 +8,17 @@ import (
 
 func init() { actionButtonTemplate_QmlRegisterType2("FilesTemplate", 1, 0, "ActionButtonTemplate") }
 
-type actionButtonTemplate struct { //TODO: fix name clash
+type actionButtonTemplate struct {
 	quick.QQuickItem
 
 	_ func() `constructor:"init"`
 
-	_ func(string) `signal:"showDownload"`
-	_ func(string) `signal:"deleteRequest"`
+	_ func(string) `signal:"showDownload,->(controller.ActionButtonController)"`
+	_ func(string) `signal:"deleteRequest,->(controller.ActionButtonController)"`
 }
 
 func (t *actionButtonTemplate) init() {
-	c := cfiles.ActionButtonController
-	if c == nil {
-		c = cfiles.NewActionButtonController(nil)
+	if controller.ActionButtonController == nil {
+		controller.NewActionButtonController(nil)
 	}
-
-	t.ConnectShowDownload(c.ShowDownload)
-	t.ConnectDeleteRequest(c.DeleteRequest)
 }

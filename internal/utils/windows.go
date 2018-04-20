@@ -26,7 +26,7 @@ func QT_MSYS2_DIR() string {
 	if QT_MSYS2_ARCH() == "amd64" {
 		suffix = "mingw64"
 	}
-	return fmt.Sprintf("C:\\%v\\%v", prefix, suffix)
+	return fmt.Sprintf("%v\\%v\\%v", windowsSystemDrive(), prefix, suffix)
 }
 
 func IsMsys2QtDir() bool {
@@ -34,10 +34,11 @@ func IsMsys2QtDir() bool {
 }
 
 func QT_MSYS2_ARCH() string {
-	if arch, ok := os.LookupEnv("QT_MSYS2_ARCH"); ok {
+	arch, ok := os.LookupEnv("QT_MSYS2_ARCH")
+	if ok {
 		return arch
 	}
-	if MSYSTEM() == "MINGW64" {
+	if MSYSTEM() == "MINGW64" || (!ok && runtime.GOARCH == "amd64") {
 		return "amd64"
 	}
 	return "386"
@@ -54,4 +55,17 @@ func MSYSTEM() string {
 func MSYS_DOCKER() bool {
 	_, ok := os.LookupEnv("DOCKER_MACHINE_NAME")
 	return ok
+}
+
+func windowsSystemDrive() string {
+	if vol, ok := os.LookupEnv("SystemDrive"); ok {
+		return vol
+	}
+	if vol, ok := os.LookupEnv("SystemRoot"); ok {
+		return filepath.VolumeName(vol)
+	}
+	if vol, ok := os.LookupEnv("WinDir"); ok {
+		return filepath.VolumeName(vol)
+	}
+	return "C:"
 }
