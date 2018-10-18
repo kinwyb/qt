@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/therecipe/qt/internal/utils"
 )
 
 func (f *Function) fix() {
@@ -13,10 +15,21 @@ func (f *Function) fix() {
 	f.fixOverload()
 	f.fixOverload_Version()
 
-	f.fixGeneric()
+	//f.fixGeneric()
 }
 
 func (f *Function) fixGeneral() {
+
+	if utils.QT_VERSION_NUM() >= 5110 {
+		for _, p := range f.Parameters {
+			if p.Value == "" {
+				p.Value = p.ValueNew
+			}
+			if p.Default == "nullptr" {
+				p.Default = "Q_NULLPTR"
+			}
+		}
+	}
 
 	//linux fixes
 
@@ -96,18 +109,46 @@ func (f *Function) fixGeneral_Version() {
 				f.Overload = true
 			}
 		}
+	case "QAndroidJniEnvironment::javaVM":
+		{
+			f.Output = strings.Replace(f.Output, "int *", "JavaVM *", -1)
+			f.Signature = strings.Replace(f.Signature, "int *", "JavaVM *", -1)
+		}
+	case "QAndroidJniObject::fromLocalRef":
+		{
+			f.Parameters[0].Value = strings.Replace(f.Parameters[0].Value, "int", "jobject", -1)
+			f.Signature = strings.Replace(f.Signature, "int", "jobject", -1)
+		}
+	case "QAndroidJniObject::QAndroidJniObject":
+		{
+			if strings.HasSuffix(f.Href, "5") {
+				f.Parameters[0].Value = strings.Replace(f.Parameters[0].Value, "int", "jobject", -1)
+				f.Signature = strings.Replace(f.Signature, "int", "jobject", -1)
+			}
+		}
+	case "QImage::QImage":
+		{
+			for i := len(f.Parameters) - 1; i >= 0; i-- {
+				if strings.HasPrefix(f.Parameters[i].Name, "cleanup") {
+					f.Parameters = append(f.Parameters[:i], f.Parameters[i+1:]...)
+				}
+			}
+		}
 	}
 }
 
 func (f *Function) fixOverload() {
 
 	if strings.Contains(f.Href, "-") {
-		var tmp, err = strconv.Atoi(strings.Split(f.Href, "-")[1])
+		tmp, err := strconv.Atoi(strings.Split(f.Href, "-")[1])
 		if err == nil && tmp > 0 {
 			f.Overload = true
-			tmp++
-			f.OverloadNumber = strconv.Itoa(tmp)
+			f.OverloadNumber = strconv.Itoa(tmp + 1)
 		}
+	}
+
+	if f.OverloadNumber == "1" {
+		f.OverloadNumber = "2"
 	}
 
 	if f.OverloadNumber != "0" {
@@ -246,6 +287,27 @@ func (f *Function) fixGenericInput() {
 
 	if len(f.OgParameters) == 0 && !skipOG {
 		for _, p := range f.Parameters {
+			if p.Default == "..." {
+				switch f.Name {
+				case "QPaintEngine":
+					p.Default = "PaintEngineFeatures()"
+				case "QLayoutItem":
+					p.Default = "Qt::Alignment()"
+				case "QBluetoothLocalDevice", "QWebEngineUrlRequestInterceptor":
+					p.Default = "Q_NULLPTR"
+				case "QMediaPlayer", "QQuickImageProvider":
+					p.Default = "Flags()"
+				case "QModbusRequest", "QModbusResponse":
+					p.Default = "QByteArray()"
+				case "QGeoServiceProvider":
+					p.Default = "QVariantMap()"
+				default:
+					p.Default = "Qt::WindowFlags()"
+				}
+			}
+			if strings.HasPrefix(p.Default, "DECLARE_READING") {
+				p.Default = ""
+			}
 			f.OgParameters = append(f.OgParameters, *p)
 		}
 	}
@@ -335,6 +397,7 @@ func (c *Class) FixGenericHelper() {
 		}
 		for _, f := range class.Functions {
 			//TODO: needed because there could be unfixed subclasses; delay this to later (also check for GetAllBases or GetBases in parser)
+			f.fixGeneral()
 			f.fixGeneric()
 
 			if IsPackedList(CleanValue(f.Output)) || IsPackedMap(CleanValue(f.Output)) {
@@ -351,6 +414,19 @@ func (c *Class) FixGenericHelper() {
 					if isMap {
 						params[0].Name = "v"
 						params = append(params, &Parameter{Name: "i", Value: "int"})
+						params[0].PureGoType = func() string {
+							if strings.Contains(f.PureGoOutput, "[error]") {
+								return "error"
+							}
+							return ""
+						}()
+					} else {
+						params[0].PureGoType = func() string {
+							if strings.Contains(f.PureGoOutput, "]error") {
+								return "error"
+							}
+							return ""
+						}()
 					}
 
 					c.Functions = append(c.Functions, &Function{
@@ -366,18 +442,41 @@ func (c *Class) FixGenericHelper() {
 						OverloadNumber: f.OverloadNumber,
 						Overload:       f.Overload,
 						NoMocDeduce:    true,
-						AsError:        f.AsError,
-						IsMap:          isMap,
+						PureGoOutput: func() string {
+							if strings.Contains(f.PureGoOutput, "]error") {
+								return "error"
+							}
+							return ""
+						}(),
+						IsMap: isMap,
 					})
 				}
 
 				if !c.HasFunctionWithNameAndOverloadNumber(fmt.Sprintf("__%v_setList", f.Name), f.OverloadNumber) {
 					var params = func() []*Parameter {
 						if IsPackedList(CleanValue(f.Output)) {
-							return []*Parameter{{Name: "i", Value: strings.Split(strings.Split(f.Output, "<")[1], ">")[0]}}
+							return []*Parameter{{Name: "i", Value: strings.Split(strings.Split(f.Output, "<")[1], ">")[0],
+								PureGoType: func() string {
+									if strings.Contains(f.PureGoOutput, "]error") {
+										return "error"
+									}
+									return ""
+								}()}}
 						}
 						var key, value = UnpackedMapDirty(CleanValue(f.Output))
-						return []*Parameter{{Name: "key", Value: key}, {Name: "i", Value: value}}
+						return []*Parameter{{Name: "key", Value: key,
+							PureGoType: func() string {
+								if strings.Contains(f.PureGoOutput, "[error]") {
+									return "error"
+								}
+								return ""
+							}()}, {Name: "i", Value: value,
+							PureGoType: func() string {
+								if strings.Contains(f.PureGoOutput, "]error") {
+									return "error"
+								}
+								return ""
+							}()}}
 					}()
 					c.Functions = append(c.Functions, &Function{
 						Name:           fmt.Sprintf("__%v_setList", f.Name),
@@ -392,7 +491,6 @@ func (c *Class) FixGenericHelper() {
 						OverloadNumber: f.OverloadNumber,
 						Overload:       f.Overload,
 						NoMocDeduce:    true,
-						AsError:        f.AsError,
 					})
 				}
 
@@ -409,7 +507,6 @@ func (c *Class) FixGenericHelper() {
 						OverloadNumber: f.OverloadNumber,
 						Overload:       f.Overload,
 						NoMocDeduce:    true,
-						AsError:        f.AsError,
 					})
 				}
 
@@ -427,8 +524,13 @@ func (c *Class) FixGenericHelper() {
 							OverloadNumber: f.OverloadNumber,
 							Overload:       f.Overload,
 							NoMocDeduce:    true,
-							AsError:        f.AsError,
-							Container:      CleanValue(f.Output),
+							PureGoOutput: func() string {
+								if strings.Contains(f.PureGoOutput, "[error]") {
+									return "[]error"
+								}
+								return ""
+							}(),
+							Container: CleanValue(f.Output),
 						})
 						rec = true
 					}
@@ -437,7 +539,6 @@ func (c *Class) FixGenericHelper() {
 
 			for _, p := range f.Parameters {
 				if IsPackedList(CleanValue(p.Value)) || IsPackedMap(CleanValue(p.Value)) {
-
 					if !c.HasFunctionWithNameAndOverloadNumber(fmt.Sprintf("__%v_%v_atList", f.Name, p.Name), f.OverloadNumber) {
 						var key, output, isMap = func() (string, string, bool) {
 							if IsPackedList(CleanValue(p.Value)) {
@@ -451,6 +552,19 @@ func (c *Class) FixGenericHelper() {
 						if isMap {
 							params[0].Name = "v"
 							params = append(params, &Parameter{Name: "i", Value: "int"})
+							params[0].PureGoType = func() string {
+								if strings.Contains(p.PureGoType, "[error]") {
+									return "error"
+								}
+								return ""
+							}()
+						} else {
+							params[0].PureGoType = func() string {
+								if strings.Contains(p.PureGoType, "]error") {
+									return "error"
+								}
+								return ""
+							}()
 						}
 
 						c.Functions = append(c.Functions, &Function{
@@ -466,18 +580,41 @@ func (c *Class) FixGenericHelper() {
 							OverloadNumber: f.OverloadNumber,
 							Overload:       f.Overload,
 							NoMocDeduce:    true,
-							AsError:        f.AsError,
-							IsMap:          isMap,
+							PureGoOutput: func() string {
+								if strings.Contains(p.PureGoType, "]error") {
+									return "error"
+								}
+								return ""
+							}(),
+							IsMap: isMap,
 						})
 					}
 
 					if !c.HasFunctionWithNameAndOverloadNumber(fmt.Sprintf("__%v_%v_setList", f.Name, p.Name), f.OverloadNumber) {
 						var params = func() []*Parameter {
 							if IsPackedList(CleanValue(p.Value)) {
-								return []*Parameter{{Name: "i", Value: strings.Split(strings.Split(p.Value, "<")[1], ">")[0]}}
+								return []*Parameter{{Name: "i", Value: strings.Split(strings.Split(p.Value, "<")[1], ">")[0],
+									PureGoType: func() string {
+										if strings.Contains(p.PureGoType, "]error") {
+											return "error"
+										}
+										return ""
+									}()}}
 							}
 							var key, value = UnpackedMapDirty(CleanValue(p.Value))
-							return []*Parameter{{Name: "key", Value: key}, {Name: "i", Value: value}}
+							return []*Parameter{{Name: "key", Value: key,
+								PureGoType: func() string {
+									if strings.Contains(p.PureGoType, "[error]") {
+										return "error"
+									}
+									return ""
+								}()}, {Name: "i", Value: value,
+								PureGoType: func() string {
+									if strings.Contains(p.PureGoType, "]error") {
+										return "error"
+									}
+									return ""
+								}()}}
 						}()
 						c.Functions = append(c.Functions, &Function{
 							Name:           fmt.Sprintf("__%v_%v_setList", f.Name, p.Name),
@@ -492,7 +629,6 @@ func (c *Class) FixGenericHelper() {
 							OverloadNumber: f.OverloadNumber,
 							Overload:       f.Overload,
 							NoMocDeduce:    true,
-							AsError:        f.AsError,
 						})
 					}
 
@@ -509,16 +645,15 @@ func (c *Class) FixGenericHelper() {
 							OverloadNumber: f.OverloadNumber,
 							Overload:       f.Overload,
 							NoMocDeduce:    true,
-							AsError:        f.AsError,
 						})
 					}
 
 					if IsPackedMap(CleanValue(p.Value)) {
-						if !c.HasFunctionWithNameAndOverloadNumber(fmt.Sprintf("__%v_keyList", f.Name), f.OverloadNumber) {
+						if !c.HasFunctionWithNameAndOverloadNumber(fmt.Sprintf("__%v_%v_keyList", f.Name, p.Name), f.OverloadNumber) {
 							var keyType, _ = UnpackedMapDirty(CleanValue(p.Value))
 							c.Functions = append(c.Functions, &Function{
-								Name:           fmt.Sprintf("__%v_keyList", f.Name),
-								Fullname:       fmt.Sprintf("%v::__%v_keyList", c.Name, f.Name),
+								Name:           fmt.Sprintf("__%v_%v_keyList", f.Name, p.Name),
+								Fullname:       fmt.Sprintf("%v::__%v_%v_keyList", c.Name, f.Name, p.Name),
 								Access:         "public",
 								Virtual:        "non",
 								Meta:           PLAIN,
@@ -527,8 +662,13 @@ func (c *Class) FixGenericHelper() {
 								OverloadNumber: f.OverloadNumber,
 								Overload:       f.Overload,
 								NoMocDeduce:    true,
-								AsError:        f.AsError,
-								Container:      CleanValue(p.Value),
+								PureGoOutput: func() string {
+									if strings.Contains(p.PureGoType, "[error]") {
+										return "[]error"
+									}
+									return ""
+								}(),
+								Container: CleanValue(p.Value),
 							})
 							rec = true
 						}

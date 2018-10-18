@@ -5,16 +5,21 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"math/rand"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/therecipe/qt/internal/binding/converter"
 	"github.com/therecipe/qt/internal/binding/parser"
 	"github.com/therecipe/qt/internal/utils"
 )
 
+var exportedFunctions []string
+
 func CppTemplate(module string, mode int, target, tags string) []byte {
 	utils.Log.WithField("module", module).Debug("generating cpp")
+	exportedFunctions = make([]string, 0)
 	parser.State.Target = target
 
 	var bb = new(bytes.Buffer)
@@ -184,7 +189,10 @@ func CppTemplate(module string, mode int, target, tags string) []byte {
 								if mode != MOC {
 									return pre
 								}
-								return fmt.Sprintf("qRegisterMetaType<quintptr>(\"quintptr\");%v%[2]v_%[2]v_QRegisterMetaTypes();callback%[2]v_Constructor(this);", pre, className)
+								if UseJs() {
+									return fmt.Sprintf("qRegisterMetaType<quintptr>(\"quintptr\");%[1]v%[2]v_%[2]v_QRegisterMetaTypes();emscripten::val::global(\"Module\").call<void>(\"_callback%[2]v_Constructor\", reinterpret_cast<uintptr_t>(this));", pre, className)
+								}
+								return fmt.Sprintf("qRegisterMetaType<quintptr>(\"quintptr\");%[1]v%[2]v_%[2]v_QRegisterMetaTypes();callback%[2]v_Constructor(this);", pre, className)
 							}(),
 						)
 
@@ -382,13 +390,43 @@ func CppTemplate(module string, mode int, target, tags string) []byte {
 			}
 		}
 
-		fmt.Fprintln(bb, "#include \"moc_moc.h\"")
+		if !UseJs() {
+			fmt.Fprintln(bb, "#include \"moc_moc.h\"")
+		}
 	}
 
-	return preambleCpp(module, bb.Bytes(), mode, tags)
+	if UseJs() {
+		for _, df := range deferredFunctions {
+			bb.WriteString(df)
+		}
+		deferredFunctions = nil
+
+		rand.Seed(time.Now().UTC().UnixNano())
+		fmt.Fprintf(bb, "EMSCRIPTEN_BINDINGS(r%v) {\n", rand.Intn(10000000))
+
+		sort.Stable(sort.StringSlice(exportedFunctions))
+
+		for _, f := range exportedFunctions {
+			if strings.Contains(bb.String(), f+"(") && !strings.Contains(bb.String(), "_KEEPALIVE_"+f+"(") && !strings.Contains(bb.String(), "_"+f+"\"") {
+				fmt.Fprintf(bb, "\temscripten::function(\"_%[1]v\", &%[1]v);\n", f)
+			}
+
+			if strings.Contains(bb.String(), f+"Default(") && !strings.Contains(bb.String(), "_KEEPALIVE_"+f+"Default(") && !strings.Contains(bb.String(), "_"+f+"Default\"") {
+				fmt.Fprintf(bb, "\temscripten::function(\"_%[1]vDefault\", &%[1]vDefault);\n", f)
+			}
+		}
+
+		fmt.Fprintln(bb, "}\n")
+
+		if mode == MOC {
+			fmt.Fprintln(bb, "#include \"moc_moc.h\"")
+		}
+	}
+
+	return preambleCpp(module, bb.Bytes(), mode, target, tags)
 }
 
-func preambleCpp(module string, input []byte, mode int, tags string) []byte {
+func preambleCpp(module string, input []byte, mode int, target, tags string) []byte {
 	var bb = new(bytes.Buffer)
 	defer bb.Reset()
 
@@ -493,6 +531,9 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 		}(),
 
 		func() string {
+			if UseJs() {
+				return "\n#include <string>\n#include <emscripten.h>\n#include <emscripten/bind.h>\n#include <emscripten/val.h>"
+			}
 			switch module {
 			case "QtAndroidExtras", "QtSailfish":
 				return "#include \"_cgo_export.h\""
@@ -542,7 +583,10 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 				"QRemoteObjectPackets",
 				"QRemoteObjectStringLiterals",
 				"ui",
-				"QStringList":
+				"QStringList",
+				"QtDwmApiDll",
+				"content",
+				"QStringView":
 				{
 					continue
 				}
@@ -566,6 +610,12 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 				}
 			}
 
+			if strings.HasPrefix(parser.State.Target, "rpi") && utils.QT_RPI() {
+				if !parser.IsWhiteListedRaspberryLib(strings.TrimPrefix(c.Module, "Qt")) {
+					continue
+				}
+			}
+
 			if c, ok := parser.State.ClassMap[class]; ok {
 				if strings.Contains(c.Pkg, "/vendor/") {
 					continue
@@ -573,6 +623,29 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 			}
 
 			fmt.Fprintf(bb, "#include <%v>\n", class)
+
+			if (strings.HasPrefix(target, "ios") || target == "js") && mode == MINIMAL {
+				oldModuleGo := strings.TrimPrefix(c.Module, "Qt")
+
+				var containsSelf bool
+				for _, l := range parser.LibDeps["build_ios"] {
+					if l == oldModuleGo {
+						containsSelf = true
+						break
+					}
+				}
+
+				if !containsSelf {
+					parser.LibDeps["build_ios"] = append(parser.LibDeps["build_ios"], oldModuleGo)
+
+					switch oldModuleGo {
+					case "Multimedia":
+						parser.LibDeps["build_ios"] = append(parser.LibDeps["build_ios"], "MultimediaWidgets")
+					case "Quick":
+						parser.LibDeps["build_ios"] = append(parser.LibDeps["build_ios"], "QuickWidgets")
+					}
+				}
+			}
 
 			if mode == MOC {
 				var found bool
@@ -584,6 +657,27 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 				}
 				if !found {
 					parser.LibDeps[parser.MOC] = append(parser.LibDeps[parser.MOC], strings.TrimPrefix(c.Module, "Qt"))
+				}
+
+				if target == "js" {
+
+					found = false
+					for _, m := range parser.LibDeps["build_ios"] {
+						if m == strings.TrimPrefix(c.Module, "Qt") {
+							found = true
+							break
+						}
+					}
+					if !found {
+						parser.LibDeps["build_ios"] = append(parser.LibDeps["build_ios"], strings.TrimPrefix(c.Module, "Qt"))
+
+						switch strings.TrimPrefix(c.Module, "Qt") {
+						case "Multimedia":
+							parser.LibDeps["build_ios"] = append(parser.LibDeps["build_ios"], "MultimediaWidgets")
+						case "Quick":
+							parser.LibDeps["build_ios"] = append(parser.LibDeps["build_ios"], "QuickWidgets")
+						}
+					}
 				}
 			}
 		}
@@ -648,7 +742,7 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 
 		for _, c := range parser.SortedClassesForModule(strings.Join(libs, ","), true) {
 			hName := c.Hash()
-			sep := []string{" ", "\t", "\n", "\r", "(", ")", ":", ";", "*", "<", ">", "&", "~", "{", "}", "[", "]", "_", "callback"}
+			sep := []string{"\"_", "LIVE_", " ", "\t", "\n", "\r", "(", ")", ":", ";", "*", "<", ">", "&", "~", "{", "}", "[", "]", "_", "callback"}
 			for _, p := range sep {
 				for _, s := range sep {
 					if s == "callback" {
@@ -659,6 +753,13 @@ func preambleCpp(module string, input []byte, mode int, tags string) []byte {
 			}
 		}
 		pre = strings.Replace(pre, "PREPRO", "", -1)
+		bb.WriteString(pre)
+	}
+
+	if UseJs() {
+		pre := bb.String()
+		bb.Reset()
+		pre = strings.Replace(pre, "_KEEPALIVE_", "", -1)
 		bb.WriteString(pre)
 	}
 

@@ -3,6 +3,7 @@ package parser
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -35,6 +36,7 @@ func (c *Class) fixFunctions(fix func(*Function)) {
 }
 
 //TODO: (*Enum) IsSupported
+//TODO: merge into (*Class).removeEnums_Version
 func (c *Class) fixEnums() {
 	for _, e := range c.Enums {
 		if e.Fullname == "QVariant::Type" {
@@ -45,10 +47,26 @@ func (c *Class) fixEnums() {
 				}
 			}
 		}
-		if utils.QT_VERSION_NUM() <= 5042 && e.Fullname == "QFileSystemModel::Roles" {
+		if e.Fullname == "QFileSystemModel::Roles" && utils.QT_VERSION_NUM() <= 5042 {
 			for i := len(e.Values) - 1; i >= 0; i-- {
 				if v := e.Values[i]; v.Name == "FileIconRole" {
 					e.Values = append(e.Values[:i], e.Values[i+1:]...)
+				}
+			}
+		}
+		if utils.QT_MACPORTS() {
+			if e.Fullname == "QWebSettings::WebAttribute" {
+				for i := len(e.Values) - 1; i >= 0; i-- {
+					if v := e.Values[i]; v.Name == "MediaSourceEnabled" || v.Name == "MediaEnabled" || v.Name == "WebSecurityEnabled" || v.Name == "FullScreenSupportEnabled" {
+						e.Values = append(e.Values[:i], e.Values[i+1:]...)
+					}
+				}
+			}
+			if e.Fullname == "QWebPage::MessageSource" {
+				for i := len(e.Values) - 1; i >= 0; i-- {
+					if v := e.Values[i]; v.Name == "MessageSource" || v.Name == "MessageLevel" {
+						e.Values = append(e.Values[:i], e.Values[i+1:]...)
+					}
 				}
 			}
 		}
@@ -149,6 +167,12 @@ func (c *Class) fixGeneral_Version() {
 				})
 			}
 		}
+	case "QDesktopWidget":
+		{
+			for _, f := range c.Functions {
+				f.Status = "active"
+			}
+		}
 	}
 }
 
@@ -176,6 +200,11 @@ var pkgConfigIncludeDir string
 
 func (c *Class) fixBases() {
 	if c.Module == MOC || c.Pkg != "" {
+		return
+	}
+
+	if c.Bases == "QList" {
+		c.Bases = ""
 		return
 	}
 
@@ -218,14 +247,31 @@ func (c *Class) fixBases() {
 				}
 			} else {
 				prefixPath = filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32")
+				if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
+					prefixPath = strings.Replace(prefixPath, utils.QT_VERSION_MAJOR(), utils.QT_VERSION(), -1)
+				}
+				if !utils.ExistsDir(prefixPath) {
+					prefixPath = strings.Replace(prefixPath, "mingw53_32", "mingw49_32", -1)
+				}
 			}
 		}
 
 	case "darwin":
 		{
-			prefixPath = utils.QT_DARWIN_DIR()
-			infixPath = "lib"
-			suffixPath = ".framework/Headers/"
+			if utils.QT_NIX() {
+				infixPath = "include"
+				suffixPath = string(filepath.Separator)
+				for _, qmakepath := range strings.Split(os.Getenv("QMAKEPATH"), string(filepath.ListSeparator)) {
+					if utils.ExistsFile(filepath.Join(qmakepath, infixPath, c.DocModule+suffixPath+c.Name)) {
+						prefixPath = qmakepath
+						break
+					}
+				}
+			} else {
+				prefixPath = utils.QT_DARWIN_DIR()
+				infixPath = "lib"
+				suffixPath = ".framework/Headers/"
+			}
 		}
 
 	case "linux":
@@ -241,6 +287,9 @@ func (c *Class) fixBases() {
 				infixPath = ""
 			default:
 				prefixPath = filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "gcc_64")
+				if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
+					prefixPath = strings.Replace(prefixPath, utils.QT_VERSION_MAJOR(), utils.QT_VERSION(), -1)
+				}
 			}
 		}
 	}

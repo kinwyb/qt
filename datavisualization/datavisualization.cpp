@@ -47,11 +47,11 @@
 #include <QLayout>
 #include <QLine>
 #include <QLinearGradient>
-#include <QList>
 #include <QLocale>
 #include <QLogValue3DAxisFormatter>
 #include <QMediaPlaylist>
 #include <QMediaRecorder>
+#include <QMetaObject>
 #include <QMouseEvent>
 #include <QObject>
 #include <QOffscreenSurface>
@@ -67,7 +67,6 @@
 #include <QScatter3DSeries>
 #include <QScatterDataItem>
 #include <QScatterDataProxy>
-#include <QSignalSpy>
 #include <QSize>
 #include <QSizeF>
 #include <QString>
@@ -137,6 +136,7 @@ public:
 	void Signal_SelectedSeriesChanged(QBar3DSeries * series) { callbackQ3DBars_SelectedSeriesChanged(this, series); };
 	void Signal_ValueAxisChanged(QValue3DAxis * axis) { callbackQ3DBars_ValueAxisChanged(this, axis); };
 	 ~MyQ3DBars() { callbackQ3DBars_DestroyQ3DBars(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DBars_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DBars_NewQ3DBars(void* format, void* parent)
@@ -146,6 +146,16 @@ void* Q3DBars_NewQ3DBars(void* format, void* parent)
 	} else {
 		return new MyQ3DBars(static_cast<QSurfaceFormat*>(format), static_cast<QWindow*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString Q3DBars_Q3DBars_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t506497 = Q3DBars::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t506497.prepend("WHITESPACE").constData()+10), t506497.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DBars_Q3DBars_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray te2ebf0 = Q3DBars::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(te2ebf0.prepend("WHITESPACE").constData()+10), te2ebf0.size()-10 }; });
 }
 
 void Q3DBars_AddAxis(void* ptr, void* axis)
@@ -429,6 +439,16 @@ char Q3DBars_IsMultiSeriesUniform(void* ptr)
 	return static_cast<Q3DBars*>(ptr)->isMultiSeriesUniform();
 }
 
+void* Q3DBars_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DBars*>(ptr)->metaObject());
+}
+
+void* Q3DBars_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DBars*>(ptr)->Q3DBars::metaObject());
+}
+
 float Q3DBars_BarThickness(void* ptr)
 {
 	return static_cast<Q3DBars*>(ptr)->barThickness();
@@ -486,17 +506,8 @@ public:
 	void Signal_YRotationChanged(float rotation) { callbackQ3DCamera_YRotationChanged(this, rotation); };
 	void Signal_ZoomLevelChanged(float zoomLevel) { callbackQ3DCamera_ZoomLevelChanged(this, zoomLevel); };
 	 ~MyQ3DCamera() { callbackQ3DCamera_DestroyQ3DCamera(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DCamera_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
-
-void Q3DCamera_SetCameraPosition(void* ptr, float horizontal, float vertical, float zoom)
-{
-	static_cast<Q3DCamera*>(ptr)->setCameraPosition(horizontal, vertical, zoom);
-}
-
-void Q3DCamera_SetTarget(void* ptr, void* target)
-{
-	static_cast<Q3DCamera*>(ptr)->setTarget(*static_cast<QVector3D*>(target));
-}
 
 void* Q3DCamera_NewQ3DCamera(void* parent)
 {
@@ -528,8 +539,6 @@ void* Q3DCamera_NewQ3DCamera(void* parent)
 		return new MyQ3DCamera(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DCamera(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DCamera(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DCamera(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -537,6 +546,16 @@ void* Q3DCamera_NewQ3DCamera(void* parent)
 	} else {
 		return new MyQ3DCamera(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString Q3DCamera_Q3DCamera_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t1c418d = Q3DCamera::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t1c418d.prepend("WHITESPACE").constData()+10), t1c418d.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DCamera_Q3DCamera_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t0e9669 = Q3DCamera::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0e9669.prepend("WHITESPACE").constData()+10), t0e9669.size()-10 }; });
 }
 
 void Q3DCamera_ConnectCameraPresetChanged(void* ptr)
@@ -594,6 +613,11 @@ void Q3DCamera_MinZoomLevelChanged(void* ptr, float zoomLevel)
 	static_cast<Q3DCamera*>(ptr)->minZoomLevelChanged(zoomLevel);
 }
 
+void Q3DCamera_SetCameraPosition(void* ptr, float horizontal, float vertical, float zoom)
+{
+	static_cast<Q3DCamera*>(ptr)->setCameraPosition(horizontal, vertical, zoom);
+}
+
 void Q3DCamera_SetCameraPreset(void* ptr, long long preset)
 {
 	static_cast<Q3DCamera*>(ptr)->setCameraPreset(static_cast<Q3DCamera::CameraPreset>(preset));
@@ -607,6 +631,11 @@ void Q3DCamera_SetMaxZoomLevel(void* ptr, float zoomLevel)
 void Q3DCamera_SetMinZoomLevel(void* ptr, float zoomLevel)
 {
 	static_cast<Q3DCamera*>(ptr)->setMinZoomLevel(zoomLevel);
+}
+
+void Q3DCamera_SetTarget(void* ptr, void* target)
+{
+	static_cast<Q3DCamera*>(ptr)->setTarget(*static_cast<QVector3D*>(target));
 }
 
 void Q3DCamera_SetWrapXRotation(void* ptr, char isEnabled)
@@ -755,6 +784,16 @@ char Q3DCamera_WrapYRotation(void* ptr)
 	return static_cast<Q3DCamera*>(ptr)->wrapYRotation();
 }
 
+void* Q3DCamera_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DCamera*>(ptr)->metaObject());
+}
+
+void* Q3DCamera_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DCamera*>(ptr)->Q3DCamera::metaObject());
+}
+
 float Q3DCamera_MaxZoomLevel(void* ptr)
 {
 	return static_cast<Q3DCamera*>(ptr)->maxZoomLevel();
@@ -793,6 +832,7 @@ public:
 	void Signal_ZoomAtTargetEnabledChanged(bool enable) { callbackQ3DInputHandler_ZoomAtTargetEnabledChanged(this, enable); };
 	void Signal_ZoomEnabledChanged(bool enable) { callbackQ3DInputHandler_ZoomEnabledChanged(this, enable); };
 	 ~MyQ3DInputHandler() { callbackQ3DInputHandler_DestroyQ3DInputHandler(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DInputHandler_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DInputHandler_NewQ3DInputHandler(void* parent)
@@ -825,8 +865,6 @@ void* Q3DInputHandler_NewQ3DInputHandler(void* parent)
 		return new MyQ3DInputHandler(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DInputHandler(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DInputHandler(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DInputHandler(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -834,6 +872,16 @@ void* Q3DInputHandler_NewQ3DInputHandler(void* parent)
 	} else {
 		return new MyQ3DInputHandler(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString Q3DInputHandler_Q3DInputHandler_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray ta6f28a = Q3DInputHandler::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta6f28a.prepend("WHITESPACE").constData()+10), ta6f28a.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DInputHandler_Q3DInputHandler_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t9d366a = Q3DInputHandler::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t9d366a.prepend("WHITESPACE").constData()+10), t9d366a.size()-10 }; });
 }
 
 void Q3DInputHandler_MouseMoveEvent(void* ptr, void* event, void* mousePos)
@@ -987,12 +1035,23 @@ char Q3DInputHandler_IsZoomEnabled(void* ptr)
 	return static_cast<Q3DInputHandler*>(ptr)->isZoomEnabled();
 }
 
+void* Q3DInputHandler_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DInputHandler*>(ptr)->metaObject());
+}
+
+void* Q3DInputHandler_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DInputHandler*>(ptr)->Q3DInputHandler::metaObject());
+}
+
 class MyQ3DLight: public Q3DLight
 {
 public:
 	MyQ3DLight(QObject *parent = Q_NULLPTR) : Q3DLight(parent) {};
 	void Signal_AutoPositionChanged(bool autoPosition) { callbackQ3DLight_AutoPositionChanged(this, autoPosition); };
 	 ~MyQ3DLight() { callbackQ3DLight_DestroyQ3DLight(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DLight_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DLight_NewQ3DLight(void* parent)
@@ -1025,8 +1084,6 @@ void* Q3DLight_NewQ3DLight(void* parent)
 		return new MyQ3DLight(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DLight(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DLight(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DLight(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1034,6 +1091,16 @@ void* Q3DLight_NewQ3DLight(void* parent)
 	} else {
 		return new MyQ3DLight(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString Q3DLight_Q3DLight_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t8f2fb9 = Q3DLight::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t8f2fb9.prepend("WHITESPACE").constData()+10), t8f2fb9.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DLight_Q3DLight_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray tf499e2 = Q3DLight::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tf499e2.prepend("WHITESPACE").constData()+10), tf499e2.size()-10 }; });
 }
 
 char Q3DLight_IsAutoPosition(void* ptr)
@@ -1072,6 +1139,16 @@ void Q3DLight_DestroyQ3DLightDefault(void* ptr)
 
 }
 
+void* Q3DLight_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DLight*>(ptr)->metaObject());
+}
+
+void* Q3DLight_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DLight*>(ptr)->Q3DLight::metaObject());
+}
+
 class MyQ3DObject: public Q3DObject
 {
 public:
@@ -1079,6 +1156,7 @@ public:
 	void copyValuesFrom(const Q3DObject & source) { callbackQ3DObject_CopyValuesFrom(this, const_cast<Q3DObject*>(&source)); };
 	void Signal_PositionChanged(const QVector3D & position) { callbackQ3DObject_PositionChanged(this, const_cast<QVector3D*>(&position)); };
 	 ~MyQ3DObject() { callbackQ3DObject_DestroyQ3DObject(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DObject_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DObject_NewQ3DObject(void* parent)
@@ -1111,8 +1189,6 @@ void* Q3DObject_NewQ3DObject(void* parent)
 		return new MyQ3DObject(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DObject(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DObject(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DObject(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1125,6 +1201,16 @@ void* Q3DObject_NewQ3DObject(void* parent)
 void* Q3DObject_ParentScene(void* ptr)
 {
 	return static_cast<Q3DObject*>(ptr)->parentScene();
+}
+
+struct QtDataVisualization_PackedString Q3DObject_Q3DObject_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tff43e3 = Q3DObject::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tff43e3.prepend("WHITESPACE").constData()+10), tff43e3.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DObject_Q3DObject_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t4057bc = Q3DObject::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t4057bc.prepend("WHITESPACE").constData()+10), t4057bc.size()-10 }; });
 }
 
 void Q3DObject_CopyValuesFrom(void* ptr, void* source)
@@ -1183,6 +1269,16 @@ char Q3DObject_IsDirty(void* ptr)
 	return static_cast<Q3DObject*>(ptr)->isDirty();
 }
 
+void* Q3DObject_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DObject*>(ptr)->metaObject());
+}
+
+void* Q3DObject_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DObject*>(ptr)->Q3DObject::metaObject());
+}
+
 class MyQ3DScatter: public Q3DScatter
 {
 public:
@@ -1192,6 +1288,7 @@ public:
 	void Signal_AxisZChanged(QValue3DAxis * axis) { callbackQ3DScatter_AxisZChanged(this, axis); };
 	void Signal_SelectedSeriesChanged(QScatter3DSeries * series) { callbackQ3DScatter_SelectedSeriesChanged(this, series); };
 	 ~MyQ3DScatter() { callbackQ3DScatter_DestroyQ3DScatter(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DScatter_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DScatter_NewQ3DScatter(void* format, void* parent)
@@ -1201,6 +1298,16 @@ void* Q3DScatter_NewQ3DScatter(void* format, void* parent)
 	} else {
 		return new MyQ3DScatter(static_cast<QSurfaceFormat*>(format), static_cast<QWindow*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString Q3DScatter_Q3DScatter_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t809444 = Q3DScatter::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t809444.prepend("WHITESPACE").constData()+10), t809444.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DScatter_Q3DScatter_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t0b01ae = Q3DScatter::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0b01ae.prepend("WHITESPACE").constData()+10), t0b01ae.size()-10 }; });
 }
 
 void Q3DScatter_AddAxis(void* ptr, void* axis)
@@ -1339,6 +1446,16 @@ void* Q3DScatter_AxisZ(void* ptr)
 	return static_cast<Q3DScatter*>(ptr)->axisZ();
 }
 
+void* Q3DScatter_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DScatter*>(ptr)->metaObject());
+}
+
+void* Q3DScatter_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DScatter*>(ptr)->Q3DScatter::metaObject());
+}
+
 void* Q3DScatter___seriesList_atList(void* ptr, int i)
 {
 	return ({QScatter3DSeries * tmp = static_cast<QList<QScatter3DSeries *>*>(ptr)->at(i); if (i == static_cast<QList<QScatter3DSeries *>*>(ptr)->size()-1) { static_cast<QList<QScatter3DSeries *>*>(ptr)->~QList(); free(ptr); }; tmp; });
@@ -1386,6 +1503,7 @@ public:
 	void Signal_SlicingActiveChanged(bool isSlicingActive) { callbackQ3DScene_SlicingActiveChanged(this, isSlicingActive); };
 	void Signal_ViewportChanged(const QRect & viewport) { callbackQ3DScene_ViewportChanged(this, const_cast<QRect*>(&viewport)); };
 	 ~MyQ3DScene() { callbackQ3DScene_DestroyQ3DScene(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DScene_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DScene_NewQ3DScene(void* parent)
@@ -1418,8 +1536,6 @@ void* Q3DScene_NewQ3DScene(void* parent)
 		return new MyQ3DScene(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DScene(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DScene(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DScene(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1432,6 +1548,16 @@ void* Q3DScene_NewQ3DScene(void* parent)
 void* Q3DScene_Q3DScene_InvalidSelectionPoint()
 {
 	return ({ QPoint tmpValue = Q3DScene::invalidSelectionPoint(); new QPoint(tmpValue.x(), tmpValue.y()); });
+}
+
+struct QtDataVisualization_PackedString Q3DScene_Q3DScene_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray td6d065 = Q3DScene::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(td6d065.prepend("WHITESPACE").constData()+10), td6d065.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DScene_Q3DScene_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t0bd6db = Q3DScene::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0bd6db.prepend("WHITESPACE").constData()+10), t0bd6db.size()-10 }; });
 }
 
 char Q3DScene_IsPointInPrimarySubView(void* ptr, void* point)
@@ -1695,6 +1821,16 @@ char Q3DScene_IsSlicingActive(void* ptr)
 	return static_cast<Q3DScene*>(ptr)->isSlicingActive();
 }
 
+void* Q3DScene_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DScene*>(ptr)->metaObject());
+}
+
+void* Q3DScene_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DScene*>(ptr)->Q3DScene::metaObject());
+}
+
 float Q3DScene_DevicePixelRatio(void* ptr)
 {
 	return static_cast<Q3DScene*>(ptr)->devicePixelRatio();
@@ -1710,6 +1846,7 @@ public:
 	void Signal_FlipHorizontalGridChanged(bool flip) { callbackQ3DSurface_FlipHorizontalGridChanged(this, flip); };
 	void Signal_SelectedSeriesChanged(QSurface3DSeries * series) { callbackQ3DSurface_SelectedSeriesChanged(this, series); };
 	 ~MyQ3DSurface() { callbackQ3DSurface_DestroyQ3DSurface(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DSurface_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* Q3DSurface_NewQ3DSurface(void* format, void* parent)
@@ -1719,6 +1856,16 @@ void* Q3DSurface_NewQ3DSurface(void* format, void* parent)
 	} else {
 		return new MyQ3DSurface(static_cast<QSurfaceFormat*>(format), static_cast<QWindow*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString Q3DSurface_Q3DSurface_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tee8689 = Q3DSurface::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tee8689.prepend("WHITESPACE").constData()+10), tee8689.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DSurface_Q3DSurface_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t68768d = Q3DSurface::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t68768d.prepend("WHITESPACE").constData()+10), t68768d.size()-10 }; });
 }
 
 void Q3DSurface_AddAxis(void* ptr, void* axis)
@@ -1882,6 +2029,16 @@ char Q3DSurface_FlipHorizontalGrid(void* ptr)
 	return static_cast<Q3DSurface*>(ptr)->flipHorizontalGrid();
 }
 
+void* Q3DSurface_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DSurface*>(ptr)->metaObject());
+}
+
+void* Q3DSurface_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DSurface*>(ptr)->Q3DSurface::metaObject());
+}
+
 void* Q3DSurface___seriesList_atList(void* ptr, int i)
 {
 	return ({QSurface3DSeries * tmp = static_cast<QList<QSurface3DSeries *>*>(ptr)->at(i); if (i == static_cast<QList<QSurface3DSeries *>*>(ptr)->size()-1) { static_cast<QList<QSurface3DSeries *>*>(ptr)->~QList(); free(ptr); }; tmp; });
@@ -1917,8 +2074,8 @@ void* Q3DSurface___axes_newList(void* ptr)
 class MyQ3DTheme: public Q3DTheme
 {
 public:
+	MyQ3DTheme(Q3DTheme::Theme themeType, QObject *parent = Q_NULLPTR) : Q3DTheme(themeType, parent) {};
 	MyQ3DTheme(QObject *parent = Q_NULLPTR) : Q3DTheme(parent) {};
-	MyQ3DTheme(Theme themeType, QObject *parent = Q_NULLPTR) : Q3DTheme(themeType, parent) {};
 	void Signal_AmbientLightStrengthChanged(float strength) { callbackQ3DTheme_AmbientLightStrengthChanged(this, strength); };
 	void Signal_BackgroundColorChanged(const QColor & color) { callbackQ3DTheme_BackgroundColorChanged(this, const_cast<QColor*>(&color)); };
 	void Signal_BackgroundEnabledChanged(bool enabled) { callbackQ3DTheme_BackgroundEnabledChanged(this, enabled); };
@@ -1942,48 +2099,8 @@ public:
 	void Signal_TypeChanged(Q3DTheme::Theme themeType) { callbackQ3DTheme_TypeChanged(this, themeType); };
 	void Signal_WindowColorChanged(const QColor & color) { callbackQ3DTheme_WindowColorChanged(this, const_cast<QColor*>(&color)); };
 	 ~MyQ3DTheme() { callbackQ3DTheme_DestroyQ3DTheme(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQ3DTheme_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
-
-void* Q3DTheme_NewQ3DTheme(void* parent)
-{
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QCameraImageCapture*>(parent));
-	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QDBusPendingCallWatcher*>(parent));
-	} else if (dynamic_cast<QExtensionFactory*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QExtensionFactory*>(parent));
-	} else if (dynamic_cast<QExtensionManager*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QExtensionManager*>(parent));
-	} else if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QGraphicsObject*>(parent));
-	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QGraphicsWidget*>(parent));
-	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QLayout*>(parent));
-	} else if (dynamic_cast<QMediaPlaylist*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QMediaPlaylist*>(parent));
-	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QMediaRecorder*>(parent));
-	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QOffscreenSurface*>(parent));
-	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QPaintDeviceWindow*>(parent));
-	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QPdfWriter*>(parent));
-	} else if (dynamic_cast<QQuickItem*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QQuickItem*>(parent));
-	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QSignalSpy*>(parent));
-	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QWidget*>(parent));
-	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<QWindow*>(parent));
-	} else {
-		return new MyQ3DTheme(static_cast<QObject*>(parent));
-	}
-}
 
 void* Q3DTheme_NewQ3DTheme2(long long themeType, void* parent)
 {
@@ -2015,8 +2132,6 @@ void* Q3DTheme_NewQ3DTheme2(long long themeType, void* parent)
 		return new MyQ3DTheme(static_cast<Q3DTheme::Theme>(themeType), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DTheme(static_cast<Q3DTheme::Theme>(themeType), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQ3DTheme(static_cast<Q3DTheme::Theme>(themeType), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQ3DTheme(static_cast<Q3DTheme::Theme>(themeType), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -2024,6 +2139,55 @@ void* Q3DTheme_NewQ3DTheme2(long long themeType, void* parent)
 	} else {
 		return new MyQ3DTheme(static_cast<Q3DTheme::Theme>(themeType), static_cast<QObject*>(parent));
 	}
+}
+
+void* Q3DTheme_NewQ3DTheme(void* parent)
+{
+	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QCameraImageCapture*>(parent));
+	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QDBusPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QExtensionFactory*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QExtensionFactory*>(parent));
+	} else if (dynamic_cast<QExtensionManager*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QExtensionManager*>(parent));
+	} else if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QGraphicsObject*>(parent));
+	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QGraphicsWidget*>(parent));
+	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QLayout*>(parent));
+	} else if (dynamic_cast<QMediaPlaylist*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QMediaPlaylist*>(parent));
+	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QOffscreenSurface*>(parent));
+	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QPaintDeviceWindow*>(parent));
+	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QPdfWriter*>(parent));
+	} else if (dynamic_cast<QQuickItem*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QQuickItem*>(parent));
+	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QRadioData*>(parent));
+	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QWidget*>(parent));
+	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
+		return new MyQ3DTheme(static_cast<QWindow*>(parent));
+	} else {
+		return new MyQ3DTheme(static_cast<QObject*>(parent));
+	}
+}
+
+struct QtDataVisualization_PackedString Q3DTheme_Q3DTheme_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t958dfd = Q3DTheme::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t958dfd.prepend("WHITESPACE").constData()+10), t958dfd.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString Q3DTheme_Q3DTheme_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray teff3ca = Q3DTheme::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(teff3ca.prepend("WHITESPACE").constData()+10), teff3ca.size()-10 }; });
 }
 
 void Q3DTheme_ConnectAmbientLightStrengthChanged(void* ptr)
@@ -2482,6 +2646,11 @@ long long Q3DTheme_ColorStyle(void* ptr)
 	return static_cast<Q3DTheme*>(ptr)->colorStyle();
 }
 
+long long Q3DTheme_Type(void* ptr)
+{
+	return static_cast<Q3DTheme*>(ptr)->type();
+}
+
 void* Q3DTheme_BackgroundColor(void* ptr)
 {
 	return new QColor(static_cast<Q3DTheme*>(ptr)->backgroundColor());
@@ -2547,11 +2716,6 @@ struct QtDataVisualization_PackedList Q3DTheme_BaseGradients(void* ptr)
 	return ({ QList<QLinearGradient>* tmpValue = new QList<QLinearGradient>(static_cast<Q3DTheme*>(ptr)->baseGradients()); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; });
 }
 
-long long Q3DTheme_Type(void* ptr)
-{
-	return static_cast<Q3DTheme*>(ptr)->type();
-}
-
 char Q3DTheme_IsBackgroundEnabled(void* ptr)
 {
 	return static_cast<Q3DTheme*>(ptr)->isBackgroundEnabled();
@@ -2570,6 +2734,16 @@ char Q3DTheme_IsLabelBackgroundEnabled(void* ptr)
 char Q3DTheme_IsLabelBorderEnabled(void* ptr)
 {
 	return static_cast<Q3DTheme*>(ptr)->isLabelBorderEnabled();
+}
+
+void* Q3DTheme_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<Q3DTheme*>(ptr)->metaObject());
+}
+
+void* Q3DTheme_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<Q3DTheme*>(ptr)->Q3DTheme::metaObject());
 }
 
 float Q3DTheme_AmbientLightStrength(void* ptr)
@@ -2686,37 +2860,28 @@ void* Q3DTheme___baseGradients_newList(void* ptr)
 class MyQAbstract3DAxis: public QAbstract3DAxis
 {
 public:
-	void Signal_RangeChanged(float min, float max) { callbackQAbstract3DAxis_RangeChanged(this, min, max); };
 	void Signal_AutoAdjustRangeChanged(bool autoAdjust) { callbackQAbstract3DAxis_AutoAdjustRangeChanged(this, autoAdjust); };
 	void Signal_LabelAutoRotationChanged(float angle) { callbackQAbstract3DAxis_LabelAutoRotationChanged(this, angle); };
 	void Signal_LabelsChanged() { callbackQAbstract3DAxis_LabelsChanged(this); };
 	void Signal_MaxChanged(float value) { callbackQAbstract3DAxis_MaxChanged(this, value); };
 	void Signal_MinChanged(float value) { callbackQAbstract3DAxis_MinChanged(this, value); };
 	void Signal_OrientationChanged(QAbstract3DAxis::AxisOrientation orientation) { callbackQAbstract3DAxis_OrientationChanged(this, orientation); };
+	void Signal_RangeChanged(float min, float max) { callbackQAbstract3DAxis_RangeChanged(this, min, max); };
 	void Signal_TitleChanged(const QString & newTitle) { QByteArray tee1e04 = newTitle.toUtf8(); QtDataVisualization_PackedString newTitlePacked = { const_cast<char*>(tee1e04.prepend("WHITESPACE").constData()+10), tee1e04.size()-10 };callbackQAbstract3DAxis_TitleChanged(this, newTitlePacked); };
 	void Signal_TitleFixedChanged(bool fixed) { callbackQAbstract3DAxis_TitleFixedChanged(this, fixed); };
 	void Signal_TitleVisibilityChanged(bool visible) { callbackQAbstract3DAxis_TitleVisibilityChanged(this, visible); };
 	 ~MyQAbstract3DAxis() { callbackQAbstract3DAxis_DestroyQAbstract3DAxis(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstract3DAxis_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
-void QAbstract3DAxis_ConnectRangeChanged(void* ptr)
+struct QtDataVisualization_PackedString QAbstract3DAxis_QAbstract3DAxis_Tr(char* s, char* c, int n)
 {
-	QObject::connect(static_cast<QAbstract3DAxis*>(ptr), static_cast<void (QAbstract3DAxis::*)(float, float)>(&QAbstract3DAxis::rangeChanged), static_cast<MyQAbstract3DAxis*>(ptr), static_cast<void (MyQAbstract3DAxis::*)(float, float)>(&MyQAbstract3DAxis::Signal_RangeChanged));
+	return ({ QByteArray tdc4319 = QAbstract3DAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tdc4319.prepend("WHITESPACE").constData()+10), tdc4319.size()-10 }; });
 }
 
-void QAbstract3DAxis_DisconnectRangeChanged(void* ptr)
+struct QtDataVisualization_PackedString QAbstract3DAxis_QAbstract3DAxis_TrUtf8(char* s, char* c, int n)
 {
-	QObject::disconnect(static_cast<QAbstract3DAxis*>(ptr), static_cast<void (QAbstract3DAxis::*)(float, float)>(&QAbstract3DAxis::rangeChanged), static_cast<MyQAbstract3DAxis*>(ptr), static_cast<void (MyQAbstract3DAxis::*)(float, float)>(&MyQAbstract3DAxis::Signal_RangeChanged));
-}
-
-void QAbstract3DAxis_RangeChanged(void* ptr, float min, float max)
-{
-	static_cast<QAbstract3DAxis*>(ptr)->rangeChanged(min, max);
-}
-
-void QAbstract3DAxis_SetTitleFixed(void* ptr, char fixed)
-{
-	static_cast<QAbstract3DAxis*>(ptr)->setTitleFixed(fixed != 0);
+	return ({ QByteArray t80f82d = QAbstract3DAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t80f82d.prepend("WHITESPACE").constData()+10), t80f82d.size()-10 }; });
 }
 
 void QAbstract3DAxis_ConnectAutoAdjustRangeChanged(void* ptr)
@@ -2809,6 +2974,21 @@ void QAbstract3DAxis_OrientationChanged(void* ptr, long long orientation)
 	static_cast<QAbstract3DAxis*>(ptr)->orientationChanged(static_cast<QAbstract3DAxis::AxisOrientation>(orientation));
 }
 
+void QAbstract3DAxis_ConnectRangeChanged(void* ptr)
+{
+	QObject::connect(static_cast<QAbstract3DAxis*>(ptr), static_cast<void (QAbstract3DAxis::*)(float, float)>(&QAbstract3DAxis::rangeChanged), static_cast<MyQAbstract3DAxis*>(ptr), static_cast<void (MyQAbstract3DAxis::*)(float, float)>(&MyQAbstract3DAxis::Signal_RangeChanged));
+}
+
+void QAbstract3DAxis_DisconnectRangeChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QAbstract3DAxis*>(ptr), static_cast<void (QAbstract3DAxis::*)(float, float)>(&QAbstract3DAxis::rangeChanged), static_cast<MyQAbstract3DAxis*>(ptr), static_cast<void (MyQAbstract3DAxis::*)(float, float)>(&MyQAbstract3DAxis::Signal_RangeChanged));
+}
+
+void QAbstract3DAxis_RangeChanged(void* ptr, float min, float max)
+{
+	static_cast<QAbstract3DAxis*>(ptr)->rangeChanged(min, max);
+}
+
 void QAbstract3DAxis_SetAutoAdjustRange(void* ptr, char autoAdjust)
 {
 	static_cast<QAbstract3DAxis*>(ptr)->setAutoAdjustRange(autoAdjust != 0);
@@ -2842,6 +3022,11 @@ void QAbstract3DAxis_SetRange(void* ptr, float min, float max)
 void QAbstract3DAxis_SetTitle(void* ptr, struct QtDataVisualization_PackedString title)
 {
 	static_cast<QAbstract3DAxis*>(ptr)->setTitle(QString::fromUtf8(title.data, title.len));
+}
+
+void QAbstract3DAxis_SetTitleFixed(void* ptr, char fixed)
+{
+	static_cast<QAbstract3DAxis*>(ptr)->setTitleFixed(fixed != 0);
 }
 
 void QAbstract3DAxis_SetTitleVisible(void* ptr, char visible)
@@ -2940,6 +3125,16 @@ char QAbstract3DAxis_IsTitleVisible(void* ptr)
 	return static_cast<QAbstract3DAxis*>(ptr)->isTitleVisible();
 }
 
+void* QAbstract3DAxis_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QAbstract3DAxis*>(ptr)->metaObject());
+}
+
+void* QAbstract3DAxis_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QAbstract3DAxis*>(ptr)->QAbstract3DAxis::metaObject());
+}
+
 float QAbstract3DAxis_LabelAutoRotation(void* ptr)
 {
 	return static_cast<QAbstract3DAxis*>(ptr)->labelAutoRotation();
@@ -2953,635 +3148,6 @@ float QAbstract3DAxis_Max(void* ptr)
 float QAbstract3DAxis_Min(void* ptr)
 {
 	return static_cast<QAbstract3DAxis*>(ptr)->min();
-}
-
-class MyQAbstract3DGraph: public QAbstract3DGraph
-{
-public:
-	void Signal_ActiveInputHandlerChanged(QAbstract3DInputHandler * inputHandler) { callbackQAbstract3DGraph_ActiveInputHandlerChanged(this, inputHandler); };
-	void Signal_ActiveThemeChanged(Q3DTheme * theme) { callbackQAbstract3DGraph_ActiveThemeChanged(this, theme); };
-	void Signal_AspectRatioChanged(qreal ratio) { callbackQAbstract3DGraph_AspectRatioChanged(this, ratio); };
-	void Signal_CurrentFpsChanged(qreal fps) { callbackQAbstract3DGraph_CurrentFpsChanged(this, fps); };
-	void Signal_HorizontalAspectRatioChanged(qreal ratio) { callbackQAbstract3DGraph_HorizontalAspectRatioChanged(this, ratio); };
-	void Signal_LocaleChanged(const QLocale & locale) { callbackQAbstract3DGraph_LocaleChanged(this, const_cast<QLocale*>(&locale)); };
-	void Signal_MarginChanged(qreal margin) { callbackQAbstract3DGraph_MarginChanged(this, margin); };
-	void Signal_MeasureFpsChanged(bool enabled) { callbackQAbstract3DGraph_MeasureFpsChanged(this, enabled); };
-	void Signal_OptimizationHintsChanged(QAbstract3DGraph::OptimizationHints hints) { callbackQAbstract3DGraph_OptimizationHintsChanged(this, hints); };
-	void Signal_OrthoProjectionChanged(bool enabled) { callbackQAbstract3DGraph_OrthoProjectionChanged(this, enabled); };
-	void Signal_PolarChanged(bool enabled) { callbackQAbstract3DGraph_PolarChanged(this, enabled); };
-	void Signal_QueriedGraphPositionChanged(const QVector3D & data) { callbackQAbstract3DGraph_QueriedGraphPositionChanged(this, const_cast<QVector3D*>(&data)); };
-	void Signal_RadialLabelOffsetChanged(float offset) { callbackQAbstract3DGraph_RadialLabelOffsetChanged(this, offset); };
-	void Signal_ReflectionChanged(bool enabled) { callbackQAbstract3DGraph_ReflectionChanged(this, enabled); };
-	void Signal_ReflectivityChanged(qreal reflectivity) { callbackQAbstract3DGraph_ReflectivityChanged(this, reflectivity); };
-	void Signal_SelectedElementChanged(QAbstract3DGraph::ElementType ty) { callbackQAbstract3DGraph_SelectedElementChanged(this, ty); };
-	void Signal_SelectionModeChanged(QAbstract3DGraph::SelectionFlags mode) { callbackQAbstract3DGraph_SelectionModeChanged(this, mode); };
-	void Signal_ShadowQualityChanged(QAbstract3DGraph::ShadowQuality quality) { callbackQAbstract3DGraph_ShadowQualityChanged(this, quality); };
-	 ~MyQAbstract3DGraph() { callbackQAbstract3DGraph_DestroyQAbstract3DGraph(this); };
-	bool shadowsSupported() const { return callbackQAbstract3DGraph_ShadowsSupported(const_cast<void*>(static_cast<const void*>(this))) != 0; };
-};
-
-void* QAbstract3DGraph_RenderToImage(void* ptr, int msaaSamples, void* imageSize)
-{
-	return new QImage(static_cast<QAbstract3DGraph*>(ptr)->renderToImage(msaaSamples, *static_cast<QSize*>(imageSize)));
-}
-
-int QAbstract3DGraph_AddCustomItem(void* ptr, void* item)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->addCustomItem(static_cast<QCustom3DItem*>(item));
-}
-
-void QAbstract3DGraph_ConnectActiveInputHandlerChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DInputHandler *)>(&QAbstract3DGraph::activeInputHandlerChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DInputHandler *)>(&MyQAbstract3DGraph::Signal_ActiveInputHandlerChanged));
-}
-
-void QAbstract3DGraph_DisconnectActiveInputHandlerChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DInputHandler *)>(&QAbstract3DGraph::activeInputHandlerChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DInputHandler *)>(&MyQAbstract3DGraph::Signal_ActiveInputHandlerChanged));
-}
-
-void QAbstract3DGraph_ActiveInputHandlerChanged(void* ptr, void* inputHandler)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->activeInputHandlerChanged(static_cast<QAbstract3DInputHandler*>(inputHandler));
-}
-
-void QAbstract3DGraph_ConnectActiveThemeChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(Q3DTheme *)>(&QAbstract3DGraph::activeThemeChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(Q3DTheme *)>(&MyQAbstract3DGraph::Signal_ActiveThemeChanged));
-}
-
-void QAbstract3DGraph_DisconnectActiveThemeChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(Q3DTheme *)>(&QAbstract3DGraph::activeThemeChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(Q3DTheme *)>(&MyQAbstract3DGraph::Signal_ActiveThemeChanged));
-}
-
-void QAbstract3DGraph_ActiveThemeChanged(void* ptr, void* theme)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->activeThemeChanged(static_cast<Q3DTheme*>(theme));
-}
-
-void QAbstract3DGraph_AddInputHandler(void* ptr, void* inputHandler)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->addInputHandler(static_cast<QAbstract3DInputHandler*>(inputHandler));
-}
-
-void QAbstract3DGraph_AddTheme(void* ptr, void* theme)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->addTheme(static_cast<Q3DTheme*>(theme));
-}
-
-void QAbstract3DGraph_ConnectAspectRatioChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::aspectRatioChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_AspectRatioChanged));
-}
-
-void QAbstract3DGraph_DisconnectAspectRatioChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::aspectRatioChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_AspectRatioChanged));
-}
-
-void QAbstract3DGraph_AspectRatioChanged(void* ptr, double ratio)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->aspectRatioChanged(ratio);
-}
-
-void QAbstract3DGraph_ClearSelection(void* ptr)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->clearSelection();
-}
-
-void QAbstract3DGraph_ConnectCurrentFpsChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::currentFpsChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_CurrentFpsChanged));
-}
-
-void QAbstract3DGraph_DisconnectCurrentFpsChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::currentFpsChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_CurrentFpsChanged));
-}
-
-void QAbstract3DGraph_CurrentFpsChanged(void* ptr, double fps)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->currentFpsChanged(fps);
-}
-
-void QAbstract3DGraph_ConnectHorizontalAspectRatioChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::horizontalAspectRatioChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_HorizontalAspectRatioChanged));
-}
-
-void QAbstract3DGraph_DisconnectHorizontalAspectRatioChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::horizontalAspectRatioChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_HorizontalAspectRatioChanged));
-}
-
-void QAbstract3DGraph_HorizontalAspectRatioChanged(void* ptr, double ratio)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->horizontalAspectRatioChanged(ratio);
-}
-
-void QAbstract3DGraph_ConnectLocaleChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(const QLocale &)>(&QAbstract3DGraph::localeChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(const QLocale &)>(&MyQAbstract3DGraph::Signal_LocaleChanged));
-}
-
-void QAbstract3DGraph_DisconnectLocaleChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(const QLocale &)>(&QAbstract3DGraph::localeChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(const QLocale &)>(&MyQAbstract3DGraph::Signal_LocaleChanged));
-}
-
-void QAbstract3DGraph_LocaleChanged(void* ptr, void* locale)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->localeChanged(*static_cast<QLocale*>(locale));
-}
-
-void QAbstract3DGraph_ConnectMarginChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::marginChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_MarginChanged));
-}
-
-void QAbstract3DGraph_DisconnectMarginChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::marginChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_MarginChanged));
-}
-
-void QAbstract3DGraph_MarginChanged(void* ptr, double margin)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->marginChanged(margin);
-}
-
-void QAbstract3DGraph_ConnectMeasureFpsChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::measureFpsChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_MeasureFpsChanged));
-}
-
-void QAbstract3DGraph_DisconnectMeasureFpsChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::measureFpsChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_MeasureFpsChanged));
-}
-
-void QAbstract3DGraph_MeasureFpsChanged(void* ptr, char enabled)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->measureFpsChanged(enabled != 0);
-}
-
-void QAbstract3DGraph_ConnectOptimizationHintsChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::OptimizationHints)>(&QAbstract3DGraph::optimizationHintsChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::OptimizationHints)>(&MyQAbstract3DGraph::Signal_OptimizationHintsChanged));
-}
-
-void QAbstract3DGraph_DisconnectOptimizationHintsChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::OptimizationHints)>(&QAbstract3DGraph::optimizationHintsChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::OptimizationHints)>(&MyQAbstract3DGraph::Signal_OptimizationHintsChanged));
-}
-
-void QAbstract3DGraph_OptimizationHintsChanged(void* ptr, long long hints)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->optimizationHintsChanged(static_cast<QAbstract3DGraph::OptimizationHint>(hints));
-}
-
-void QAbstract3DGraph_ConnectOrthoProjectionChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::orthoProjectionChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_OrthoProjectionChanged));
-}
-
-void QAbstract3DGraph_DisconnectOrthoProjectionChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::orthoProjectionChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_OrthoProjectionChanged));
-}
-
-void QAbstract3DGraph_OrthoProjectionChanged(void* ptr, char enabled)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->orthoProjectionChanged(enabled != 0);
-}
-
-void QAbstract3DGraph_ConnectPolarChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::polarChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_PolarChanged));
-}
-
-void QAbstract3DGraph_DisconnectPolarChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::polarChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_PolarChanged));
-}
-
-void QAbstract3DGraph_PolarChanged(void* ptr, char enabled)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->polarChanged(enabled != 0);
-}
-
-void QAbstract3DGraph_ConnectQueriedGraphPositionChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(const QVector3D &)>(&QAbstract3DGraph::queriedGraphPositionChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(const QVector3D &)>(&MyQAbstract3DGraph::Signal_QueriedGraphPositionChanged));
-}
-
-void QAbstract3DGraph_DisconnectQueriedGraphPositionChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(const QVector3D &)>(&QAbstract3DGraph::queriedGraphPositionChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(const QVector3D &)>(&MyQAbstract3DGraph::Signal_QueriedGraphPositionChanged));
-}
-
-void QAbstract3DGraph_QueriedGraphPositionChanged(void* ptr, void* data)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->queriedGraphPositionChanged(*static_cast<QVector3D*>(data));
-}
-
-void QAbstract3DGraph_ConnectRadialLabelOffsetChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(float)>(&QAbstract3DGraph::radialLabelOffsetChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(float)>(&MyQAbstract3DGraph::Signal_RadialLabelOffsetChanged));
-}
-
-void QAbstract3DGraph_DisconnectRadialLabelOffsetChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(float)>(&QAbstract3DGraph::radialLabelOffsetChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(float)>(&MyQAbstract3DGraph::Signal_RadialLabelOffsetChanged));
-}
-
-void QAbstract3DGraph_RadialLabelOffsetChanged(void* ptr, float offset)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->radialLabelOffsetChanged(offset);
-}
-
-void QAbstract3DGraph_ConnectReflectionChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::reflectionChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_ReflectionChanged));
-}
-
-void QAbstract3DGraph_DisconnectReflectionChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(bool)>(&QAbstract3DGraph::reflectionChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(bool)>(&MyQAbstract3DGraph::Signal_ReflectionChanged));
-}
-
-void QAbstract3DGraph_ReflectionChanged(void* ptr, char enabled)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->reflectionChanged(enabled != 0);
-}
-
-void QAbstract3DGraph_ConnectReflectivityChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::reflectivityChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_ReflectivityChanged));
-}
-
-void QAbstract3DGraph_DisconnectReflectivityChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(qreal)>(&QAbstract3DGraph::reflectivityChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(qreal)>(&MyQAbstract3DGraph::Signal_ReflectivityChanged));
-}
-
-void QAbstract3DGraph_ReflectivityChanged(void* ptr, double reflectivity)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->reflectivityChanged(reflectivity);
-}
-
-void QAbstract3DGraph_ReleaseCustomItem(void* ptr, void* item)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->releaseCustomItem(static_cast<QCustom3DItem*>(item));
-}
-
-void QAbstract3DGraph_ReleaseInputHandler(void* ptr, void* inputHandler)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->releaseInputHandler(static_cast<QAbstract3DInputHandler*>(inputHandler));
-}
-
-void QAbstract3DGraph_ReleaseTheme(void* ptr, void* theme)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->releaseTheme(static_cast<Q3DTheme*>(theme));
-}
-
-void QAbstract3DGraph_RemoveCustomItem(void* ptr, void* item)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->removeCustomItem(static_cast<QCustom3DItem*>(item));
-}
-
-void QAbstract3DGraph_RemoveCustomItemAt(void* ptr, void* position)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->removeCustomItemAt(*static_cast<QVector3D*>(position));
-}
-
-void QAbstract3DGraph_RemoveCustomItems(void* ptr)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->removeCustomItems();
-}
-
-void QAbstract3DGraph_ConnectSelectedElementChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::ElementType)>(&QAbstract3DGraph::selectedElementChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::ElementType)>(&MyQAbstract3DGraph::Signal_SelectedElementChanged));
-}
-
-void QAbstract3DGraph_DisconnectSelectedElementChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::ElementType)>(&QAbstract3DGraph::selectedElementChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::ElementType)>(&MyQAbstract3DGraph::Signal_SelectedElementChanged));
-}
-
-void QAbstract3DGraph_SelectedElementChanged(void* ptr, long long ty)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->selectedElementChanged(static_cast<QAbstract3DGraph::ElementType>(ty));
-}
-
-void QAbstract3DGraph_ConnectSelectionModeChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::SelectionFlags)>(&QAbstract3DGraph::selectionModeChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::SelectionFlags)>(&MyQAbstract3DGraph::Signal_SelectionModeChanged));
-}
-
-void QAbstract3DGraph_DisconnectSelectionModeChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::SelectionFlags)>(&QAbstract3DGraph::selectionModeChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::SelectionFlags)>(&MyQAbstract3DGraph::Signal_SelectionModeChanged));
-}
-
-void QAbstract3DGraph_SelectionModeChanged(void* ptr, long long mode)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->selectionModeChanged(static_cast<QAbstract3DGraph::SelectionFlag>(mode));
-}
-
-void QAbstract3DGraph_SetActiveInputHandler(void* ptr, void* inputHandler)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setActiveInputHandler(static_cast<QAbstract3DInputHandler*>(inputHandler));
-}
-
-void QAbstract3DGraph_SetActiveTheme(void* ptr, void* theme)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setActiveTheme(static_cast<Q3DTheme*>(theme));
-}
-
-void QAbstract3DGraph_SetAspectRatio(void* ptr, double ratio)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setAspectRatio(ratio);
-}
-
-void QAbstract3DGraph_SetHorizontalAspectRatio(void* ptr, double ratio)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setHorizontalAspectRatio(ratio);
-}
-
-void QAbstract3DGraph_SetLocale(void* ptr, void* locale)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setLocale(*static_cast<QLocale*>(locale));
-}
-
-void QAbstract3DGraph_SetMargin(void* ptr, double margin)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setMargin(margin);
-}
-
-void QAbstract3DGraph_SetMeasureFps(void* ptr, char enable)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setMeasureFps(enable != 0);
-}
-
-void QAbstract3DGraph_SetOptimizationHints(void* ptr, long long hints)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setOptimizationHints(static_cast<QAbstract3DGraph::OptimizationHint>(hints));
-}
-
-void QAbstract3DGraph_SetOrthoProjection(void* ptr, char enable)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setOrthoProjection(enable != 0);
-}
-
-void QAbstract3DGraph_SetPolar(void* ptr, char enable)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setPolar(enable != 0);
-}
-
-void QAbstract3DGraph_SetRadialLabelOffset(void* ptr, float offset)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setRadialLabelOffset(offset);
-}
-
-void QAbstract3DGraph_SetReflection(void* ptr, char enable)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setReflection(enable != 0);
-}
-
-void QAbstract3DGraph_SetReflectivity(void* ptr, double reflectivity)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setReflectivity(reflectivity);
-}
-
-void QAbstract3DGraph_SetSelectionMode(void* ptr, long long mode)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setSelectionMode(static_cast<QAbstract3DGraph::SelectionFlag>(mode));
-}
-
-void QAbstract3DGraph_SetShadowQuality(void* ptr, long long quality)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->setShadowQuality(static_cast<QAbstract3DGraph::ShadowQuality>(quality));
-}
-
-void QAbstract3DGraph_ConnectShadowQualityChanged(void* ptr)
-{
-	QObject::connect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::ShadowQuality)>(&QAbstract3DGraph::shadowQualityChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::ShadowQuality)>(&MyQAbstract3DGraph::Signal_ShadowQualityChanged));
-}
-
-void QAbstract3DGraph_DisconnectShadowQualityChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QAbstract3DGraph*>(ptr), static_cast<void (QAbstract3DGraph::*)(QAbstract3DGraph::ShadowQuality)>(&QAbstract3DGraph::shadowQualityChanged), static_cast<MyQAbstract3DGraph*>(ptr), static_cast<void (MyQAbstract3DGraph::*)(QAbstract3DGraph::ShadowQuality)>(&MyQAbstract3DGraph::Signal_ShadowQualityChanged));
-}
-
-void QAbstract3DGraph_ShadowQualityChanged(void* ptr, long long quality)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->shadowQualityChanged(static_cast<QAbstract3DGraph::ShadowQuality>(quality));
-}
-
-void QAbstract3DGraph_DestroyQAbstract3DGraph(void* ptr)
-{
-	static_cast<QAbstract3DGraph*>(ptr)->~QAbstract3DGraph();
-}
-
-void QAbstract3DGraph_DestroyQAbstract3DGraphDefault(void* ptr)
-{
-	Q_UNUSED(ptr);
-
-}
-
-long long QAbstract3DGraph_SelectedElement(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->selectedElement();
-}
-
-long long QAbstract3DGraph_OptimizationHints(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->optimizationHints();
-}
-
-void* QAbstract3DGraph_Scene(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->scene();
-}
-
-void* QAbstract3DGraph_ActiveTheme(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->activeTheme();
-}
-
-void* QAbstract3DGraph_SelectedAxis(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->selectedAxis();
-}
-
-void* QAbstract3DGraph_ActiveInputHandler(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->activeInputHandler();
-}
-
-void* QAbstract3DGraph_SelectedCustomItem(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->selectedCustomItem();
-}
-
-struct QtDataVisualization_PackedList QAbstract3DGraph_Themes(void* ptr)
-{
-	return ({ QList<Q3DTheme *>* tmpValue = new QList<Q3DTheme *>(static_cast<QAbstract3DGraph*>(ptr)->themes()); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; });
-}
-
-struct QtDataVisualization_PackedList QAbstract3DGraph_InputHandlers(void* ptr)
-{
-	return ({ QList<QAbstract3DInputHandler *>* tmpValue = new QList<QAbstract3DInputHandler *>(static_cast<QAbstract3DGraph*>(ptr)->inputHandlers()); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; });
-}
-
-struct QtDataVisualization_PackedList QAbstract3DGraph_CustomItems(void* ptr)
-{
-	return ({ QList<QCustom3DItem *>* tmpValue = new QList<QCustom3DItem *>(static_cast<QAbstract3DGraph*>(ptr)->customItems()); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; });
-}
-
-void* QAbstract3DGraph_Locale(void* ptr)
-{
-	return new QLocale(static_cast<QAbstract3DGraph*>(ptr)->locale());
-}
-
-void* QAbstract3DGraph_QueriedGraphPosition(void* ptr)
-{
-	return new QVector3D(static_cast<QAbstract3DGraph*>(ptr)->queriedGraphPosition());
-}
-
-long long QAbstract3DGraph_SelectionMode(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->selectionMode();
-}
-
-long long QAbstract3DGraph_ShadowQuality(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->shadowQuality();
-}
-
-char QAbstract3DGraph_HasContext(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->hasContext();
-}
-
-char QAbstract3DGraph_IsOrthoProjection(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->isOrthoProjection();
-}
-
-char QAbstract3DGraph_IsPolar(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->isPolar();
-}
-
-char QAbstract3DGraph_IsReflection(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->isReflection();
-}
-
-char QAbstract3DGraph_MeasureFps(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->measureFps();
-}
-
-char QAbstract3DGraph_ShadowsSupported(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->shadowsSupported();
-}
-
-char QAbstract3DGraph_ShadowsSupportedDefault(void* ptr)
-{
-		return static_cast<QAbstract3DGraph*>(ptr)->QAbstract3DGraph::shadowsSupported();
-}
-
-float QAbstract3DGraph_RadialLabelOffset(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->radialLabelOffset();
-}
-
-int QAbstract3DGraph_SelectedCustomItemIndex(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->selectedCustomItemIndex();
-}
-
-int QAbstract3DGraph_SelectedLabelIndex(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->selectedLabelIndex();
-}
-
-double QAbstract3DGraph_AspectRatio(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->aspectRatio();
-}
-
-double QAbstract3DGraph_CurrentFps(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->currentFps();
-}
-
-double QAbstract3DGraph_HorizontalAspectRatio(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->horizontalAspectRatio();
-}
-
-double QAbstract3DGraph_Margin(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->margin();
-}
-
-double QAbstract3DGraph_Reflectivity(void* ptr)
-{
-	return static_cast<QAbstract3DGraph*>(ptr)->reflectivity();
-}
-
-void* QAbstract3DGraph___themes_atList(void* ptr, int i)
-{
-	return ({Q3DTheme * tmp = static_cast<QList<Q3DTheme *>*>(ptr)->at(i); if (i == static_cast<QList<Q3DTheme *>*>(ptr)->size()-1) { static_cast<QList<Q3DTheme *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QAbstract3DGraph___themes_setList(void* ptr, void* i)
-{
-	static_cast<QList<Q3DTheme *>*>(ptr)->append(static_cast<Q3DTheme*>(i));
-}
-
-void* QAbstract3DGraph___themes_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<Q3DTheme *>();
-}
-
-void* QAbstract3DGraph___inputHandlers_atList(void* ptr, int i)
-{
-	return ({QAbstract3DInputHandler * tmp = static_cast<QList<QAbstract3DInputHandler *>*>(ptr)->at(i); if (i == static_cast<QList<QAbstract3DInputHandler *>*>(ptr)->size()-1) { static_cast<QList<QAbstract3DInputHandler *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QAbstract3DGraph___inputHandlers_setList(void* ptr, void* i)
-{
-	static_cast<QList<QAbstract3DInputHandler *>*>(ptr)->append(static_cast<QAbstract3DInputHandler*>(i));
-}
-
-void* QAbstract3DGraph___inputHandlers_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QAbstract3DInputHandler *>();
-}
-
-void* QAbstract3DGraph___customItems_atList(void* ptr, int i)
-{
-	return ({QCustom3DItem * tmp = static_cast<QList<QCustom3DItem *>*>(ptr)->at(i); if (i == static_cast<QList<QCustom3DItem *>*>(ptr)->size()-1) { static_cast<QList<QCustom3DItem *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QAbstract3DGraph___customItems_setList(void* ptr, void* i)
-{
-	static_cast<QList<QCustom3DItem *>*>(ptr)->append(static_cast<QCustom3DItem*>(i));
-}
-
-void* QAbstract3DGraph___customItems_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QCustom3DItem *>();
 }
 
 class MyQAbstract3DInputHandler: public QAbstract3DInputHandler
@@ -3598,22 +3164,8 @@ public:
 	void touchEvent(QTouchEvent * event) { callbackQAbstract3DInputHandler_TouchEvent(this, event); };
 	void wheelEvent(QWheelEvent * event) { callbackQAbstract3DInputHandler_WheelEvent(this, event); };
 	 ~MyQAbstract3DInputHandler() { callbackQAbstract3DInputHandler_DestroyQAbstract3DInputHandler(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstract3DInputHandler_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
-
-void QAbstract3DInputHandler_SetInputPosition(void* ptr, void* position)
-{
-	static_cast<QAbstract3DInputHandler*>(ptr)->setInputPosition(*static_cast<QPoint*>(position));
-}
-
-void QAbstract3DInputHandler_SetInputView(void* ptr, long long inputView)
-{
-	static_cast<QAbstract3DInputHandler*>(ptr)->setInputView(static_cast<QAbstract3DInputHandler::InputView>(inputView));
-}
-
-long long QAbstract3DInputHandler_InputView(void* ptr)
-{
-	return static_cast<QAbstract3DInputHandler*>(ptr)->inputView();
-}
 
 void* QAbstract3DInputHandler_NewQAbstract3DInputHandler(void* parent)
 {
@@ -3645,8 +3197,6 @@ void* QAbstract3DInputHandler_NewQAbstract3DInputHandler(void* parent)
 		return new MyQAbstract3DInputHandler(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstract3DInputHandler(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQAbstract3DInputHandler(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstract3DInputHandler(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -3654,6 +3204,16 @@ void* QAbstract3DInputHandler_NewQAbstract3DInputHandler(void* parent)
 	} else {
 		return new MyQAbstract3DInputHandler(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QAbstract3DInputHandler_QAbstract3DInputHandler_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tb37210 = QAbstract3DInputHandler::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb37210.prepend("WHITESPACE").constData()+10), tb37210.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QAbstract3DInputHandler_QAbstract3DInputHandler_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t9d32e5 = QAbstract3DInputHandler::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t9d32e5.prepend("WHITESPACE").constData()+10), t9d32e5.size()-10 }; });
 }
 
 void QAbstract3DInputHandler_ConnectInputViewChanged(void* ptr)
@@ -3741,6 +3301,16 @@ void QAbstract3DInputHandler_SceneChanged(void* ptr, void* scene)
 	static_cast<QAbstract3DInputHandler*>(ptr)->sceneChanged(static_cast<Q3DScene*>(scene));
 }
 
+void QAbstract3DInputHandler_SetInputPosition(void* ptr, void* position)
+{
+	static_cast<QAbstract3DInputHandler*>(ptr)->setInputPosition(*static_cast<QPoint*>(position));
+}
+
+void QAbstract3DInputHandler_SetInputView(void* ptr, long long inputView)
+{
+	static_cast<QAbstract3DInputHandler*>(ptr)->setInputView(static_cast<QAbstract3DInputHandler::InputView>(inputView));
+}
+
 void QAbstract3DInputHandler_SetPrevDistance(void* ptr, int distance)
 {
 	static_cast<QAbstract3DInputHandler*>(ptr)->setPrevDistance(distance);
@@ -3792,6 +3362,11 @@ void* QAbstract3DInputHandler_Scene(void* ptr)
 	return static_cast<QAbstract3DInputHandler*>(ptr)->scene();
 }
 
+long long QAbstract3DInputHandler_InputView(void* ptr)
+{
+	return static_cast<QAbstract3DInputHandler*>(ptr)->inputView();
+}
+
 void* QAbstract3DInputHandler_InputPosition(void* ptr)
 {
 	return ({ QPoint tmpValue = static_cast<QAbstract3DInputHandler*>(ptr)->inputPosition(); new QPoint(tmpValue.x(), tmpValue.y()); });
@@ -3802,6 +3377,16 @@ void* QAbstract3DInputHandler_PreviousInputPos(void* ptr)
 	return ({ QPoint tmpValue = static_cast<QAbstract3DInputHandler*>(ptr)->previousInputPos(); new QPoint(tmpValue.x(), tmpValue.y()); });
 }
 
+void* QAbstract3DInputHandler_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QAbstract3DInputHandler*>(ptr)->metaObject());
+}
+
+void* QAbstract3DInputHandler_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QAbstract3DInputHandler*>(ptr)->QAbstract3DInputHandler::metaObject());
+}
+
 int QAbstract3DInputHandler_PrevDistance(void* ptr)
 {
 	return static_cast<QAbstract3DInputHandler*>(ptr)->prevDistance();
@@ -3810,7 +3395,6 @@ int QAbstract3DInputHandler_PrevDistance(void* ptr)
 class MyQAbstract3DSeries: public QAbstract3DSeries
 {
 public:
-	void Signal_MultiHighlightGradientChanged(const QLinearGradient & gradient) { callbackQAbstract3DSeries_MultiHighlightGradientChanged(this, const_cast<QLinearGradient*>(&gradient)); };
 	void Signal_BaseColorChanged(const QColor & color) { callbackQAbstract3DSeries_BaseColorChanged(this, const_cast<QColor*>(&color)); };
 	void Signal_BaseGradientChanged(const QLinearGradient & gradient) { callbackQAbstract3DSeries_BaseGradientChanged(this, const_cast<QLinearGradient*>(&gradient)); };
 	void Signal_ColorStyleChanged(Q3DTheme::ColorStyle style) { callbackQAbstract3DSeries_ColorStyleChanged(this, style); };
@@ -3821,32 +3405,24 @@ public:
 	void Signal_MeshRotationChanged(const QQuaternion & rotation) { callbackQAbstract3DSeries_MeshRotationChanged(this, const_cast<QQuaternion*>(&rotation)); };
 	void Signal_MeshSmoothChanged(bool enabled) { callbackQAbstract3DSeries_MeshSmoothChanged(this, enabled); };
 	void Signal_MultiHighlightColorChanged(const QColor & color) { callbackQAbstract3DSeries_MultiHighlightColorChanged(this, const_cast<QColor*>(&color)); };
+	void Signal_MultiHighlightGradientChanged(const QLinearGradient & gradient) { callbackQAbstract3DSeries_MultiHighlightGradientChanged(this, const_cast<QLinearGradient*>(&gradient)); };
 	void Signal_NameChanged(const QString & name) { QByteArray t6ae999 = name.toUtf8(); QtDataVisualization_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackQAbstract3DSeries_NameChanged(this, namePacked); };
 	void Signal_SingleHighlightColorChanged(const QColor & color) { callbackQAbstract3DSeries_SingleHighlightColorChanged(this, const_cast<QColor*>(&color)); };
 	void Signal_SingleHighlightGradientChanged(const QLinearGradient & gradient) { callbackQAbstract3DSeries_SingleHighlightGradientChanged(this, const_cast<QLinearGradient*>(&gradient)); };
 	void Signal_UserDefinedMeshChanged(const QString & fileName) { QByteArray td83e09 = fileName.toUtf8(); QtDataVisualization_PackedString fileNamePacked = { const_cast<char*>(td83e09.prepend("WHITESPACE").constData()+10), td83e09.size()-10 };callbackQAbstract3DSeries_UserDefinedMeshChanged(this, fileNamePacked); };
 	void Signal_VisibilityChanged(bool visible) { callbackQAbstract3DSeries_VisibilityChanged(this, visible); };
 	 ~MyQAbstract3DSeries() { callbackQAbstract3DSeries_DestroyQAbstract3DSeries(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstract3DSeries_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
-void QAbstract3DSeries_ConnectMultiHighlightGradientChanged(void* ptr)
+struct QtDataVisualization_PackedString QAbstract3DSeries_QAbstract3DSeries_Tr(char* s, char* c, int n)
 {
-	QObject::connect(static_cast<QAbstract3DSeries*>(ptr), static_cast<void (QAbstract3DSeries::*)(const QLinearGradient &)>(&QAbstract3DSeries::multiHighlightGradientChanged), static_cast<MyQAbstract3DSeries*>(ptr), static_cast<void (MyQAbstract3DSeries::*)(const QLinearGradient &)>(&MyQAbstract3DSeries::Signal_MultiHighlightGradientChanged));
+	return ({ QByteArray tb63f72 = QAbstract3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb63f72.prepend("WHITESPACE").constData()+10), tb63f72.size()-10 }; });
 }
 
-void QAbstract3DSeries_DisconnectMultiHighlightGradientChanged(void* ptr)
+struct QtDataVisualization_PackedString QAbstract3DSeries_QAbstract3DSeries_TrUtf8(char* s, char* c, int n)
 {
-	QObject::disconnect(static_cast<QAbstract3DSeries*>(ptr), static_cast<void (QAbstract3DSeries::*)(const QLinearGradient &)>(&QAbstract3DSeries::multiHighlightGradientChanged), static_cast<MyQAbstract3DSeries*>(ptr), static_cast<void (MyQAbstract3DSeries::*)(const QLinearGradient &)>(&MyQAbstract3DSeries::Signal_MultiHighlightGradientChanged));
-}
-
-void QAbstract3DSeries_MultiHighlightGradientChanged(void* ptr, void* gradient)
-{
-	static_cast<QAbstract3DSeries*>(ptr)->multiHighlightGradientChanged(*static_cast<QLinearGradient*>(gradient));
-}
-
-void QAbstract3DSeries_SetMeshRotation(void* ptr, void* rotation)
-{
-	static_cast<QAbstract3DSeries*>(ptr)->setMeshRotation(*static_cast<QQuaternion*>(rotation));
+	return ({ QByteArray t099b98 = QAbstract3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t099b98.prepend("WHITESPACE").constData()+10), t099b98.size()-10 }; });
 }
 
 void QAbstract3DSeries_ConnectBaseColorChanged(void* ptr)
@@ -3999,6 +3575,21 @@ void QAbstract3DSeries_MultiHighlightColorChanged(void* ptr, void* color)
 	static_cast<QAbstract3DSeries*>(ptr)->multiHighlightColorChanged(*static_cast<QColor*>(color));
 }
 
+void QAbstract3DSeries_ConnectMultiHighlightGradientChanged(void* ptr)
+{
+	QObject::connect(static_cast<QAbstract3DSeries*>(ptr), static_cast<void (QAbstract3DSeries::*)(const QLinearGradient &)>(&QAbstract3DSeries::multiHighlightGradientChanged), static_cast<MyQAbstract3DSeries*>(ptr), static_cast<void (MyQAbstract3DSeries::*)(const QLinearGradient &)>(&MyQAbstract3DSeries::Signal_MultiHighlightGradientChanged));
+}
+
+void QAbstract3DSeries_DisconnectMultiHighlightGradientChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QAbstract3DSeries*>(ptr), static_cast<void (QAbstract3DSeries::*)(const QLinearGradient &)>(&QAbstract3DSeries::multiHighlightGradientChanged), static_cast<MyQAbstract3DSeries*>(ptr), static_cast<void (MyQAbstract3DSeries::*)(const QLinearGradient &)>(&MyQAbstract3DSeries::Signal_MultiHighlightGradientChanged));
+}
+
+void QAbstract3DSeries_MultiHighlightGradientChanged(void* ptr, void* gradient)
+{
+	static_cast<QAbstract3DSeries*>(ptr)->multiHighlightGradientChanged(*static_cast<QLinearGradient*>(gradient));
+}
+
 void QAbstract3DSeries_ConnectNameChanged(void* ptr)
 {
 	QObject::connect(static_cast<QAbstract3DSeries*>(ptr), static_cast<void (QAbstract3DSeries::*)(const QString &)>(&QAbstract3DSeries::nameChanged), static_cast<MyQAbstract3DSeries*>(ptr), static_cast<void (MyQAbstract3DSeries::*)(const QString &)>(&MyQAbstract3DSeries::Signal_NameChanged));
@@ -4047,6 +3638,11 @@ void QAbstract3DSeries_SetMesh(void* ptr, long long mesh)
 void QAbstract3DSeries_SetMeshAxisAndAngle(void* ptr, void* axis, float angle)
 {
 	static_cast<QAbstract3DSeries*>(ptr)->setMeshAxisAndAngle(*static_cast<QVector3D*>(axis), angle);
+}
+
+void QAbstract3DSeries_SetMeshRotation(void* ptr, void* rotation)
+{
+	static_cast<QAbstract3DSeries*>(ptr)->setMeshRotation(*static_cast<QQuaternion*>(rotation));
 }
 
 void QAbstract3DSeries_SetMeshSmooth(void* ptr, char enable)
@@ -4160,14 +3756,19 @@ void QAbstract3DSeries_DestroyQAbstract3DSeriesDefault(void* ptr)
 
 }
 
+long long QAbstract3DSeries_ColorStyle(void* ptr)
+{
+	return static_cast<QAbstract3DSeries*>(ptr)->colorStyle();
+}
+
 long long QAbstract3DSeries_Mesh(void* ptr)
 {
 	return static_cast<QAbstract3DSeries*>(ptr)->mesh();
 }
 
-long long QAbstract3DSeries_ColorStyle(void* ptr)
+long long QAbstract3DSeries_Type(void* ptr)
 {
-	return static_cast<QAbstract3DSeries*>(ptr)->colorStyle();
+	return static_cast<QAbstract3DSeries*>(ptr)->type();
 }
 
 void* QAbstract3DSeries_BaseColor(void* ptr)
@@ -4225,11 +3826,6 @@ struct QtDataVisualization_PackedString QAbstract3DSeries_UserDefinedMesh(void* 
 	return ({ QByteArray t448627 = static_cast<QAbstract3DSeries*>(ptr)->userDefinedMesh().toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t448627.prepend("WHITESPACE").constData()+10), t448627.size()-10 }; });
 }
 
-long long QAbstract3DSeries_Type(void* ptr)
-{
-	return static_cast<QAbstract3DSeries*>(ptr)->type();
-}
-
 char QAbstract3DSeries_IsItemLabelVisible(void* ptr)
 {
 	return static_cast<QAbstract3DSeries*>(ptr)->isItemLabelVisible();
@@ -4245,15 +3841,31 @@ char QAbstract3DSeries_IsVisible(void* ptr)
 	return static_cast<QAbstract3DSeries*>(ptr)->isVisible();
 }
 
+void* QAbstract3DSeries_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QAbstract3DSeries*>(ptr)->metaObject());
+}
+
+void* QAbstract3DSeries_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QAbstract3DSeries*>(ptr)->QAbstract3DSeries::metaObject());
+}
+
 class MyQAbstractDataProxy: public QAbstractDataProxy
 {
 public:
 	 ~MyQAbstractDataProxy() { callbackQAbstractDataProxy_DestroyQAbstractDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
-long long QAbstractDataProxy_Type(void* ptr)
+struct QtDataVisualization_PackedString QAbstractDataProxy_QAbstractDataProxy_Tr(char* s, char* c, int n)
 {
-	return static_cast<QAbstractDataProxy*>(ptr)->type();
+	return ({ QByteArray t247869 = QAbstractDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t247869.prepend("WHITESPACE").constData()+10), t247869.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QAbstractDataProxy_QAbstractDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t1f7d4a = QAbstractDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t1f7d4a.prepend("WHITESPACE").constData()+10), t1f7d4a.size()-10 }; });
 }
 
 void QAbstractDataProxy_DestroyQAbstractDataProxy(void* ptr)
@@ -4267,6 +3879,21 @@ void QAbstractDataProxy_DestroyQAbstractDataProxyDefault(void* ptr)
 
 }
 
+long long QAbstractDataProxy_Type(void* ptr)
+{
+	return static_cast<QAbstractDataProxy*>(ptr)->type();
+}
+
+void* QAbstractDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QAbstractDataProxy*>(ptr)->metaObject());
+}
+
+void* QAbstractDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QAbstractDataProxy*>(ptr)->QAbstractDataProxy::metaObject());
+}
+
 class MyQBar3DSeries: public QBar3DSeries
 {
 public:
@@ -4276,6 +3903,7 @@ public:
 	void Signal_MeshAngleChanged(float angle) { callbackQBar3DSeries_MeshAngleChanged(this, angle); };
 	void Signal_SelectedBarChanged(const QPoint & position) { callbackQBar3DSeries_SelectedBarChanged(this, const_cast<QPoint*>(&position)); };
 	 ~MyQBar3DSeries() { callbackQBar3DSeries_DestroyQBar3DSeries(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQBar3DSeries_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QBar3DSeries_NewQBar3DSeries2(void* dataProxy, void* parent)
@@ -4308,8 +3936,6 @@ void* QBar3DSeries_NewQBar3DSeries2(void* dataProxy, void* parent)
 		return new MyQBar3DSeries(static_cast<QBarDataProxy*>(dataProxy), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQBar3DSeries(static_cast<QBarDataProxy*>(dataProxy), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQBar3DSeries(static_cast<QBarDataProxy*>(dataProxy), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQBar3DSeries(static_cast<QBarDataProxy*>(dataProxy), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4349,8 +3975,6 @@ void* QBar3DSeries_NewQBar3DSeries(void* parent)
 		return new MyQBar3DSeries(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQBar3DSeries(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQBar3DSeries(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQBar3DSeries(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4363,6 +3987,16 @@ void* QBar3DSeries_NewQBar3DSeries(void* parent)
 void* QBar3DSeries_QBar3DSeries_InvalidSelectionPosition()
 {
 	return ({ QPoint tmpValue = QBar3DSeries::invalidSelectionPosition(); new QPoint(tmpValue.x(), tmpValue.y()); });
+}
+
+struct QtDataVisualization_PackedString QBar3DSeries_QBar3DSeries_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t3dd1be = QBar3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t3dd1be.prepend("WHITESPACE").constData()+10), t3dd1be.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QBar3DSeries_QBar3DSeries_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t9b16bd = QBar3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t9b16bd.prepend("WHITESPACE").constData()+10), t9b16bd.size()-10 }; });
 }
 
 void QBar3DSeries_ConnectDataProxyChanged(void* ptr)
@@ -4446,6 +4080,16 @@ void* QBar3DSeries_SelectedBar(void* ptr)
 	return ({ QPoint tmpValue = static_cast<QBar3DSeries*>(ptr)->selectedBar(); new QPoint(tmpValue.x(), tmpValue.y()); });
 }
 
+void* QBar3DSeries_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QBar3DSeries*>(ptr)->metaObject());
+}
+
+void* QBar3DSeries_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QBar3DSeries*>(ptr)->QBar3DSeries::metaObject());
+}
+
 float QBar3DSeries_MeshAngle(void* ptr)
 {
 	return static_cast<QBar3DSeries*>(ptr)->meshAngle();
@@ -4511,6 +4155,7 @@ public:
 	void Signal_RowsRemoved(int startIndex, int count) { callbackQBarDataProxy_RowsRemoved(this, startIndex, count); };
 	void Signal_SeriesChanged(QBar3DSeries * series) { callbackQBarDataProxy_SeriesChanged(this, series); };
 	 ~MyQBarDataProxy() { callbackQBarDataProxy_DestroyQBarDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQBarDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QBarDataProxy_NewQBarDataProxy(void* parent)
@@ -4543,8 +4188,6 @@ void* QBarDataProxy_NewQBarDataProxy(void* parent)
 		return new MyQBarDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQBarDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQBarDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQBarDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4552,6 +4195,16 @@ void* QBarDataProxy_NewQBarDataProxy(void* parent)
 	} else {
 		return new MyQBarDataProxy(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QBarDataProxy_QBarDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray ta842ef = QBarDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta842ef.prepend("WHITESPACE").constData()+10), ta842ef.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QBarDataProxy_QBarDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray tb36487 = QBarDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb36487.prepend("WHITESPACE").constData()+10), tb36487.size()-10 }; });
 }
 
 void QBarDataProxy_ConnectArrayReset(void* ptr)
@@ -4770,6 +4423,16 @@ void* QBarDataProxy_ItemAt(void* ptr, int rowIndex, int columnIndex)
 	return const_cast<QBarDataItem*>(static_cast<QBarDataProxy*>(ptr)->itemAt(rowIndex, columnIndex));
 }
 
+void* QBarDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QBarDataProxy*>(ptr)->metaObject());
+}
+
+void* QBarDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QBarDataProxy*>(ptr)->QBarDataProxy::metaObject());
+}
+
 int QBarDataProxy_RowCount(void* ptr)
 {
 	return static_cast<QBarDataProxy*>(ptr)->rowCount();
@@ -4781,6 +4444,7 @@ public:
 	MyQCategory3DAxis(QObject *parent = Q_NULLPTR) : QCategory3DAxis(parent) {};
 	void Signal_LabelsChanged() { callbackQCategory3DAxis_LabelsChanged(this); };
 	 ~MyQCategory3DAxis() { callbackQCategory3DAxis_DestroyQCategory3DAxis(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQCategory3DAxis_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QCategory3DAxis_NewQCategory3DAxis(void* parent)
@@ -4813,8 +4477,6 @@ void* QCategory3DAxis_NewQCategory3DAxis(void* parent)
 		return new MyQCategory3DAxis(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQCategory3DAxis(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQCategory3DAxis(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQCategory3DAxis(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4822,6 +4484,16 @@ void* QCategory3DAxis_NewQCategory3DAxis(void* parent)
 	} else {
 		return new MyQCategory3DAxis(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QCategory3DAxis_QCategory3DAxis_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray ta78c4d = QCategory3DAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta78c4d.prepend("WHITESPACE").constData()+10), ta78c4d.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QCategory3DAxis_QCategory3DAxis_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray tf37b7d = QCategory3DAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tf37b7d.prepend("WHITESPACE").constData()+10), tf37b7d.size()-10 }; });
 }
 
 void QCategory3DAxis_ConnectLabelsChanged(void* ptr)
@@ -4860,6 +4532,16 @@ struct QtDataVisualization_PackedString QCategory3DAxis_Labels(void* ptr)
 	return ({ QByteArray t2a027f = static_cast<QCategory3DAxis*>(ptr)->labels().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t2a027f.prepend("WHITESPACE").constData()+10), t2a027f.size()-10 }; });
 }
 
+void* QCategory3DAxis_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QCategory3DAxis*>(ptr)->metaObject());
+}
+
+void* QCategory3DAxis_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QCategory3DAxis*>(ptr)->QCategory3DAxis::metaObject());
+}
+
 class MyQCustom3DItem: public QCustom3DItem
 {
 public:
@@ -4875,6 +4557,7 @@ public:
 	void Signal_TextureFileChanged(const QString & textureFile) { QByteArray t19f53d = textureFile.toUtf8(); QtDataVisualization_PackedString textureFilePacked = { const_cast<char*>(t19f53d.prepend("WHITESPACE").constData()+10), t19f53d.size()-10 };callbackQCustom3DItem_TextureFileChanged(this, textureFilePacked); };
 	void Signal_VisibleChanged(bool visible) { callbackQCustom3DItem_VisibleChanged(this, visible); };
 	 ~MyQCustom3DItem() { callbackQCustom3DItem_DestroyQCustom3DItem(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQCustom3DItem_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QCustom3DItem_NewQCustom3DItem(void* parent)
@@ -4907,8 +4590,6 @@ void* QCustom3DItem_NewQCustom3DItem(void* parent)
 		return new MyQCustom3DItem(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DItem(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQCustom3DItem(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DItem(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4948,8 +4629,6 @@ void* QCustom3DItem_NewQCustom3DItem2(struct QtDataVisualization_PackedString me
 		return new MyQCustom3DItem(QString::fromUtf8(meshFile.data, meshFile.len), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), *static_cast<QImage*>(texture), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DItem(QString::fromUtf8(meshFile.data, meshFile.len), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), *static_cast<QImage*>(texture), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQCustom3DItem(QString::fromUtf8(meshFile.data, meshFile.len), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), *static_cast<QImage*>(texture), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DItem(QString::fromUtf8(meshFile.data, meshFile.len), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), *static_cast<QImage*>(texture), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4962,6 +4641,16 @@ void* QCustom3DItem_NewQCustom3DItem2(struct QtDataVisualization_PackedString me
 void* QCustom3DItem_Rotation(void* ptr)
 {
 	return new QQuaternion(static_cast<QCustom3DItem*>(ptr)->rotation());
+}
+
+struct QtDataVisualization_PackedString QCustom3DItem_QCustom3DItem_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t01b7b2 = QCustom3DItem::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t01b7b2.prepend("WHITESPACE").constData()+10), t01b7b2.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QCustom3DItem_QCustom3DItem_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t10dbbf = QCustom3DItem::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t10dbbf.prepend("WHITESPACE").constData()+10), t10dbbf.size()-10 }; });
 }
 
 void QCustom3DItem_ConnectMeshFileChanged(void* ptr)
@@ -5205,6 +4894,16 @@ char QCustom3DItem_IsVisible(void* ptr)
 	return static_cast<QCustom3DItem*>(ptr)->isVisible();
 }
 
+void* QCustom3DItem_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QCustom3DItem*>(ptr)->metaObject());
+}
+
+void* QCustom3DItem_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QCustom3DItem*>(ptr)->QCustom3DItem::metaObject());
+}
+
 class MyQCustom3DLabel: public QCustom3DLabel
 {
 public:
@@ -5218,6 +4917,7 @@ public:
 	void Signal_TextChanged(const QString & text) { QByteArray t372ea0 = text.toUtf8(); QtDataVisualization_PackedString textPacked = { const_cast<char*>(t372ea0.prepend("WHITESPACE").constData()+10), t372ea0.size()-10 };callbackQCustom3DLabel_TextChanged(this, textPacked); };
 	void Signal_TextColorChanged(const QColor & color) { callbackQCustom3DLabel_TextColorChanged(this, const_cast<QColor*>(&color)); };
 	 ~MyQCustom3DLabel() { callbackQCustom3DLabel_DestroyQCustom3DLabel(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQCustom3DLabel_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QCustom3DLabel_NewQCustom3DLabel(void* parent)
@@ -5250,8 +4950,6 @@ void* QCustom3DLabel_NewQCustom3DLabel(void* parent)
 		return new MyQCustom3DLabel(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DLabel(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQCustom3DLabel(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DLabel(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -5291,8 +4989,6 @@ void* QCustom3DLabel_NewQCustom3DLabel2(struct QtDataVisualization_PackedString 
 		return new MyQCustom3DLabel(QString::fromUtf8(text.data, text.len), *static_cast<QFont*>(font), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DLabel(QString::fromUtf8(text.data, text.len), *static_cast<QFont*>(font), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQCustom3DLabel(QString::fromUtf8(text.data, text.len), *static_cast<QFont*>(font), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DLabel(QString::fromUtf8(text.data, text.len), *static_cast<QFont*>(font), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -5300,6 +4996,16 @@ void* QCustom3DLabel_NewQCustom3DLabel2(struct QtDataVisualization_PackedString 
 	} else {
 		return new MyQCustom3DLabel(QString::fromUtf8(text.data, text.len), *static_cast<QFont*>(font), *static_cast<QVector3D*>(position), *static_cast<QVector3D*>(scaling), *static_cast<QQuaternion*>(rotation), static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QCustom3DLabel_QCustom3DLabel_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t23ba81 = QCustom3DLabel::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t23ba81.prepend("WHITESPACE").constData()+10), t23ba81.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QCustom3DLabel_QCustom3DLabel_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t799c6c = QCustom3DLabel::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t799c6c.prepend("WHITESPACE").constData()+10), t799c6c.size()-10 }; });
 }
 
 void QCustom3DLabel_ConnectBackgroundColorChanged(void* ptr)
@@ -5488,6 +5194,16 @@ char QCustom3DLabel_IsFacingCamera(void* ptr)
 	return static_cast<QCustom3DLabel*>(ptr)->isFacingCamera();
 }
 
+void* QCustom3DLabel_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QCustom3DLabel*>(ptr)->metaObject());
+}
+
+void* QCustom3DLabel_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QCustom3DLabel*>(ptr)->QCustom3DLabel::metaObject());
+}
+
 class MyQCustom3DVolume: public QCustom3DVolume
 {
 public:
@@ -5510,6 +5226,7 @@ public:
 	void Signal_TextureWidthChanged(int value) { callbackQCustom3DVolume_TextureWidthChanged(this, value); };
 	void Signal_UseHighDefShaderChanged(bool enabled) { callbackQCustom3DVolume_UseHighDefShaderChanged(this, enabled); };
 	 ~MyQCustom3DVolume() { callbackQCustom3DVolume_DestroyQCustom3DVolume(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQCustom3DVolume_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QCustom3DVolume_NewQCustom3DVolume(void* parent)
@@ -5542,8 +5259,6 @@ void* QCustom3DVolume_NewQCustom3DVolume(void* parent)
 		return new MyQCustom3DVolume(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DVolume(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQCustom3DVolume(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQCustom3DVolume(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -5556,6 +5271,16 @@ void* QCustom3DVolume_NewQCustom3DVolume(void* parent)
 void* QCustom3DVolume_RenderSlice(void* ptr, long long axis, int index)
 {
 	return new QImage(static_cast<QCustom3DVolume*>(ptr)->renderSlice(static_cast<Qt::Axis>(axis), index));
+}
+
+struct QtDataVisualization_PackedString QCustom3DVolume_QCustom3DVolume_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t757ae1 = QCustom3DVolume::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t757ae1.prepend("WHITESPACE").constData()+10), t757ae1.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QCustom3DVolume_QCustom3DVolume_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray tf47ef1 = QCustom3DVolume::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tf47ef1.prepend("WHITESPACE").constData()+10), tf47ef1.size()-10 }; });
 }
 
 void QCustom3DVolume_ConnectAlphaMultiplierChanged(void* ptr)
@@ -5636,6 +5361,11 @@ void QCustom3DVolume_PreserveOpacityChanged(void* ptr, char enabled)
 void QCustom3DVolume_SetAlphaMultiplier(void* ptr, float mult)
 {
 	static_cast<QCustom3DVolume*>(ptr)->setAlphaMultiplier(mult);
+}
+
+void QCustom3DVolume_SetColorTable(void* ptr, void* colors)
+{
+	static_cast<QCustom3DVolume*>(ptr)->setColorTable(*static_cast<QVector<QRgb>*>(colors));
 }
 
 void QCustom3DVolume_SetDrawSliceFrames(void* ptr, char enable)
@@ -5949,6 +5679,11 @@ void* QCustom3DVolume_SliceFrameWidths(void* ptr)
 	return new QVector3D(static_cast<QCustom3DVolume*>(ptr)->sliceFrameWidths());
 }
 
+struct QtDataVisualization_PackedList QCustom3DVolume_ColorTable(void* ptr)
+{
+	return ({ QVector<QRgb>* tmpValue = new QVector<QRgb>(static_cast<QCustom3DVolume*>(ptr)->colorTable()); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; });
+}
+
 char QCustom3DVolume_DrawSliceFrames(void* ptr)
 {
 	return static_cast<QCustom3DVolume*>(ptr)->drawSliceFrames();
@@ -5967,6 +5702,16 @@ char QCustom3DVolume_PreserveOpacity(void* ptr)
 char QCustom3DVolume_UseHighDefShader(void* ptr)
 {
 	return static_cast<QCustom3DVolume*>(ptr)->useHighDefShader();
+}
+
+void* QCustom3DVolume_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QCustom3DVolume*>(ptr)->metaObject());
+}
+
+void* QCustom3DVolume_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QCustom3DVolume*>(ptr)->QCustom3DVolume::metaObject());
 }
 
 float QCustom3DVolume_AlphaMultiplier(void* ptr)
@@ -6004,16 +5749,46 @@ int QCustom3DVolume_TextureWidth(void* ptr)
 	return static_cast<QCustom3DVolume*>(ptr)->textureWidth();
 }
 
+unsigned int QCustom3DVolume___QCustom3DVolume_colorTable_atList2(void* ptr, int i)
+{
+	return ({QRgb tmp = static_cast<QVector<QRgb>*>(ptr)->at(i); if (i == static_cast<QVector<QRgb>*>(ptr)->size()-1) { static_cast<QVector<QRgb>*>(ptr)->~QVector(); free(ptr); }; tmp; });
+}
+
+void QCustom3DVolume___QCustom3DVolume_colorTable_setList2(void* ptr, unsigned int i)
+{
+	static_cast<QVector<QRgb>*>(ptr)->append(i);
+}
+
 void* QCustom3DVolume___QCustom3DVolume_colorTable_newList2(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QVector<QRgb>();
 }
 
+unsigned int QCustom3DVolume___setColorTable_colors_atList(void* ptr, int i)
+{
+	return ({QRgb tmp = static_cast<QVector<QRgb>*>(ptr)->at(i); if (i == static_cast<QVector<QRgb>*>(ptr)->size()-1) { static_cast<QVector<QRgb>*>(ptr)->~QVector(); free(ptr); }; tmp; });
+}
+
+void QCustom3DVolume___setColorTable_colors_setList(void* ptr, unsigned int i)
+{
+	static_cast<QVector<QRgb>*>(ptr)->append(i);
+}
+
 void* QCustom3DVolume___setColorTable_colors_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QVector<QRgb>();
+}
+
+unsigned int QCustom3DVolume___colorTable_atList(void* ptr, int i)
+{
+	return ({QRgb tmp = static_cast<QVector<QRgb>*>(ptr)->at(i); if (i == static_cast<QVector<QRgb>*>(ptr)->size()-1) { static_cast<QVector<QRgb>*>(ptr)->~QVector(); free(ptr); }; tmp; });
+}
+
+void QCustom3DVolume___colorTable_setList(void* ptr, unsigned int i)
+{
+	static_cast<QVector<QRgb>*>(ptr)->append(i);
 }
 
 void* QCustom3DVolume___colorTable_newList(void* ptr)
@@ -6035,6 +5810,7 @@ public:
 	void Signal_MinXValueChanged(float value) { callbackQHeightMapSurfaceDataProxy_MinXValueChanged(this, value); };
 	void Signal_MinZValueChanged(float value) { callbackQHeightMapSurfaceDataProxy_MinZValueChanged(this, value); };
 	 ~MyQHeightMapSurfaceDataProxy() { callbackQHeightMapSurfaceDataProxy_DestroyQHeightMapSurfaceDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQHeightMapSurfaceDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QHeightMapSurfaceDataProxy_NewQHeightMapSurfaceDataProxy(void* parent)
@@ -6067,8 +5843,6 @@ void* QHeightMapSurfaceDataProxy_NewQHeightMapSurfaceDataProxy(void* parent)
 		return new MyQHeightMapSurfaceDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQHeightMapSurfaceDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQHeightMapSurfaceDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQHeightMapSurfaceDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6108,8 +5882,6 @@ void* QHeightMapSurfaceDataProxy_NewQHeightMapSurfaceDataProxy2(void* image, voi
 		return new MyQHeightMapSurfaceDataProxy(*static_cast<QImage*>(image), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQHeightMapSurfaceDataProxy(*static_cast<QImage*>(image), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQHeightMapSurfaceDataProxy(*static_cast<QImage*>(image), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQHeightMapSurfaceDataProxy(*static_cast<QImage*>(image), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6149,8 +5921,6 @@ void* QHeightMapSurfaceDataProxy_NewQHeightMapSurfaceDataProxy3(struct QtDataVis
 		return new MyQHeightMapSurfaceDataProxy(QString::fromUtf8(filename.data, filename.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQHeightMapSurfaceDataProxy(QString::fromUtf8(filename.data, filename.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQHeightMapSurfaceDataProxy(QString::fromUtf8(filename.data, filename.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQHeightMapSurfaceDataProxy(QString::fromUtf8(filename.data, filename.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6158,6 +5928,16 @@ void* QHeightMapSurfaceDataProxy_NewQHeightMapSurfaceDataProxy3(struct QtDataVis
 	} else {
 		return new MyQHeightMapSurfaceDataProxy(QString::fromUtf8(filename.data, filename.len), static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QHeightMapSurfaceDataProxy_QHeightMapSurfaceDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t2cbfbb = QHeightMapSurfaceDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t2cbfbb.prepend("WHITESPACE").constData()+10), t2cbfbb.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QHeightMapSurfaceDataProxy_QHeightMapSurfaceDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t15a74b = QHeightMapSurfaceDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t15a74b.prepend("WHITESPACE").constData()+10), t15a74b.size()-10 }; });
 }
 
 void QHeightMapSurfaceDataProxy_ConnectHeightMapChanged(void* ptr)
@@ -6306,6 +6086,16 @@ struct QtDataVisualization_PackedString QHeightMapSurfaceDataProxy_HeightMapFile
 	return ({ QByteArray t26dd34 = static_cast<QHeightMapSurfaceDataProxy*>(ptr)->heightMapFile().toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t26dd34.prepend("WHITESPACE").constData()+10), t26dd34.size()-10 }; });
 }
 
+void* QHeightMapSurfaceDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QHeightMapSurfaceDataProxy*>(ptr)->metaObject());
+}
+
+void* QHeightMapSurfaceDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QHeightMapSurfaceDataProxy*>(ptr)->QHeightMapSurfaceDataProxy::metaObject());
+}
+
 float QHeightMapSurfaceDataProxy_MaxXValue(void* ptr)
 {
 	return static_cast<QHeightMapSurfaceDataProxy*>(ptr)->maxXValue();
@@ -6356,6 +6146,7 @@ public:
 	void Signal_ValueRolePatternChanged(const QRegExp & pattern) { callbackQItemModelBarDataProxy_ValueRolePatternChanged(this, const_cast<QRegExp*>(&pattern)); };
 	void Signal_ValueRoleReplaceChanged(const QString & replace) { QByteArray t3cacc7 = replace.toUtf8(); QtDataVisualization_PackedString replacePacked = { const_cast<char*>(t3cacc7.prepend("WHITESPACE").constData()+10), t3cacc7.size()-10 };callbackQItemModelBarDataProxy_ValueRoleReplaceChanged(this, replacePacked); };
 	 ~MyQItemModelBarDataProxy() { callbackQItemModelBarDataProxy_DestroyQItemModelBarDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQItemModelBarDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QItemModelBarDataProxy_NewQItemModelBarDataProxy2(void* itemModel, void* parent)
@@ -6388,8 +6179,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy2(void* itemModel, void* p
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6429,8 +6218,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy4(void* itemModel, struct 
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6470,8 +6257,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy5(void* itemModel, struct 
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6511,8 +6296,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy7(void* itemModel, struct 
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6552,8 +6335,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy6(void* itemModel, struct 
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6593,8 +6374,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy3(void* itemModel, struct 
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(valueRole.data, valueRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6634,8 +6413,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy(void* parent)
 		return new MyQItemModelBarDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelBarDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6643,6 +6420,16 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy(void* parent)
 	} else {
 		return new MyQItemModelBarDataProxy(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QItemModelBarDataProxy_QItemModelBarDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t6ac795 = QItemModelBarDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t6ac795.prepend("WHITESPACE").constData()+10), t6ac795.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QItemModelBarDataProxy_QItemModelBarDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t92eab3 = QItemModelBarDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t92eab3.prepend("WHITESPACE").constData()+10), t92eab3.size()-10 }; });
 }
 
 int QItemModelBarDataProxy_ColumnCategoryIndex(void* ptr, struct QtDataVisualization_PackedString category)
@@ -7051,14 +6838,14 @@ void QItemModelBarDataProxy_DestroyQItemModelBarDataProxyDefault(void* ptr)
 
 }
 
-long long QItemModelBarDataProxy_MultiMatchBehavior(void* ptr)
-{
-	return static_cast<QItemModelBarDataProxy*>(ptr)->multiMatchBehavior();
-}
-
 void* QItemModelBarDataProxy_ItemModel(void* ptr)
 {
 	return static_cast<QItemModelBarDataProxy*>(ptr)->itemModel();
+}
+
+long long QItemModelBarDataProxy_MultiMatchBehavior(void* ptr)
+{
+	return static_cast<QItemModelBarDataProxy*>(ptr)->multiMatchBehavior();
 }
 
 void* QItemModelBarDataProxy_ColumnRolePattern(void* ptr)
@@ -7146,6 +6933,16 @@ char QItemModelBarDataProxy_UseModelCategories(void* ptr)
 	return static_cast<QItemModelBarDataProxy*>(ptr)->useModelCategories();
 }
 
+void* QItemModelBarDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QItemModelBarDataProxy*>(ptr)->metaObject());
+}
+
+void* QItemModelBarDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QItemModelBarDataProxy*>(ptr)->QItemModelBarDataProxy::metaObject());
+}
+
 class MyQItemModelScatterDataProxy: public QItemModelScatterDataProxy
 {
 public:
@@ -7167,6 +6964,7 @@ public:
 	void Signal_ZPosRolePatternChanged(const QRegExp & pattern) { callbackQItemModelScatterDataProxy_ZPosRolePatternChanged(this, const_cast<QRegExp*>(&pattern)); };
 	void Signal_ZPosRoleReplaceChanged(const QString & replace) { QByteArray t3cacc7 = replace.toUtf8(); QtDataVisualization_PackedString replacePacked = { const_cast<char*>(t3cacc7.prepend("WHITESPACE").constData()+10), t3cacc7.size()-10 };callbackQItemModelScatterDataProxy_ZPosRoleReplaceChanged(this, replacePacked); };
 	 ~MyQItemModelScatterDataProxy() { callbackQItemModelScatterDataProxy_DestroyQItemModelScatterDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQItemModelScatterDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy2(void* itemModel, void* parent)
@@ -7199,8 +6997,6 @@ void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy2(void* itemModel,
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7240,8 +7036,6 @@ void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy3(void* itemModel,
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7281,8 +7075,6 @@ void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy4(void* itemModel,
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7322,8 +7114,6 @@ void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy(void* parent)
 		return new MyQItemModelScatterDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelScatterDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelScatterDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7331,6 +7121,16 @@ void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy(void* parent)
 	} else {
 		return new MyQItemModelScatterDataProxy(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QItemModelScatterDataProxy_QItemModelScatterDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t15d7cf = QItemModelScatterDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t15d7cf.prepend("WHITESPACE").constData()+10), t15d7cf.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QItemModelScatterDataProxy_QItemModelScatterDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t5f214d = QItemModelScatterDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t5f214d.prepend("WHITESPACE").constData()+10), t5f214d.size()-10 }; });
 }
 
 void QItemModelScatterDataProxy_ConnectItemModelChanged(void* ptr)
@@ -7674,6 +7474,16 @@ struct QtDataVisualization_PackedString QItemModelScatterDataProxy_ZPosRoleRepla
 	return ({ QByteArray t4c6acb = static_cast<QItemModelScatterDataProxy*>(ptr)->zPosRoleReplace().toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t4c6acb.prepend("WHITESPACE").constData()+10), t4c6acb.size()-10 }; });
 }
 
+void* QItemModelScatterDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QItemModelScatterDataProxy*>(ptr)->metaObject());
+}
+
+void* QItemModelScatterDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QItemModelScatterDataProxy*>(ptr)->QItemModelScatterDataProxy::metaObject());
+}
+
 class MyQItemModelSurfaceDataProxy: public QItemModelSurfaceDataProxy
 {
 public:
@@ -7707,6 +7517,7 @@ public:
 	void Signal_ZPosRolePatternChanged(const QRegExp & pattern) { callbackQItemModelSurfaceDataProxy_ZPosRolePatternChanged(this, const_cast<QRegExp*>(&pattern)); };
 	void Signal_ZPosRoleReplaceChanged(const QString & replace) { QByteArray t3cacc7 = replace.toUtf8(); QtDataVisualization_PackedString replacePacked = { const_cast<char*>(t3cacc7.prepend("WHITESPACE").constData()+10), t3cacc7.size()-10 };callbackQItemModelSurfaceDataProxy_ZPosRoleReplaceChanged(this, replacePacked); };
 	 ~MyQItemModelSurfaceDataProxy() { callbackQItemModelSurfaceDataProxy_DestroyQItemModelSurfaceDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQItemModelSurfaceDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy2(void* itemModel, void* parent)
@@ -7739,8 +7550,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy2(void* itemModel,
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7780,8 +7589,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy5(void* itemModel,
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7821,8 +7628,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy7(void* itemModel,
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7862,8 +7667,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy4(void* itemModel,
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7903,8 +7706,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy6(void* itemModel,
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7944,8 +7745,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy3(void* itemModel,
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(yPosRole.data, yPosRole.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7985,8 +7784,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy(void* parent)
 		return new MyQItemModelSurfaceDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7994,6 +7791,16 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy(void* parent)
 	} else {
 		return new MyQItemModelSurfaceDataProxy(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_QItemModelSurfaceDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tb3c53a = QItemModelSurfaceDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb3c53a.prepend("WHITESPACE").constData()+10), tb3c53a.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_QItemModelSurfaceDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t4696dd = QItemModelSurfaceDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t4696dd.prepend("WHITESPACE").constData()+10), t4696dd.size()-10 }; });
 }
 
 int QItemModelSurfaceDataProxy_ColumnCategoryIndex(void* ptr, struct QtDataVisualization_PackedString category)
@@ -8462,14 +8269,14 @@ void QItemModelSurfaceDataProxy_DestroyQItemModelSurfaceDataProxyDefault(void* p
 
 }
 
-long long QItemModelSurfaceDataProxy_MultiMatchBehavior(void* ptr)
-{
-	return static_cast<QItemModelSurfaceDataProxy*>(ptr)->multiMatchBehavior();
-}
-
 void* QItemModelSurfaceDataProxy_ItemModel(void* ptr)
 {
 	return static_cast<QItemModelSurfaceDataProxy*>(ptr)->itemModel();
+}
+
+long long QItemModelSurfaceDataProxy_MultiMatchBehavior(void* ptr)
+{
+	return static_cast<QItemModelSurfaceDataProxy*>(ptr)->multiMatchBehavior();
 }
 
 void* QItemModelSurfaceDataProxy_ColumnRolePattern(void* ptr)
@@ -8572,6 +8379,16 @@ char QItemModelSurfaceDataProxy_UseModelCategories(void* ptr)
 	return static_cast<QItemModelSurfaceDataProxy*>(ptr)->useModelCategories();
 }
 
+void* QItemModelSurfaceDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QItemModelSurfaceDataProxy*>(ptr)->metaObject());
+}
+
+void* QItemModelSurfaceDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QItemModelSurfaceDataProxy*>(ptr)->QItemModelSurfaceDataProxy::metaObject());
+}
+
 class MyQLogValue3DAxisFormatter: public QLogValue3DAxisFormatter
 {
 public:
@@ -8580,6 +8397,7 @@ public:
 	void Signal_BaseChanged(qreal base) { callbackQLogValue3DAxisFormatter_BaseChanged(this, base); };
 	void Signal_ShowEdgeLabelsChanged(bool enabled) { callbackQLogValue3DAxisFormatter_ShowEdgeLabelsChanged(this, enabled); };
 	 ~MyQLogValue3DAxisFormatter() { callbackQLogValue3DAxisFormatter_DestroyQLogValue3DAxisFormatter(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQLogValue3DAxisFormatter_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QLogValue3DAxisFormatter_NewQLogValue3DAxisFormatter(void* parent)
@@ -8612,8 +8430,6 @@ void* QLogValue3DAxisFormatter_NewQLogValue3DAxisFormatter(void* parent)
 		return new MyQLogValue3DAxisFormatter(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQLogValue3DAxisFormatter(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQLogValue3DAxisFormatter(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQLogValue3DAxisFormatter(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -8621,6 +8437,16 @@ void* QLogValue3DAxisFormatter_NewQLogValue3DAxisFormatter(void* parent)
 	} else {
 		return new MyQLogValue3DAxisFormatter(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QLogValue3DAxisFormatter_QLogValue3DAxisFormatter_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tb5b6fe = QLogValue3DAxisFormatter::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb5b6fe.prepend("WHITESPACE").constData()+10), tb5b6fe.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QLogValue3DAxisFormatter_QLogValue3DAxisFormatter_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t10d8a6 = QLogValue3DAxisFormatter::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t10d8a6.prepend("WHITESPACE").constData()+10), t10d8a6.size()-10 }; });
 }
 
 void QLogValue3DAxisFormatter_ConnectAutoSubGridChanged(void* ptr)
@@ -8704,6 +8530,16 @@ char QLogValue3DAxisFormatter_ShowEdgeLabels(void* ptr)
 	return static_cast<QLogValue3DAxisFormatter*>(ptr)->showEdgeLabels();
 }
 
+void* QLogValue3DAxisFormatter_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QLogValue3DAxisFormatter*>(ptr)->metaObject());
+}
+
+void* QLogValue3DAxisFormatter_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QLogValue3DAxisFormatter*>(ptr)->QLogValue3DAxisFormatter::metaObject());
+}
+
 double QLogValue3DAxisFormatter_Base(void* ptr)
 {
 	return static_cast<QLogValue3DAxisFormatter*>(ptr)->base();
@@ -8718,6 +8554,7 @@ public:
 	void Signal_ItemSizeChanged(float size) { callbackQScatter3DSeries_ItemSizeChanged(this, size); };
 	void Signal_SelectedItemChanged(int index) { callbackQScatter3DSeries_SelectedItemChanged(this, index); };
 	 ~MyQScatter3DSeries() { callbackQScatter3DSeries_DestroyQScatter3DSeries(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQScatter3DSeries_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QScatter3DSeries_NewQScatter3DSeries(void* parent)
@@ -8750,8 +8587,6 @@ void* QScatter3DSeries_NewQScatter3DSeries(void* parent)
 		return new MyQScatter3DSeries(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQScatter3DSeries(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQScatter3DSeries(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQScatter3DSeries(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -8791,8 +8626,6 @@ void* QScatter3DSeries_NewQScatter3DSeries2(void* dataProxy, void* parent)
 		return new MyQScatter3DSeries(static_cast<QScatterDataProxy*>(dataProxy), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQScatter3DSeries(static_cast<QScatterDataProxy*>(dataProxy), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQScatter3DSeries(static_cast<QScatterDataProxy*>(dataProxy), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQScatter3DSeries(static_cast<QScatterDataProxy*>(dataProxy), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -8800,6 +8633,16 @@ void* QScatter3DSeries_NewQScatter3DSeries2(void* dataProxy, void* parent)
 	} else {
 		return new MyQScatter3DSeries(static_cast<QScatterDataProxy*>(dataProxy), static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QScatter3DSeries_QScatter3DSeries_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tab9ed4 = QScatter3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tab9ed4.prepend("WHITESPACE").constData()+10), tab9ed4.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QScatter3DSeries_QScatter3DSeries_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray tda61c2 = QScatter3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tda61c2.prepend("WHITESPACE").constData()+10), tda61c2.size()-10 }; });
 }
 
 int QScatter3DSeries_QScatter3DSeries_InvalidSelectionIndex()
@@ -8881,6 +8724,16 @@ void QScatter3DSeries_DestroyQScatter3DSeriesDefault(void* ptr)
 void* QScatter3DSeries_DataProxy(void* ptr)
 {
 	return static_cast<QScatter3DSeries*>(ptr)->dataProxy();
+}
+
+void* QScatter3DSeries_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QScatter3DSeries*>(ptr)->metaObject());
+}
+
+void* QScatter3DSeries_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QScatter3DSeries*>(ptr)->QScatter3DSeries::metaObject());
 }
 
 float QScatter3DSeries_ItemSize(void* ptr)
@@ -8980,6 +8833,7 @@ public:
 	void Signal_ItemsRemoved(int startIndex, int count) { callbackQScatterDataProxy_ItemsRemoved(this, startIndex, count); };
 	void Signal_SeriesChanged(QScatter3DSeries * series) { callbackQScatterDataProxy_SeriesChanged(this, series); };
 	 ~MyQScatterDataProxy() { callbackQScatterDataProxy_DestroyQScatterDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQScatterDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QScatterDataProxy_NewQScatterDataProxy(void* parent)
@@ -9012,8 +8866,6 @@ void* QScatterDataProxy_NewQScatterDataProxy(void* parent)
 		return new MyQScatterDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQScatterDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQScatterDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQScatterDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9021,6 +8873,16 @@ void* QScatterDataProxy_NewQScatterDataProxy(void* parent)
 	} else {
 		return new MyQScatterDataProxy(static_cast<QObject*>(parent));
 	}
+}
+
+struct QtDataVisualization_PackedString QScatterDataProxy_QScatterDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t6e4323 = QScatterDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t6e4323.prepend("WHITESPACE").constData()+10), t6e4323.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QScatterDataProxy_QScatterDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray tdbd6ea = QScatterDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tdbd6ea.prepend("WHITESPACE").constData()+10), tdbd6ea.size()-10 }; });
 }
 
 int QScatterDataProxy_AddItem(void* ptr, void* item)
@@ -9164,6 +9026,16 @@ void* QScatterDataProxy_Series(void* ptr)
 	return static_cast<QScatterDataProxy*>(ptr)->series();
 }
 
+void* QScatterDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QScatterDataProxy*>(ptr)->metaObject());
+}
+
+void* QScatterDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QScatterDataProxy*>(ptr)->QScatterDataProxy::metaObject());
+}
+
 void* QScatterDataProxy_ItemAt(void* ptr, int index)
 {
 	return const_cast<QScatterDataItem*>(static_cast<QScatterDataProxy*>(ptr)->itemAt(index));
@@ -9179,39 +9051,30 @@ class MyQSurface3DSeries: public QSurface3DSeries
 public:
 	MyQSurface3DSeries(QObject *parent = Q_NULLPTR) : QSurface3DSeries(parent) {};
 	MyQSurface3DSeries(QSurfaceDataProxy *dataProxy, QObject *parent = Q_NULLPTR) : QSurface3DSeries(dataProxy, parent) {};
-	void Signal_SelectedPointChanged(const QPoint & position) { callbackQSurface3DSeries_SelectedPointChanged(this, const_cast<QPoint*>(&position)); };
 	void Signal_DataProxyChanged(QSurfaceDataProxy * proxy) { callbackQSurface3DSeries_DataProxyChanged(this, proxy); };
 	void Signal_DrawModeChanged(QSurface3DSeries::DrawFlags mode) { callbackQSurface3DSeries_DrawModeChanged(this, mode); };
 	void Signal_FlatShadingEnabledChanged(bool enable) { callbackQSurface3DSeries_FlatShadingEnabledChanged(this, enable); };
 	void Signal_FlatShadingSupportedChanged(bool enable) { callbackQSurface3DSeries_FlatShadingSupportedChanged(this, enable); };
+	void Signal_SelectedPointChanged(const QPoint & position) { callbackQSurface3DSeries_SelectedPointChanged(this, const_cast<QPoint*>(&position)); };
 	void Signal_TextureChanged(const QImage & image) { callbackQSurface3DSeries_TextureChanged(this, const_cast<QImage*>(&image)); };
 	void Signal_TextureFileChanged(const QString & filename) { QByteArray t08deae = filename.toUtf8(); QtDataVisualization_PackedString filenamePacked = { const_cast<char*>(t08deae.prepend("WHITESPACE").constData()+10), t08deae.size()-10 };callbackQSurface3DSeries_TextureFileChanged(this, filenamePacked); };
 	 ~MyQSurface3DSeries() { callbackQSurface3DSeries_DestroyQSurface3DSeries(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSurface3DSeries_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
-
-void QSurface3DSeries_ConnectSelectedPointChanged(void* ptr)
-{
-	QObject::connect(static_cast<QSurface3DSeries*>(ptr), static_cast<void (QSurface3DSeries::*)(const QPoint &)>(&QSurface3DSeries::selectedPointChanged), static_cast<MyQSurface3DSeries*>(ptr), static_cast<void (MyQSurface3DSeries::*)(const QPoint &)>(&MyQSurface3DSeries::Signal_SelectedPointChanged));
-}
-
-void QSurface3DSeries_DisconnectSelectedPointChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QSurface3DSeries*>(ptr), static_cast<void (QSurface3DSeries::*)(const QPoint &)>(&QSurface3DSeries::selectedPointChanged), static_cast<MyQSurface3DSeries*>(ptr), static_cast<void (MyQSurface3DSeries::*)(const QPoint &)>(&MyQSurface3DSeries::Signal_SelectedPointChanged));
-}
-
-void QSurface3DSeries_SelectedPointChanged(void* ptr, void* position)
-{
-	static_cast<QSurface3DSeries*>(ptr)->selectedPointChanged(*static_cast<QPoint*>(position));
-}
-
-void QSurface3DSeries_SetDataProxy(void* ptr, void* proxy)
-{
-	static_cast<QSurface3DSeries*>(ptr)->setDataProxy(static_cast<QSurfaceDataProxy*>(proxy));
-}
 
 void* QSurface3DSeries_QSurface3DSeries_InvalidSelectionPosition()
 {
 	return ({ QPoint tmpValue = QSurface3DSeries::invalidSelectionPosition(); new QPoint(tmpValue.x(), tmpValue.y()); });
+}
+
+struct QtDataVisualization_PackedString QSurface3DSeries_QSurface3DSeries_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t06518b = QSurface3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t06518b.prepend("WHITESPACE").constData()+10), t06518b.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QSurface3DSeries_QSurface3DSeries_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t259647 = QSurface3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t259647.prepend("WHITESPACE").constData()+10), t259647.size()-10 }; });
 }
 
 void* QSurface3DSeries_NewQSurface3DSeries(void* parent)
@@ -9244,8 +9107,6 @@ void* QSurface3DSeries_NewQSurface3DSeries(void* parent)
 		return new MyQSurface3DSeries(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQSurface3DSeries(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQSurface3DSeries(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSurface3DSeries(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9285,8 +9146,6 @@ void* QSurface3DSeries_NewQSurface3DSeries2(void* dataProxy, void* parent)
 		return new MyQSurface3DSeries(static_cast<QSurfaceDataProxy*>(dataProxy), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQSurface3DSeries(static_cast<QSurfaceDataProxy*>(dataProxy), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQSurface3DSeries(static_cast<QSurfaceDataProxy*>(dataProxy), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSurface3DSeries(static_cast<QSurfaceDataProxy*>(dataProxy), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9354,6 +9213,26 @@ void QSurface3DSeries_DisconnectFlatShadingSupportedChanged(void* ptr)
 void QSurface3DSeries_FlatShadingSupportedChanged(void* ptr, char enable)
 {
 	static_cast<QSurface3DSeries*>(ptr)->flatShadingSupportedChanged(enable != 0);
+}
+
+void QSurface3DSeries_ConnectSelectedPointChanged(void* ptr)
+{
+	QObject::connect(static_cast<QSurface3DSeries*>(ptr), static_cast<void (QSurface3DSeries::*)(const QPoint &)>(&QSurface3DSeries::selectedPointChanged), static_cast<MyQSurface3DSeries*>(ptr), static_cast<void (MyQSurface3DSeries::*)(const QPoint &)>(&MyQSurface3DSeries::Signal_SelectedPointChanged));
+}
+
+void QSurface3DSeries_DisconnectSelectedPointChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QSurface3DSeries*>(ptr), static_cast<void (QSurface3DSeries::*)(const QPoint &)>(&QSurface3DSeries::selectedPointChanged), static_cast<MyQSurface3DSeries*>(ptr), static_cast<void (MyQSurface3DSeries::*)(const QPoint &)>(&MyQSurface3DSeries::Signal_SelectedPointChanged));
+}
+
+void QSurface3DSeries_SelectedPointChanged(void* ptr, void* position)
+{
+	static_cast<QSurface3DSeries*>(ptr)->selectedPointChanged(*static_cast<QPoint*>(position));
+}
+
+void QSurface3DSeries_SetDataProxy(void* ptr, void* proxy)
+{
+	static_cast<QSurface3DSeries*>(ptr)->setDataProxy(static_cast<QSurfaceDataProxy*>(proxy));
 }
 
 void QSurface3DSeries_SetDrawMode(void* ptr, long long mode)
@@ -9457,6 +9336,16 @@ char QSurface3DSeries_IsFlatShadingSupported(void* ptr)
 	return static_cast<QSurface3DSeries*>(ptr)->isFlatShadingSupported();
 }
 
+void* QSurface3DSeries_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QSurface3DSeries*>(ptr)->metaObject());
+}
+
+void* QSurface3DSeries_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QSurface3DSeries*>(ptr)->QSurface3DSeries::metaObject());
+}
+
 void* QSurfaceDataItem_NewQSurfaceDataItem()
 {
 	return new QSurfaceDataItem();
@@ -9531,7 +9420,18 @@ public:
 	void Signal_RowsRemoved(int startIndex, int count) { callbackQSurfaceDataProxy_RowsRemoved(this, startIndex, count); };
 	void Signal_SeriesChanged(QSurface3DSeries * series) { callbackQSurfaceDataProxy_SeriesChanged(this, series); };
 	 ~MyQSurfaceDataProxy() { callbackQSurfaceDataProxy_DestroyQSurfaceDataProxy(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSurfaceDataProxy_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
+
+struct QtDataVisualization_PackedString QSurfaceDataProxy_QSurfaceDataProxy_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t950cf2 = QSurfaceDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t950cf2.prepend("WHITESPACE").constData()+10), t950cf2.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QSurfaceDataProxy_QSurfaceDataProxy_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t45f866 = QSurfaceDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t45f866.prepend("WHITESPACE").constData()+10), t45f866.size()-10 }; });
+}
 
 void* QSurfaceDataProxy_NewQSurfaceDataProxy(void* parent)
 {
@@ -9563,8 +9463,6 @@ void* QSurfaceDataProxy_NewQSurfaceDataProxy(void* parent)
 		return new MyQSurfaceDataProxy(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQSurfaceDataProxy(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQSurfaceDataProxy(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSurfaceDataProxy(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9740,6 +9638,16 @@ void* QSurfaceDataProxy_Series(void* ptr)
 	return static_cast<QSurfaceDataProxy*>(ptr)->series();
 }
 
+void* QSurfaceDataProxy_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QSurfaceDataProxy*>(ptr)->metaObject());
+}
+
+void* QSurfaceDataProxy_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QSurfaceDataProxy*>(ptr)->QSurfaceDataProxy::metaObject());
+}
+
 void* QSurfaceDataProxy_ItemAt2(void* ptr, void* position)
 {
 	return const_cast<QSurfaceDataItem*>(static_cast<QSurfaceDataProxy*>(ptr)->itemAt(*static_cast<QPoint*>(position)));
@@ -9766,7 +9674,18 @@ public:
 	MyQTouch3DInputHandler(QObject *parent = Q_NULLPTR) : QTouch3DInputHandler(parent) {};
 	void touchEvent(QTouchEvent * event) { callbackQTouch3DInputHandler_TouchEvent(this, event); };
 	 ~MyQTouch3DInputHandler() { callbackQTouch3DInputHandler_DestroyQTouch3DInputHandler(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQTouch3DInputHandler_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
+
+struct QtDataVisualization_PackedString QTouch3DInputHandler_QTouch3DInputHandler_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t3bc4ff = QTouch3DInputHandler::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t3bc4ff.prepend("WHITESPACE").constData()+10), t3bc4ff.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QTouch3DInputHandler_QTouch3DInputHandler_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t381358 = QTouch3DInputHandler::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t381358.prepend("WHITESPACE").constData()+10), t381358.size()-10 }; });
+}
 
 void* QTouch3DInputHandler_NewQTouch3DInputHandler(void* parent)
 {
@@ -9798,8 +9717,6 @@ void* QTouch3DInputHandler_NewQTouch3DInputHandler(void* parent)
 		return new MyQTouch3DInputHandler(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQTouch3DInputHandler(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQTouch3DInputHandler(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQTouch3DInputHandler(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9830,6 +9747,16 @@ void QTouch3DInputHandler_DestroyQTouch3DInputHandlerDefault(void* ptr)
 
 }
 
+void* QTouch3DInputHandler_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QTouch3DInputHandler*>(ptr)->metaObject());
+}
+
+void* QTouch3DInputHandler_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QTouch3DInputHandler*>(ptr)->QTouch3DInputHandler::metaObject());
+}
+
 class MyQValue3DAxis: public QValue3DAxis
 {
 public:
@@ -9840,7 +9767,18 @@ public:
 	void Signal_SegmentCountChanged(int count) { callbackQValue3DAxis_SegmentCountChanged(this, count); };
 	void Signal_SubSegmentCountChanged(int count) { callbackQValue3DAxis_SubSegmentCountChanged(this, count); };
 	 ~MyQValue3DAxis() { callbackQValue3DAxis_DestroyQValue3DAxis(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQValue3DAxis_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
+
+struct QtDataVisualization_PackedString QValue3DAxis_QValue3DAxis_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray tfffefe = QValue3DAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tfffefe.prepend("WHITESPACE").constData()+10), tfffefe.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QValue3DAxis_QValue3DAxis_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t81c14c = QValue3DAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t81c14c.prepend("WHITESPACE").constData()+10), t81c14c.size()-10 }; });
+}
 
 void* QValue3DAxis_NewQValue3DAxis(void* parent)
 {
@@ -9872,8 +9810,6 @@ void* QValue3DAxis_NewQValue3DAxis(void* parent)
 		return new MyQValue3DAxis(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQValue3DAxis(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQValue3DAxis(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQValue3DAxis(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -10009,6 +9945,16 @@ char QValue3DAxis_Reversed(void* ptr)
 	return static_cast<QValue3DAxis*>(ptr)->reversed();
 }
 
+void* QValue3DAxis_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QValue3DAxis*>(ptr)->metaObject());
+}
+
+void* QValue3DAxis_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QValue3DAxis*>(ptr)->QValue3DAxis::metaObject());
+}
+
 int QValue3DAxis_SegmentCount(void* ptr)
 {
 	return static_cast<QValue3DAxis*>(ptr)->segmentCount();
@@ -10027,10 +9973,21 @@ public:
 	 ~MyQValue3DAxisFormatter() { callbackQValue3DAxisFormatter_DestroyQValue3DAxisFormatter(this); };
 	QString stringForValue(qreal value, const QString & format) const { QByteArray t785987 = format.toUtf8(); QtDataVisualization_PackedString formatPacked = { const_cast<char*>(t785987.prepend("WHITESPACE").constData()+10), t785987.size()-10 };return ({ QtDataVisualization_PackedString tempVal = callbackQValue3DAxisFormatter_StringForValue(const_cast<void*>(static_cast<const void*>(this)), value, formatPacked); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	QValue3DAxisFormatter * createNewInstance() const { return static_cast<QValue3DAxisFormatter*>(callbackQValue3DAxisFormatter_CreateNewInstance(const_cast<void*>(static_cast<const void*>(this)))); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQValue3DAxisFormatter_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	float positionAt(float value) const { return callbackQValue3DAxisFormatter_PositionAt(const_cast<void*>(static_cast<const void*>(this)), value); };
 	float valueAt(float position) const { return callbackQValue3DAxisFormatter_ValueAt(const_cast<void*>(static_cast<const void*>(this)), position); };
 	void populateCopy(QValue3DAxisFormatter & copy) const { callbackQValue3DAxisFormatter_PopulateCopy(const_cast<void*>(static_cast<const void*>(this)), static_cast<QValue3DAxisFormatter*>(&copy)); };
 };
+
+struct QtDataVisualization_PackedString QValue3DAxisFormatter_QValue3DAxisFormatter_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t10c965 = QValue3DAxisFormatter::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t10c965.prepend("WHITESPACE").constData()+10), t10c965.size()-10 }; });
+}
+
+struct QtDataVisualization_PackedString QValue3DAxisFormatter_QValue3DAxisFormatter_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray ta2671a = QValue3DAxisFormatter::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta2671a.prepend("WHITESPACE").constData()+10), ta2671a.size()-10 }; });
+}
 
 void* QValue3DAxisFormatter_NewQValue3DAxisFormatter(void* parent)
 {
@@ -10062,8 +10019,6 @@ void* QValue3DAxisFormatter_NewQValue3DAxisFormatter(void* parent)
 		return new MyQValue3DAxisFormatter(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQValue3DAxisFormatter(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQValue3DAxisFormatter(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQValue3DAxisFormatter(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -10172,6 +10127,16 @@ char QValue3DAxisFormatter_AllowNegatives(void* ptr)
 char QValue3DAxisFormatter_AllowZero(void* ptr)
 {
 	return static_cast<QValue3DAxisFormatter*>(ptr)->allowZero();
+}
+
+void* QValue3DAxisFormatter_MetaObject(void* ptr)
+{
+	return const_cast<QMetaObject*>(static_cast<QValue3DAxisFormatter*>(ptr)->metaObject());
+}
+
+void* QValue3DAxisFormatter_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QValue3DAxisFormatter*>(ptr)->QValue3DAxisFormatter::metaObject());
 }
 
 float QValue3DAxisFormatter_PositionAt(void* ptr, float value)

@@ -22,6 +22,7 @@ func ParseFlags() bool {
 		debug      = flag.Bool("debug", false, "print debug logs")
 		help       = flag.Bool("help", false, "print help")
 		p          = flag.Int("p", runtime.NumCPU(), "specify the number of cpu's to be used")
+		qt_api     = flag.String("qt_api", "", "specify the api version to be used")
 		qt_dir     = flag.String("qt_dir", utils.QT_DIR(), "export QT_DIR")
 		qt_version = flag.String("qt_version", utils.QT_VERSION(), "export QT_VERSION")
 		version    = flag.Bool("version", false, "print build version (if available)")
@@ -33,6 +34,10 @@ func ParseFlags() bool {
 	}
 
 	runtime.GOMAXPROCS(*p)
+
+	if api := *qt_api; api != "" {
+		os.Setenv("QT_API", api)
+	}
 
 	if dir := *qt_dir; dir != utils.QT_DIR() {
 		os.Setenv("QT_DIR", dir)
@@ -84,13 +89,13 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 			image = target
 		}
 
-	case "linux", "android", "rpi1", "rpi2", "rpi3", "sailfish":
+	case "linux", "rpi1", "rpi2", "rpi3", "js":
 		image = target
 
-	case "android-emulator":
+	case "android", "android-emulator":
 		image = "android"
 
-	case "sailfish-emulator":
+	case "sailfish", "sailfish-emulator":
 		image = "sailfish"
 
 	default:
@@ -176,6 +181,14 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 
 	if utils.QT_DEBUG_QML() {
 		args = append(args, []string{"-e", "QT_DEBUG_QML=true"}...)
+	}
+
+	if utils.QT_DEBUG_CONSOLE() {
+		args = append(args, []string{"-e", "QT_DEBUG_CONSOLE=true"}...)
+	}
+
+	if api := utils.QT_API(""); api != "" {
+		args = append(args, []string{"-e", "QT_API=" + api}...)
 	}
 
 	if utils.CI() {
@@ -373,7 +386,7 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 		}
 
 	case "darwin":
-		ldFlags = []string{"-w", fmt.Sprintf("-r=%v", filepath.Join(utils.QT_DARWIN_DIR(), "lib"))}
+		ldFlags = []string{"-w"}
 		out = filepath.Join(depPath, fmt.Sprintf("%v.app/Contents/MacOS/%v", name, name))
 		env = map[string]string{
 			"PATH":   os.Getenv("PATH"),
@@ -386,8 +399,18 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			"CGO_ENABLED": "1",
 		}
 
+		if utils.QT_NIX() {
+			for _, e := range os.Environ() {
+				es := strings.Split(e, "=")
+				env[es[0]] = strings.Join(es[1:], "=")
+			}
+		}
+
 	case "windows":
-		ldFlags = []string{"-s", "-w", "-H=windowsgui"}
+		ldFlags = []string{"-s", "-w"}
+		if !utils.QT_DEBUG_CONSOLE() {
+			ldFlags = append(ldFlags, "-H=windowsgui")
+		}
 		if runtime.GOOS != target {
 			tags = []string{"windows"}
 		}
@@ -413,7 +436,11 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 				env["PATH"] = filepath.Join(utils.QT_MSYS2_DIR(), "bin") + ";" + env["PATH"]
 			} else {
 				// use gcc shipped with qt installation
-				env["PATH"] = filepath.Join(utils.QT_DIR(), "Tools", "mingw530_32", "bin") + ";" + env["PATH"]
+				path := filepath.Join(utils.QT_DIR(), "Tools", "mingw530_32", "bin")
+				if !utils.ExistsDir(path) {
+					path = strings.Replace(path, "mingw530_32", "mingw492_32", -1)
+				}
+				env["PATH"] = path + ";" + env["PATH"]
 			}
 		} else {
 			delete(env, "TMP")
@@ -436,6 +463,10 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			"GOARCH": utils.GOARCH(),
 
 			"CGO_ENABLED": "1",
+		}
+
+		if utils.QT_VERSION_NUM() <= 5051 {
+			env["CGO_CXXFLAGS"] = "-std=c++11"
 		}
 
 		if arm, ok := os.LookupEnv("GOARM"); ok {
@@ -524,6 +555,37 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			"LIBRARY_PATH": "/srv/mer/targets/SailfishOS-" + utils.QT_SAILFISH_VERSION() + "-i486/usr/lib:/srv/mer/targets/SailfishOS-" + utils.QT_SAILFISH_VERSION() + "-i486/lib:/srv/mer/targets/SailfishOS-" + utils.QT_SAILFISH_VERSION() + "-i486/usr/lib/pulseaudio",
 			"CGO_LDFLAGS":  "--sysroot=/srv/mer/targets/SailfishOS-" + utils.QT_SAILFISH_VERSION() + "-i486/",
 		}
+
+	case "js":
+		tags = []string{target}
+		out = filepath.Join(depPath, name)
+		env = map[string]string{
+			"PATH":   os.Getenv("PATH"),
+			"GOPATH": utils.GOPATH(),
+			"GOROOT": runtime.GOROOT(),
+
+			"GOOS":   runtime.GOOS,
+			"GOARCH": runtime.GOARCH,
+
+			"CGO_ENABLED": "1",
+		}
+
+		env["EM_CONFIG"] = filepath.Join(os.Getenv("HOME"), ".emscripten")
+		for _, l := range strings.Split(utils.Load(env["EM_CONFIG"]), "\n") {
+			l = strings.Replace(l, "'", "", -1)
+			switch {
+			case strings.HasPrefix(l, "LLVM_ROOT="):
+				env["LLVM_ROOT"] = strings.Split(l, "=")[1]
+			case strings.HasPrefix(l, "BINARYEN_ROOT="):
+				env["BINARYEN_ROOT"] = strings.Split(l, "=")[1]
+			case strings.HasPrefix(l, "NODE_JS="):
+				env["NODE_JS"] = strings.TrimSuffix(strings.Split(l, "=")[1], "/node")
+			case strings.HasPrefix(l, "EMSCRIPTEN_ROOT="):
+				env["EMSCRIPTEN"] = strings.Split(l, "=")[1]
+				env["EMSDK"] = strings.Split(env["EMSCRIPTEN"], "/emscripten/1.")[0]
+			}
+		}
+		env["PATH"] = env["PATH"] + ":" + env["EMSDK"] + ":" + env["LLVM_ROOT"] + ":" + env["NODE_JS"] + ":" + env["EMSCRIPTEN"]
 	}
 
 	env["CGO_CFLAGS_ALLOW"] = utils.CGO_CFLAGS_ALLOW()

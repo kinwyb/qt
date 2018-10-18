@@ -9,49 +9,50 @@ import (
 )
 
 type Function struct {
-	Name            string       `xml:"name,attr"`
-	Fullname        string       `xml:"fullname,attr"`
-	Href            string       `xml:"href,attr"`
-	Status          string       `xml:"status,attr"`
-	Access          string       `xml:"access,attr"`
-	Filepath        string       `xml:"filepath,attr"`
-	Virtual         string       `xml:"virtual,attr"`
-	Meta            string       `xml:"meta,attr"`
-	Static          bool         `xml:"static,attr"`
-	Overload        bool         `xml:"overload,attr"`
-	OverloadNumber  string       `xml:"overload-number,attr"`
-	Output          string       `xml:"type,attr"`
-	Signature       string       `xml:"signature,attr"`
-	Parameters      []*Parameter `xml:"parameter"`
-	Brief           string       `xml:"brief,attr"`
-	Since           string       `xml:"since,attr"`
-	SignalMode      string
-	TemplateModeJNI string
-	Default         bool
-	TmpName         string
-	Export          bool
-	NeedsFinalizer  bool
-	Container       string
-	TemplateModeGo  string
-	NonMember       bool
-	NoMocDeduce     bool
-	AsError         bool
-	Synthetic       bool
-	Checked         bool
-	Exception       bool
-	IsMap           bool
-	OgParameters    []Parameter
-	IsMocFunction   bool
-	IsMocProperty   bool
-	PureGoOutput    string
-	Connect         int
-	Target          string
-	Inbound         bool
+	Name              string       `xml:"name,attr"`
+	Fullname          string       `xml:"fullname,attr"`
+	Href              string       `xml:"href,attr"`
+	Status            string       `xml:"status,attr"`
+	Access            string       `xml:"access,attr"`
+	Filepath          string       `xml:"filepath,attr"`
+	Virtual           string       `xml:"virtual,attr"`
+	Meta              string       `xml:"meta,attr"`
+	Static            bool         `xml:"static,attr"`
+	Overload          bool         `xml:"overload,attr"`
+	OverloadNumber    string       `xml:"overload-number,attr"`
+	Output            string       `xml:"type,attr"`
+	Signature         string       `xml:"signature,attr"`
+	Parameters        []*Parameter `xml:"parameter"`
+	Brief             string       `xml:"brief,attr"`
+	Since             string       `xml:"since,attr"`
+	SignalMode        string
+	TemplateModeJNI   string
+	Default           bool
+	TmpName           string
+	Export            bool
+	NeedsFinalizer    bool
+	Container         string
+	TemplateModeGo    string
+	NonMember         bool
+	NoMocDeduce       bool
+	Synthetic         bool
+	Checked           bool
+	Exception         bool
+	IsMap             bool
+	OgParameters      []Parameter
+	IsMocFunction     bool
+	IsMocProperty     bool
+	PureGoOutput      string
+	Connect           int
+	Target            string
+	Inbound           bool
+	BoundByEmscripten bool //TODO: needed at all ?
 }
 
 type Parameter struct {
 	Name       string `xml:"name,attr"`
 	Value      string `xml:"left,attr"`
+	ValueNew   string `xml:"type,attr"`
 	Right      string `xml:"right,attr"`
 	Default    string `xml:"default,attr"`
 	PureGoType string
@@ -261,17 +262,30 @@ func (f *Function) IsJNIGeneric() bool {
 //TODO:
 func (f *Function) IsSupported() bool {
 
-	//if utils.QT_VERSION() == "5.8.0" {
-	if f.Fullname == "QJSEngine::newQMetaObject" && f.OverloadNumber == "2" ||
-		f.Fullname == "QScxmlTableData::instructions" || f.Fullname == "QScxmlTableData::dataNames" ||
-		f.Fullname == "QScxmlTableData::stateMachineTable" ||
-		f.Fullname == "QTextToSpeech::voiceChanged" {
-		if !strings.Contains(f.Access, "unsupported") {
-			f.Access = "unsupported_isBlockedFunction"
+	if utils.QT_MACPORTS() {
+		if f.Fullname == "QWebFrame::ownerElement" || f.Fullname == "QWebHistory::toMap" ||
+			f.Fullname == "QWebHistoryItem::toMap" || f.Fullname == "QWebPage::consoleMessageReceived" ||
+			f.Fullname == "QWebPage::focusedElementChanged" || f.Fullname == "QWebPage::recentlyAudibleChanged" ||
+			f.Fullname == "QWebPage::recentlyAudible" || f.Fullname == "QWebSettings::pluginSearchPaths" ||
+			f.Fullname == "QWebSettings::setPluginSearchPaths" {
+			if !strings.Contains(f.Access, "unsupported") {
+				f.Access = "unsupported_isBlockedFunction"
+			}
+			return false
 		}
-		return false
 	}
-	//}
+
+	if utils.QT_VERSION_NUM() >= 5080 {
+		if f.Fullname == "QJSEngine::newQMetaObject" && f.OverloadNumber == "2" ||
+			f.Fullname == "QScxmlTableData::instructions" || f.Fullname == "QScxmlTableData::dataNames" ||
+			f.Fullname == "QScxmlTableData::stateMachineTable" ||
+			f.Fullname == "QTextToSpeech::voiceChanged" {
+			if !strings.Contains(f.Access, "unsupported") {
+				f.Access = "unsupported_isBlockedFunction"
+			}
+			return false
+		}
+	}
 
 	switch {
 	case
@@ -340,6 +354,46 @@ func (f *Function) IsSupported() bool {
 		f.Name == "QRandomGenerator" && f.OverloadNumber == "4",
 
 		f.Fullname == "QAndroidBinder::onTransact", f.Fullname == "QtAndroid::checkPermission",
+
+		UseJs() &&
+			(strings.Contains(f.Name, "ibraryPath") || f.Fullname == "QLockFile::getLockInfo" || f.Name == "metric" || f.Name == "moveCursor" ||
+				f.Name == "inputMethodEvent" || f.Name == "updateInputMethod" || f.Name == "inputMethodQuery" ||
+				f.Fullname == "QHeaderView::isFirstSectionMovable" || f.Fullname == "QXmlSimpleReader::property" || f.Fullname == "QXmlReader::property" ||
+				f.Fullname == "QWebSocket::ignoreSslErrors" || f.Fullname == "QWebSocket::preSharedKeyAuthenticationRequired" ||
+				f.Fullname == "QWebSocket::sslConfiguration" || f.Fullname == "QWebSocket::setSslConfiguration" ||
+				f.Fullname == "QWebSocketServer::peerVerifyError" || (strings.HasPrefix(f.ClassName(), "QWeb") && strings.Contains(f.Name, "slErrors")) ||
+				f.Fullname == "QWebSocketServer::preSharedKeyAuthenticationRequired" || f.Fullname == "QWebSocketServer::setSslConfiguration" || f.Fullname == "QWebSocketServer::sslConfiguration"),
+
+		f.Name == "qt_metacast", f.Fullname == "QVariant::fromStdVariant",
+		f.Name == "qt_check_for_QGADGET_macro",
+
+		strings.HasSuffix(f.Name, "_ptr"),
+		f.ClassName() == "QPixmap" && (f.Name == "setAlphaChannel" || f.Name == "alphaChannel"),
+		f.Fullname == "QTabletEvent::hiResGlobalPos",
+
+		f.Name == "QOpenGLPaintDevice" && f.OverloadNumber == "5",
+
+		f.Name == "d", f.Name == "setD",
+
+		f.Fullname == "QAbstractItemModelTester::failureReportingMode",
+
+		f.Fullname == "QtRemoteObjects::qt_getEnumMetaObject",
+
+		f.ClassName() == "QWebEnginePage" && (f.Name == "certificateError" ||
+			f.Name == "quotaRequested" || f.Name == "registerProtocolHandlerRequested"),
+
+		f.Fullname == "QWebEngineScriptCollection::insert",
+		f.Fullname == "QWebEngineScriptCollection::findScript",
+		f.Fullname == "QWebEngineView::pageAction",
+		f.Fullname == "QWebEnginePage::save",
+		f.Fullname == "QWebEngineScriptCollection::remove",
+		f.Fullname == "QWebEngineScriptCollection::contains",
+		f.Fullname == "QWebEngineScriptCollection::findScripts",
+		f.Fullname == "QWebEngineScriptCollection::toList",
+		f.Fullname == "QWebEngineView::createWindow",
+		f.Fullname == "QWebEngineView::renderProcessTerminated",
+		f.Fullname == "QWebEngineView::triggerPageAction",
+		f.Fullname == "QCustom3DVolume::QCustom3DVolume" && f.OverloadNumber == "2",
 
 		strings.Contains(f.Access, "unsupported"):
 		{

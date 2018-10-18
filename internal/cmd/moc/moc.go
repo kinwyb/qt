@@ -39,6 +39,9 @@ var (
 	goMocImportsCacheMutex = new(sync.Mutex)
 
 	gL int
+
+	ResourceNames      = make(map[string]string)
+	ResourceNamesMutex = new(sync.Mutex)
 )
 
 func Moc(path, target, tags string, fast, slow bool) {
@@ -282,6 +285,10 @@ func moc(path, target, tags string, fast, slow, root bool, l int) {
 	goFilesCacheMutex.Unlock()
 	parseNonMocDeps(files)
 
+	ResourceNamesMutex.Lock()
+	ResourceNames[filepath.Join(path, "moc.cpp")] = ""
+	ResourceNamesMutex.Unlock()
+
 	if err := utils.SaveBytes(filepath.Join(path, "moc.cpp"), templater.CppTemplate(parser.MOC, templater.MOC, target, tags)); err != nil {
 		return
 	}
@@ -342,19 +349,25 @@ func moc(path, target, tags string, fast, slow, root bool, l int) {
 }
 
 func parse(path string) ([]*parser.Class, string, error) {
-	utils.Log.WithField("path", path).Debug("parse")
+	if base := filepath.Base(path); strings.HasPrefix(base, "rcc") || strings.HasPrefix(base, "moc") {
+		return nil, "", errors.New("file contains no moc structs")
+	}
 
 	if strings.HasPrefix(path, filepath.Join(runtime.GOROOT(), "src")) {
 		return nil, "", errors.New("path is in GOROOT/src")
 	}
 
+	utils.Log.WithField("path", path).Debug("parse")
+
 	src, err := ioutil.ReadFile(path)
 	if err != nil {
+		utils.Log.WithField("path", path).WithError(err).Debug("failed to read file")
 		return nil, "", err
 	}
 
 	file, err := goparser.ParseFile(token.NewFileSet(), path, nil, 0)
 	if err != nil {
+		utils.Log.WithField("path", path).WithError(err).Debug("failed to parse file")
 		return nil, "", err
 	}
 
@@ -443,8 +456,8 @@ func parse(path string) ([]*parser.Class, string, error) {
 								var found bool
 								for _, imp := range file.Imports {
 									if strings.Contains(autoTag, "("+imp.Name.String()+".") {
-										name := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-f", "{{.Name}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import name"))
-										dir := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-f", "{{.Dir}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import dir"))
+										name := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-e", "-f", "{{.Name}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import name"))
+										dir := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-e", "-f", "{{.Dir}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import dir"))
 
 										h := sha1.New()
 										h.Write([]byte(dir))
@@ -465,11 +478,11 @@ func parse(path string) ([]*parser.Class, string, error) {
 										if imp.Name.String() != "<nil>" && imp.Name.String() != "_" {
 											continue
 										}
-										name := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-f", "{{.Name}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import name"))
+										name := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-e", "-f", "{{.Name}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import name"))
 										if !strings.Contains(autoTag, "("+name+".") {
 											continue
 										}
-										dir := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-f", "{{.Dir}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import dir"))
+										dir := strings.TrimSpace(utils.RunCmd(exec.Command("go", "list", "-e", "-f", "{{.Dir}}", strings.Replace(imp.Path.Value, "\"", "", -1)), "get import dir"))
 
 										h := sha1.New()
 										h.Write([]byte(dir))
@@ -641,6 +654,8 @@ func cppTypeFromGoType(f *parser.Function, t string, class *parser.Class) (strin
 			o, pureGoType := cppTypeFromGoType(f, strings.TrimPrefix(t, "[]"), class)
 			if pureGoType == "" {
 				return fmt.Sprintf("QList<%v>", o), ""
+			} else if strings.Contains(pureGoType, "error") {
+				return fmt.Sprintf("QList<%v>", o), t
 			}
 		}
 		if strings.HasPrefix(t, "map[") {
@@ -649,17 +664,17 @@ func cppTypeFromGoType(f *parser.Function, t string, class *parser.Class) (strin
 			o2, pureGoType2 := cppTypeFromGoType(f, strings.TrimPrefix(t, head), class)
 			if pureGoType1 == "" && pureGoType2 == "" {
 				return fmt.Sprintf("QMap<%v, %v>", o1, o2), ""
+			} else if strings.Contains(pureGoType1, "error") || strings.Contains(pureGoType2, "error") {
+				return fmt.Sprintf("QMap<%v, %v>", o1, o2), t
 			}
 		}
 	}
 
-	if f != nil && t == "error" {
-		f.AsError = true
-	}
-
 	switch t {
-	case "string", "error":
+	case "string":
 		return "QString", ""
+	case "error":
+		return "QString", t
 	case "[]string":
 		return "QStringList", ""
 	case "bool":
@@ -755,7 +770,7 @@ func parseNonMocDeps(files []string) {
 	wc := make(chan bool, 50)
 
 	for _, fpath := range files {
-		if filepath.Base(fpath) == "moc.go" {
+		if base := filepath.Base(fpath); strings.HasPrefix(base, "rcc") || strings.HasPrefix(base, "moc") {
 			continue
 		}
 

@@ -42,7 +42,6 @@ type Class struct {
 }
 
 func (c *Class) register(m *Module) {
-
 	c.DocModule = c.Module
 	c.Module = m.Project
 	c.Pkg = m.Pkg
@@ -67,7 +66,7 @@ func (c *Class) derivation() {
 }
 
 func (c *Class) GetBases() []string {
-	if c.Bases == "" {
+	if c == nil || c.Bases == "" {
 		return make([]string, 0)
 	}
 	if strings.Contains(c.Bases, ",") {
@@ -234,15 +233,31 @@ func (c *Class) IsSupported() bool {
 		return false
 	}
 
-	//if utils.QT_VERSION() == "5.8.0" {
-	switch c.Name {
-	case "QSctpServer", "QSctpSocket", "Http2", "QAbstractExtensionFactory":
-		{
+	if utils.QT_VERSION_NUM() >= 5080 {
+		switch c.Name {
+		case "QSctpServer", "QSctpSocket", "Http2", "QAbstractExtensionFactory":
+			{
+				c.Access = "unsupported_isBlockedClass"
+				return false
+			}
+		}
+	}
+
+	if UseJs() {
+		if strings.HasPrefix(c.Name, "QSG") {
 			c.Access = "unsupported_isBlockedClass"
 			return false
 		}
+		switch c.Name {
+		case "QThreadPool", "QSharedMemory", "QPluginLoader", "QSemaphore", "QSemaphoreReleaser",
+			"QSystemSemaphore", "QThread", "QWaitCondition", "QUnhandledException", "QFileSystemModel",
+			"QLibrary":
+			{
+				c.Access = "unsupported_isBlockedClass"
+				return false
+			}
+		}
 	}
-	//}
 
 	switch c.Name {
 	case
@@ -261,8 +276,20 @@ func (c *Class) IsSupported() bool {
 
 		"QProcess", "QProcessEnvironment", //TODO: iOS
 
-		"QRemoteObjectPackets":
+		"QRemoteObjectPackets",
 
+		"QStaticByteArrayMatcher", "QtDummyFutex", "QtLinuxFutex",
+		"QShaderLanguage",
+
+		"AndroidNfc", "OSXBluetooth",
+
+		"QtROClientFactory", "QtROServerFactory",
+
+		"QWebViewFactory", "QGeoServiceProviderFactoryV2",
+
+		"QtDwmApiDll", "QWinMime",
+
+		"QAbstract3DGraph": //TODO: only for arch with pkg_config
 		{
 			c.Access = "unsupported_isBlockedClass"
 			return false
@@ -285,7 +312,7 @@ func (c *Class) IsSupported() bool {
 		}
 	}
 
-	if strings.HasPrefix(c.Name, "QOpenGL") && os.Getenv("DEB_TARGET_ARCH_CPU") == "arm" {
+	if strings.HasPrefix(c.Name, "QOpenGL") && (os.Getenv("DEB_TARGET_ARCH_CPU") == "arm" || UseJs()) {
 		c.Access = "unsupported_isBlockedClass"
 		return false
 	}

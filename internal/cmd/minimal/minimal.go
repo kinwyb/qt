@@ -2,6 +2,7 @@ package minimal
 
 import (
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,7 +26,13 @@ func Minimal(path, target, tags string) {
 		}
 	}
 	parser.LibDeps[parser.MOC] = make([]string, 0)
-	parser.LibDeps["build_ios"] = []string{"Qml"}
+	if target == "js" { //TODO: REVIEW
+		if parser.LibDeps["build_ios"][0] == "Qml" {
+			parser.LibDeps["build_ios"] = parser.LibDeps["build_ios"][1:]
+		}
+	} else {
+		parser.LibDeps["build_ios"] = []string{"Qml"}
+	}
 	//<--
 
 	wg := new(sync.WaitGroup)
@@ -40,6 +47,9 @@ func Minimal(path, target, tags string) {
 		wc <- true
 		go func(path string) {
 			for _, path := range cmd.GetGoFiles(path, target, tags) {
+				if base := filepath.Base(path); strings.HasPrefix(base, "rcc_cgo") || strings.HasPrefix(base, "moc_cgo") {
+					continue
+				}
 				utils.Log.WithField("path", path).Debug("analyse for minimal")
 				file := utils.Load(path)
 				fileMutex.Lock()
@@ -82,6 +92,7 @@ func Minimal(path, target, tags string) {
 			if since >= 5.3 || !parser.IsWhiteListedSailfishLib(strings.TrimPrefix(c.Module, "Qt")) {
 				c.Export = false
 				delete(parser.State.ClassMap, c.Name)
+				continue
 			}
 
 			for _, f := range c.Functions {
@@ -111,6 +122,7 @@ func Minimal(path, target, tags string) {
 			if since >= 5.7 || !parser.IsWhiteListedSailfishLib(strings.TrimPrefix(c.Module, "Qt")) {
 				c.Export = false
 				delete(parser.State.ClassMap, c.Name)
+				continue
 			}
 
 			for _, f := range c.Functions {
@@ -131,6 +143,41 @@ func Minimal(path, target, tags string) {
 				delete(parser.State.ClassMap, bl)
 			}
 		}
+
+	case "rpi1", "rpi2", "rpi3":
+		if !utils.QT_RPI() {
+			break
+		}
+		for _, bl := range []string{"TestCase", "QQuickWidget"} {
+			if c, ok := parser.State.ClassMap[bl]; ok {
+				c.Export = false
+				delete(parser.State.ClassMap, c.Name)
+			}
+		}
+
+		for _, c := range parser.State.ClassMap {
+			since, err := strconv.ParseFloat(strings.TrimPrefix(c.Since, "Qt "), 64)
+			if err != nil {
+				continue
+			}
+			if since >= 5.8 || !parser.IsWhiteListedRaspberryLib(strings.TrimPrefix(c.Module, "Qt")) {
+				c.Export = false
+				delete(parser.State.ClassMap, c.Name)
+				continue
+			}
+
+			for _, f := range c.Functions {
+				since, err := strconv.ParseFloat(strings.TrimPrefix(f.Since, "Qt "), 64)
+				if err != nil {
+					continue
+				}
+				if since >= 5.8 {
+					f.Export = false
+				}
+			}
+		}
+	case "js":
+		parser.State.ClassMap["QSvgWidget"].Export = true
 	}
 
 	wg.Add(len(files))

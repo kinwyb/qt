@@ -46,7 +46,7 @@ func Install(target string, docker, vagrant bool) {
 		}
 	}
 
-	if target != runtime.GOOS && !utils.QT_FAT() {
+	if !(target == runtime.GOOS || target == "js") && !utils.QT_FAT() {
 		utils.Log.Debugf("target is %v; skipping installation of modules", target)
 		return
 	}
@@ -55,7 +55,7 @@ func Install(target string, docker, vagrant bool) {
 	var failed []string
 	for _, module := range parser.GetLibs() {
 		if !parser.ShouldBuildForTarget(module, target) {
-			utils.Log.Debug("skipping installation of %v for %v", module, target)
+			utils.Log.Debugf("skipping installation of %v for %v", module, target)
 			continue
 		}
 
@@ -68,9 +68,21 @@ func Install(target string, docker, vagrant bool) {
 		if utils.QT_DYNAMIC_SETUP() && mode == "full" {
 			cc, com := templater.ParseCgo(strings.ToLower(module), target)
 			if cc != "" {
+				if target == "js" {
+					com = strings.Replace(com, strings.ToLower(module)+".js_plugin_import.cpp ", "", -1)
+				}
 				cmd := exec.Command(cc, strings.Split(com, " ")...)
 				cmd.Dir = utils.GoQtPkgPath(strings.ToLower(module))
+				if target == "js" {
+					for key, value := range env {
+						cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", key, value))
+					}
+				}
 				utils.RunCmdOptional(cmd, fmt.Sprintf("failed to create dynamic lib for %v (%v) on %v", target, strings.ToLower(module), runtime.GOOS))
+
+				if target == "js" {
+					continue
+				}
 
 				utils.RemoveAll(utils.GoQtPkgPath(strings.ToLower(module), strings.ToLower(module)+".cpp"))
 				utils.RemoveAll(utils.GoQtPkgPath(strings.ToLower(module), "_obj"))
@@ -86,10 +98,19 @@ func Install(target string, docker, vagrant bool) {
 		if target != runtime.GOOS {
 			cmd.Args = append(cmd.Args, []string{"-pkgdir", filepath.Join(utils.MustGoPath(), "pkg", fmt.Sprintf("%v_%v_%v", strings.Replace(target, "-", "_", -1), env["GOOS"], env["GOARCH"]))}...)
 		}
+
+		if target == "js" {
+			cmd = exec.Command(filepath.Join(utils.GOBIN(), "gopherjs"), "install")
+		}
+
 		cmd.Args = append(cmd.Args, fmt.Sprintf("github.com/therecipe/qt/%v", strings.ToLower(module)))
 
-		for key, value := range env {
-			cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", key, value))
+		if target == "js" {
+			cmd.Args = append(cmd.Args, "-v")
+		} else {
+			for key, value := range env {
+				cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", key, value))
+			}
 		}
 
 		if _, err := utils.RunCmdOptionalError(cmd, fmt.Sprintf("install %v", strings.ToLower(module))); err != nil {

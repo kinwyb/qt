@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/therecipe/qt/internal/binding/parser"
+	"github.com/therecipe/qt/internal/cmd"
 	"github.com/therecipe/qt/internal/utils"
 )
 
@@ -30,7 +31,7 @@ func CgoTemplateSafe(module, path, target string, mode int, ipkg, tags string, l
 }
 
 func cgoTemplate(module, path, target string, mode int, ipkg, tags string, libs []string) (o string) {
-	utils.Log.WithField("module", module).WithField("path", path).WithField("target", target).WithField("mode", mode).WithField("pkg", ipkg)
+	utils.Log.WithField("module", module).WithField("path", path).WithField("target", target).WithField("mode", mode).WithField("pkg", ipkg).Debug("running cgoTemplate")
 
 	switch module {
 	case "AndroidExtras":
@@ -47,9 +48,9 @@ func cgoTemplate(module, path, target string, mode int, ipkg, tags string, libs 
 		path = utils.GoQtPkgPath(strings.ToLower(module))
 	}
 
-	//TODO:
-	if !(target == "sailfish" || target == "sailfish-emulator") {
-		if !parser.ShouldBuildForTarget(module, target) ||
+	//TODO: differentiate between docker and virtual-box build for sailfish targets
+	if !(target == "sailfish" || target == "sailfish-emulator" || target == "js") {
+		if !(parser.ShouldBuildForTarget(module, target) || mode == MOC || mode == RCC) ||
 			isAlreadyCached(module, path, target, mode, libs) {
 			utils.Log.Debugf("skipping cgo generation")
 			return
@@ -99,29 +100,68 @@ func isAlreadyCached(module, path, target string, mode int, libs []string) bool 
 				}
 			}
 
-			if !strings.Contains(file, utils.QT_VERSION()) {
+			if !strings.Contains(file, utils.QT_VERSION()) && strings.Contains(file, "5.") {
 				utils.Log.Debugln("wrong cgo file qt version, re-creating ...")
 				return false
+			}
+
+			switch target {
+			case "windows":
+				if utils.QT_DEBUG_CONSOLE() {
+					if strings.Contains(file, "subsystem,windows") {
+						utils.Log.Debugln("wrong subsystem: have windows and want console, re-creating ...")
+						return false
+					}
+				} else {
+					if strings.Contains(file, "subsystem,console") {
+						utils.Log.Debugln("wrong subsystem: have console and want windows, re-creating ...")
+						return false
+					}
+				}
+			case "darwin":
+				if !strings.Contains(file, utils.MACOS_SDK_DIR()) {
+					utils.Log.Debugln("wrong MACOS_SDK_DIR, re-creating ...")
+					return false
+				}
+			case "ios":
+				if !strings.Contains(file, utils.IPHONEOS_SDK_DIR()) {
+					utils.Log.Debugln("wrong IPHONEOS_SDK_DIR, re-creating ...")
+					return false
+				}
+			case "ios-simulator":
+				if !strings.Contains(file, utils.IPHONESIMULATOR_SDK_DIR()) {
+					utils.Log.Debugln("wrong IPHONESIMULATOR_SDK_DIR, re-creating ...")
+					return false
+				}
+			}
+
+			containsPath := func(file, path string) bool {
+				r := strings.Contains(strings.Replace(strings.Replace(file, "\\", "", -1), "/", "", -1), strings.Replace(strings.Replace(strings.TrimPrefix(path, filepath.VolumeName(path)), "\\", "", -1), "/", "", -1))
+				if !r {
+					utils.Log.Debugln("wrong qt path, re-creating ...")
+				}
+				return r
 			}
 
 			switch target {
 			case "darwin", "linux", "windows", "ubports":
 				//TODO: msys pkg-config mxe brew
 				switch {
-				case utils.QT_HOMEBREW():
-					return strings.Contains(file, utils.QT_DARWIN_DIR())
+				case utils.QT_HOMEBREW(), utils.QT_MACPORTS(), utils.QT_NIX():
+					return containsPath(file, utils.QT_DARWIN_DIR())
 				case utils.QT_MSYS2():
-					return strings.Contains(file, utils.QT_MSYS2_DIR())
+					return containsPath(file, utils.QT_MSYS2_DIR())
 				default:
-					return strings.Contains(file, utils.QT_DIR()) || strings.Contains(file, utils.QT_MXE_TRIPLET())
+					return containsPath(file, utils.QT_DIR()) || strings.Contains(file, utils.QT_MXE_TRIPLET())
 				}
 			case "android", "android-emulator":
-				return strings.Contains(file, utils.QT_DIR()) && strings.Contains(file, utils.ANDROID_NDK_DIR())
+				return containsPath(file, utils.QT_DIR()) && strings.Contains(file, utils.ANDROID_NDK_DIR())
 			case "ios", "ios-simulator":
-				return strings.Contains(file, utils.QT_DIR()) || strings.Contains(file, utils.QT_DARWIN_DIR())
+				return containsPath(file, utils.QT_DIR()) || strings.Contains(file, utils.QT_DARWIN_DIR())
 			case "sailfish", "sailfish-emulator", "asteroid":
 			case "rpi1", "rpi2", "rpi3":
-				return strings.Contains(file, strings.TrimSpace(utils.RunCmd(exec.Command(utils.ToolPath("qmake", target), "-query", "QT_INSTALL_LIBS"), fmt.Sprintf("query lib path for %v on %v", target, runtime.GOOS))))
+				return containsPath(file, strings.TrimSpace(utils.RunCmd(exec.Command(utils.ToolPath("qmake", target), "-query", "QT_INSTALL_LIBS"), fmt.Sprintf("query lib path for %v on %v", target, runtime.GOOS))))
+			case "js":
 			}
 		}
 	}
@@ -138,10 +178,6 @@ func createProject(module, path, target string, mode int, libs []string) {
 		out = libs
 	case mode == MINIMAL, mode == NONE:
 		out = append([]string{module}, libs...)
-	}
-
-	if strings.HasPrefix(target, "rpi") && module == "Core" {
-		out = append([]string{module}, []string{"Widgets", "Gui"}...)
 	}
 
 	for i, v := range out {
@@ -183,13 +219,18 @@ func createMakefile(module, path, target string, mode int) {
 	if err != nil || utils.QT_UBPORTS() {
 		relProPath = proPath
 	}
+	env, _, _, _ := cmd.BuildEnv(target, "", "")
 	cmd := exec.Command(utils.ToolPath("qmake", target), "-o", mPath, relProPath)
 	cmd.Dir = path
 	switch target {
 	case "darwin":
 		cmd.Args = append(cmd.Args, []string{"-spec", "macx-clang", "CONFIG+=x86_64"}...)
 	case "windows":
-		cmd.Args = append(cmd.Args, []string{"-spec", "win32-g++", "CONFIG+=windows"}...)
+		subsystem := "windows"
+		if utils.QT_DEBUG_CONSOLE() {
+			subsystem = "console"
+		}
+		cmd.Args = append(cmd.Args, []string{"-spec", "win32-g++", "CONFIG+=" + subsystem}...)
 	case "linux":
 		cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++"}...)
 	case "ios":
@@ -233,6 +274,10 @@ func createMakefile(module, path, target string, mode int) {
 				cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++"}...)
 			}
 		}
+	case "js":
+		for key, value := range env {
+			cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", key, value))
+		}
 	}
 
 	if utils.QT_DEBUG_QML() {
@@ -255,6 +300,7 @@ func createMakefile(module, path, target string, mode int) {
 
 	if utils.QT_UBPORTS() {
 		utils.Save(filepath.Join(path, "Mfile"), utils.Load(mPath))
+		utils.RemoveAll(mPath)
 	}
 
 	utils.RemoveAll(proPath)
@@ -301,6 +347,13 @@ func createMakefile(module, path, target string, mode int) {
 	case "asteroid":
 	case "rpi1", "rpi2", "rpi3":
 	case "ubports":
+	case "js":
+		for _, suf := range []string{".js_plugin_import", ".js_qml_plugin_import"} {
+			pPath := filepath.Join(path, fmt.Sprintf("%v%v.cpp", filepath.Base(path), suf))
+			if module != "build_ios" || mode == MOC || mode == RCC {
+				utils.RemoveAll(pPath)
+			}
+		}
 	}
 }
 
@@ -326,6 +379,8 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 		guards += target
 	case "rpi1", "rpi2", "rpi3":
 		guards += target
+	case "js":
+		guards += "ignore"
 	}
 	//TODO: move "minimal" build tag in separate line -->
 	switch mode {
@@ -368,6 +423,9 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 		case strings.HasPrefix(l, "LFLAGS"), strings.HasPrefix(l, "LIBS"):
 			if target == "windows" && !(utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) {
 				pFix := []string{
+					filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw49_32"),
+					filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw53_32"),
+					filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw49_32"),
 					filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32"),
 					filepath.Join(utils.QT_MXE_DIR(), "usr", utils.QT_MXE_TRIPLET(), "qt5"),
 					utils.QT_MSYS2_DIR(),
@@ -405,8 +463,8 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 		fmt.Fprintf(bb, "#cgo LDFLAGS: -Wl,-syslibroot,%v/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/%v -mios-simulator-version-min=10.0\n", utils.XCODE_DIR(), utils.IPHONESIMULATOR_SDK_DIR())
 	}
 
-	fmt.Fprintf(bb, "#cgo CFLAGS: -Wno-unused-parameter -Wno-unused-variable -Wno-return-type\n")
-	fmt.Fprintf(bb, "#cgo CXXFLAGS: -Wno-unused-parameter -Wno-unused-variable -Wno-return-type\n")
+	fmt.Fprint(bb, "#cgo CFLAGS: -Wno-unused-parameter -Wno-unused-variable -Wno-return-type\n")
+	fmt.Fprint(bb, "#cgo CXXFLAGS: -Wno-unused-parameter -Wno-unused-variable -Wno-return-type\n")
 
 	fmt.Fprint(bb, "*/\nimport \"C\"\n")
 
@@ -431,6 +489,12 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 	case "android", "android-emulator":
 		tmp = strings.Replace(tmp, fmt.Sprintf("-Wl,-soname,lib%v.so", filepath.Base(path)), "", -1)
 		tmp = strings.Replace(tmp, "-shared", "", -1)
+	case "js":
+		tmp = strings.Replace(tmp, "\"", "", -1)
+		if utils.QT_DEBUG() {
+			tmp = strings.Replace(tmp, "-s USE_FREETYPE=1", "-s USE_FREETYPE=1 -s ASSERTIONS=1", -1)
+		}
+		tmp = strings.Replace(tmp, "-s NO_EXIT_RUNTIME=0", "-s NO_EXIT_RUNTIME=1", -1) //TODO: block main instead
 	}
 
 	for _, variable := range []string{"DEFINES", "SUBLIBS", "EXPORT_QMAKE_XARCH_CFLAGS", "EXPORT_QMAKE_XARCH_LFLAGS", "EXPORT_ARCH_ARGS", "-fvisibility=hidden", "-fembed-bitcode"} {
@@ -467,6 +531,11 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 			if (utils.QT_MSYS2() && utils.QT_MSYS2_ARCH() == "amd64") || utils.QT_MXE_ARCH() == "amd64" {
 				tmp = strings.Replace(tmp, " -Wl,-s ", " ", -1)
 			}
+			if utils.QT_DEBUG_CONSOLE() { //TODO: necessary at all?
+				tmp = strings.Replace(tmp, "subsystem,windows", "subsystem,console", -1)
+			} else {
+				tmp = strings.Replace(tmp, "subsystem,console", "subsystem,windows", -1)
+			}
 		case "ios":
 			if strings.HasSuffix(file, "darwin_arm.go") {
 				tmp = strings.Replace(tmp, "arm64", "armv7", -1)
@@ -474,6 +543,10 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 		case "ios-simulator":
 			if strings.HasSuffix(file, "darwin_386.go") {
 				tmp = strings.Replace(tmp, "x86_64", "i386", -1)
+			}
+		case "js":
+			if mode == RCC {
+				utils.Save(filepath.Join(path, strings.Replace(file, "_cgo_", "_stub_", -1)), "package "+pkg+"\n")
 			}
 		}
 		utils.Save(filepath.Join(path, file), tmp)
@@ -523,6 +596,8 @@ func cgoFileNames(module, path, target string, mode int) []string {
 		sFixes = []string{"linux_arm"}
 	case "ubports":
 		sFixes = []string{"linux_" + utils.QT_UBPORTS_ARCH()}
+	case "js":
+		sFixes = []string{"js"}
 	}
 
 	var o []string
@@ -537,7 +612,6 @@ func ParseCgo(module, target string) (string, string) {
 
 	tmp := utils.LoadOptional(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
 	if tmp != "" {
-
 		tmp = strings.Split(tmp, "/*")[1]
 		tmp = strings.Split(tmp, "*/")[0]
 
@@ -549,6 +623,9 @@ func ParseCgo(module, target string) (string, string) {
 		switch target {
 		case "darwin":
 			return "clang++", fmt.Sprintf("%v -Wl,-S -Wl,-x -install_name @rpath/%[2]v/lib%[2]v.so -undefined dynamic_lookup -shared -o lib%[2]v.so %[2]v.cpp", tmp, module)
+		case "js":
+			env, _, _, _ := cmd.BuildEnv(target, "", "")
+			return filepath.Join(env["EMSCRIPTEN"], "em++"), fmt.Sprintf("%v -o %[2]v.o %[2]v.js_plugin_import.cpp %[2]v.cpp", tmp, module)
 		}
 	}
 
@@ -557,6 +634,12 @@ func ParseCgo(module, target string) (string, string) {
 
 func ReplaceCgo(module, target string) {
 	utils.Log.WithField("module", module).WithField("target", target).Debug("replace cgo for shared lib")
+
+	if target == "js" {
+		//TODO: cleanup ?
+		//utils.RemoveAll(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
+		return
+	}
 
 	tmp := utils.LoadOptional(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
 	if tmp != "" {

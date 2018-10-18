@@ -77,9 +77,9 @@ func android_config(target, path, depPath string) string {
 		Qmlrootpath                   string `json:"qml-root-path"`
 		Applicationbinary             string `json:"application-binary"`
 	}{
-		Qt:  filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "android_armv7"),
-		Sdk: utils.ANDROID_SDK_DIR(),
-		SdkBuildToolsRevision: "26.0.0",
+		Qt:                            filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "android_armv7"),
+		Sdk:                           utils.ANDROID_SDK_DIR(),
+		SdkBuildToolsRevision:         "28.0.2",
 		Ndk:                           utils.ANDROID_NDK_DIR(),
 		Toolchainprefix:               "arm-linux-androideabi",
 		Toolprefix:                    "arm-linux-androideabi",
@@ -99,8 +99,13 @@ func android_config(target, path, depPath string) string {
 		jsonStruct.Targetarchitecture = "x86"
 	}
 
-	if utils.QT_DOCKER() && target == "android" {
-		jsonStruct.AndroidExtraLibs += "," + filepath.Join(os.Getenv("HOME"), "openssl-1.0.2k", "libcrypto.so") + "," + filepath.Join(os.Getenv("HOME"), "openssl-1.0.2k", "libssl.so")
+	if utils.QT_DOCKER() {
+		switch target {
+		case "android":
+			jsonStruct.AndroidExtraLibs += "," + filepath.Join(os.Getenv("HOME"), "openssl-1.0.2o-arm", "libcrypto.so") + "," + filepath.Join(os.Getenv("HOME"), "openssl-1.0.2o-arm", "libssl.so")
+		case "android-emulator":
+			jsonStruct.AndroidExtraLibs += "," + filepath.Join(os.Getenv("HOME"), "openssl-1.0.2o-x86", "libcrypto.so") + "," + filepath.Join(os.Getenv("HOME"), "openssl-1.0.2o-x86", "libssl.so")
+		}
 	}
 
 	out, err := json.Marshal(jsonStruct)
@@ -148,6 +153,14 @@ func darwin_plist(name string) string {
 
 func darwin_pkginfo() string {
 	return "APPL????\n"
+}
+
+func darwin_nix_script(name string) string {
+	return fmt.Sprintf(`#!/bin/bash
+export PATH=$HOME/.nix-profile/bin:$PATH
+cd "${0%%/*}"
+./%v_bin
+`, name)
 }
 
 //ios
@@ -708,4 +721,24 @@ go tool link -f -o $PWD/relinked -importcfg $PWD/b001/importcfg.link -buildmode=
 				return "g++"
 			}
 		}())
+}
+
+//js
+
+func js_c_main_wrapper() string {
+	bb := new(bytes.Buffer)
+	bb.WriteString("#include <emscripten/val.h>\n")
+	for _, n := range rcc.ResourceNames {
+		fmt.Fprintf(bb, "extern int qInitResources_%v();\n", n)
+	}
+	bb.WriteString("int main(int argc, char *argv[]) {\n")
+	for _, n := range rcc.ResourceNames {
+		fmt.Fprintf(bb, "qInitResources_%v();\n", n)
+	}
+	bb.WriteString("emscripten::val document = emscripten::val::global(\"document\");\n")
+	bb.WriteString("emscripten::val script = document.call<emscripten::val>(\"createElement\", emscripten::val(\"script\"));\n")
+	bb.WriteString("script.set(\"src\", emscripten::val(\"go.js\"));\n")
+	bb.WriteString("document[\"body\"].call<void>(\"appendChild\", script);\n")
+	bb.WriteString("}")
+	return bb.String()
 }

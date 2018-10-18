@@ -9,7 +9,7 @@ import (
 	"github.com/therecipe/qt/internal/binding/parser"
 )
 
-func goType(f *parser.Function, value string) string {
+func goType(f *parser.Function, value string, p string) string {
 	var vOld = value
 
 	value = parser.CleanValue(value)
@@ -21,7 +21,7 @@ func goType(f *parser.Function, value string) string {
 				return "[]string"
 			}
 
-			if f.AsError {
+			if strings.Contains(p, "error") {
 				return "error"
 			}
 
@@ -35,6 +35,9 @@ func goType(f *parser.Function, value string) string {
 	case "void", "GLvoid", "":
 		{
 			if strings.Contains(vOld, "*") {
+				if parser.UseJs() {
+					return "uintptr"
+				}
 				return "unsafe.Pointer"
 			}
 
@@ -61,7 +64,7 @@ func goType(f *parser.Function, value string) string {
 			return "int"
 		}
 
-	case "uint", "unsigned int", "quint32", "GLenum", "GLbitfield", "GLuint":
+	case "uint", "unsigned int", "quint32", "GLenum", "GLbitfield", "GLuint", "QRgb":
 		{
 			return "uint"
 		}
@@ -180,7 +183,7 @@ func goType(f *parser.Function, value string) string {
 					return "*"
 				}
 				return ""
-			}(), goType(f, parser.UnpackedListDirty(value)))
+			}(), goType(f, parser.UnpackedListDirty(value), p))
 		}
 
 	case parser.IsPackedMap(value):
@@ -192,14 +195,14 @@ func goType(f *parser.Function, value string) string {
 						return "*"
 					}
 					return ""
-				}(), goType(f, key),
+				}(), goType(f, key, parser.UnpackedGoMapDirty(p)[0]),
 
 				func() string {
 					if isClass(parser.CleanValue(value)) && parser.CleanValue(value) != "QString" && parser.CleanValue(value) != "QStringList" {
 						return "*"
 					}
 					return ""
-				}(), goType(f, value))
+				}(), goType(f, value, parser.UnpackedGoMapDirty(p)[1]))
 		}
 	}
 
@@ -265,7 +268,7 @@ func cgoType(f *parser.Function, value string) string {
 			return "C.int"
 		}
 
-	case "uint", "unsigned int", "quint32", "GLenum", "GLbitfield", "GLuint":
+	case "uint", "unsigned int", "quint32", "GLenum", "GLbitfield", "GLuint", "QRgb":
 		{
 			return "C.uint"
 		}
@@ -334,6 +337,9 @@ func cppTypeInput(f *parser.Function, value string) string {
 	switch parser.CleanValue(value) {
 	case "char", "qint8", "uchar", "quint8", "GLubyte":
 		{
+			if parser.UseJs() {
+				return "emscripten::val"
+			}
 			return "char*"
 		}
 
@@ -355,12 +361,23 @@ func cppType(f *parser.Function, value string) string {
 	switch value {
 	case "char", "qint8", "uchar", "quint8", "GLubyte", "QString", "QStringList":
 		{
+			if parser.UseJs() {
+				return "emscripten::val"
+			}
 			return fmt.Sprintf("struct %v_PackedString", strings.Title(parser.State.ClassMap[f.ClassName()].Module))
 		}
 
 	case "void", "GLvoid", "":
 		{
 			if strings.Contains(vOld, "*") {
+				if parser.UseJs() {
+					for _, p := range f.Parameters {
+						switch parser.CleanValue(p.Value) {
+						case "char", "qint8", "uchar", "quint8", "GLubyte", "QString", "QStringList":
+							return "uintptr_t"
+						}
+					}
+				}
 				return "void*"
 			}
 
@@ -387,7 +404,7 @@ func cppType(f *parser.Function, value string) string {
 			return "int"
 		}
 
-	case "uint", "unsigned int", "quint32", "GLenum", "GLbitfield", "GLuint":
+	case "uint", "unsigned int", "quint32", "GLenum", "GLbitfield", "GLuint", "QRgb":
 		{
 			return "unsigned int"
 		}
@@ -404,11 +421,17 @@ func cppType(f *parser.Function, value string) string {
 
 	case "longlong", "long long", "qlonglong", "qint64":
 		{
+			if parser.UseJs() && f.BoundByEmscripten {
+				return "long" //TODO:
+			}
 			return "long long"
 		}
 
 	case "ulonglong", "unsigned long long", "qulonglong", "quint64":
 		{
+			if parser.UseJs() && f.BoundByEmscripten {
+				return "unsigned long" //TODO:
+			}
 			return "unsigned long long"
 		}
 
@@ -476,6 +499,9 @@ func cppType(f *parser.Function, value string) string {
 	switch {
 	case isEnum(f.ClassName(), value):
 		{
+			if parser.UseJs() && f.BoundByEmscripten {
+				return "long" //TODO:
+			}
 			return "long long"
 		}
 
@@ -486,6 +512,9 @@ func cppType(f *parser.Function, value string) string {
 
 	case parser.IsPackedList(value) || parser.IsPackedMap(value):
 		{
+			if parser.UseJs() {
+				return "emscripten::val"
+			}
 			return fmt.Sprintf("struct %v_PackedList", strings.Title(parser.State.ClassMap[f.ClassName()].Module))
 		}
 	}

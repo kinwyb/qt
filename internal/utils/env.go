@@ -21,7 +21,7 @@ func QT_VERSION() string {
 		}
 		return qT_VERSION_CACHE
 	}
-	return "5.10.0"
+	return "5.11.1"
 }
 
 func QT_VERSION_NUM() int {
@@ -41,6 +41,13 @@ func QT_VERSION_MAJOR() string {
 	return strings.Join(strings.Split(QT_VERSION(), ".")[:2], ".")
 }
 
+func QT_API(def string) string {
+	if api, ok := os.LookupEnv("QT_API"); ok {
+		return api
+	}
+	return def
+}
+
 func QT_DIR() string {
 	path := qT_DIR()
 	if ExistsFile(path) {
@@ -53,18 +60,21 @@ func qT_DIR() string {
 	if dir, ok := os.LookupEnv("QT_DIR"); ok {
 		return filepath.Clean(dir)
 	}
+
+	prefix := os.Getenv("HOME")
 	if runtime.GOOS == "windows" {
-		dir := "C:\\Qt"
-		if ExistsDir(dir) {
-			return dir
-		}
-		return dir + "\\Qt" + QT_VERSION()
+		prefix = "C:\\"
 	}
-	dir := filepath.Join(os.Getenv("HOME"), "Qt")
-	if ExistsDir(dir) {
+
+	if dir := filepath.Join(prefix, "Qt", "Qt"+QT_VERSION()); ExistsDir(dir) {
 		return dir
 	}
-	return dir + QT_VERSION()
+
+	if dir := filepath.Join(prefix, "Qt"+QT_VERSION()); ExistsDir(dir) {
+		return dir
+	}
+
+	return filepath.Join(prefix, "Qt")
 }
 
 func QT_FAT() bool {
@@ -83,6 +93,10 @@ func QT_DEBUG_QML() bool {
 	return os.Getenv("QT_DEBUG_QML") == "true"
 }
 
+func QT_DEBUG_CONSOLE() bool {
+	return os.Getenv("QT_DEBUG_CONSOLE") == "true"
+}
+
 func CheckBuildTarget(buildTarget string) {
 	switch buildTarget {
 	case "android", "android-emulator",
@@ -90,7 +104,8 @@ func CheckBuildTarget(buildTarget string) {
 		"sailfish", "sailfish-emulator", "asteroid",
 		"rpi1", "rpi2", "rpi3",
 		"windows", "darwin", "linux",
-		"homebrew", "ubports": //TODO: pkg_config ?
+		"homebrew", "ubports",
+		"js": //TODO: pkg_config ?
 	default:
 		if !strings.Contains(buildTarget, "_") {
 			Log.Panicf("failed to recognize build target %v", buildTarget)
@@ -100,8 +115,8 @@ func CheckBuildTarget(buildTarget string) {
 		switch {
 		case QT_MSYS2():
 			Log.Fatalf("%v is not supported as a deploy target on %v with MSYS2 -> install the official Qt version instead and try again", buildTarget, runtime.GOOS)
-		case QT_HOMEBREW():
-			Log.Fatalf("%v is not supported as a deploy target on %v with HomeBrew -> install the official Qt version instead and try again", buildTarget, runtime.GOOS)
+		case QT_HOMEBREW(), QT_MACPORTS(), QT_NIX():
+			Log.Fatalf("%v is not supported as a deploy target on %v with HomeBrew/MacPorts/Nix -> install the official Qt version instead and try again", buildTarget, runtime.GOOS)
 		case QT_PKG_CONFIG() && !QT_UBPORTS():
 			Log.Fatalf("%v is not supported as a deploy target on %v with PkgConfig -> install the official Qt version instead and try again", buildTarget, runtime.GOOS)
 		}
@@ -139,6 +154,11 @@ func ToolPath(tool, target string) string {
 
 	switch target {
 	case "darwin":
+		if QT_NIX() {
+			path, _ := exec.LookPath(tool)
+			path, _ = filepath.Abs(path)
+			return path
+		}
 		return filepath.Join(QT_DARWIN_DIR(), "bin", tool)
 	case "windows":
 		if runtime.GOOS == target {
@@ -148,14 +168,25 @@ func ToolPath(tool, target string) string {
 				}
 				return filepath.Join(QT_MSYS2_DIR(), "bin", tool)
 			}
-			return filepath.Join(QT_DIR(), QT_VERSION_MAJOR(), "mingw53_32", "bin", tool)
+			path := filepath.Join(QT_DIR(), QT_VERSION_MAJOR(), "mingw53_32", "bin", tool)
+			if !ExistsDir(filepath.Join(QT_DIR(), QT_VERSION_MAJOR())) {
+				path = strings.Replace(path, QT_VERSION_MAJOR(), QT_VERSION(), -1)
+			}
+			if !ExistsFile(path + ".exe") {
+				path = strings.Replace(path, "mingw53_32", "mingw49_32", -1)
+			}
+			return path
 		}
 		return filepath.Join(QT_MXE_DIR(), "usr", QT_MXE_TRIPLET(), "qt5", "bin", tool)
 	case "linux", "ubports":
 		if QT_PKG_CONFIG() {
 			return filepath.Join(strings.TrimSpace(RunCmd(exec.Command("pkg-config", "--variable=host_bins", "Qt5Core"), "cgo.LinuxPkgConfig_hostBins")), tool)
 		}
-		return filepath.Join(QT_DIR(), QT_VERSION_MAJOR(), "gcc_64", "bin", tool)
+		path := filepath.Join(QT_DIR(), QT_VERSION_MAJOR(), "gcc_64", "bin", tool)
+		if !ExistsDir(filepath.Join(QT_DIR(), QT_VERSION_MAJOR())) {
+			path = strings.Replace(path, QT_VERSION_MAJOR(), QT_VERSION(), -1)
+		}
+		return path
 	case "ios", "ios-simulator":
 		return filepath.Join(QT_DIR(), QT_VERSION_MAJOR(), "ios", "bin", tool)
 	case "android":
@@ -173,6 +204,7 @@ func ToolPath(tool, target string) string {
 	return ""
 }
 
+//TODO: detect webkit support automatically
 func QT_WEBKIT() bool {
 	return os.Getenv("QT_WEBKIT") == "true"
 }

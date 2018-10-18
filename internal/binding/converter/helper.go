@@ -2,6 +2,7 @@ package converter
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -240,8 +241,15 @@ func IsPrivateSignal(f *parser.Function) bool {
 		switch runtime.GOOS {
 		case "darwin":
 			{
-				if utils.QT_HOMEBREW() {
+				if utils.QT_HOMEBREW() || utils.QT_MACPORTS() {
 					fData = utils.LoadOptional(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
+				} else if utils.QT_NIX() {
+					for _, qmakepath := range strings.Split(os.Getenv("QMAKEPATH"), string(filepath.ListSeparator)) {
+						if strings.Contains(qmakepath, "qtbase") {
+							fData = utils.Load(filepath.Join(qmakepath, "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+							break
+						}
+					}
 				} else {
 					fData = utils.Load(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
 				}
@@ -250,9 +258,20 @@ func IsPrivateSignal(f *parser.Function) bool {
 		case "windows":
 			{
 				if utils.QT_MSYS2() {
-					fData = utils.LoadOptional(filepath.Join(utils.QT_MSYS2_DIR(), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+					if utils.QT_MSYS2_STATIC() {
+						fData = utils.LoadOptional(filepath.Join(utils.QT_MSYS2_DIR(), "qt5-static", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+					} else {
+						fData = utils.LoadOptional(filepath.Join(utils.QT_MSYS2_DIR(), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+					}
 				} else {
-					fData = utils.Load(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
+					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
+						path = strings.Replace(path, utils.QT_VERSION_MAJOR(), utils.QT_VERSION(), -1)
+					}
+					if !utils.ExistsFile(path) {
+						path = strings.Replace(path, "mingw53_32", "mingw49_32", -1)
+					}
+					fData = utils.Load(path)
 				}
 			}
 
@@ -264,7 +283,11 @@ func IsPrivateSignal(f *parser.Function) bool {
 				case utils.QT_SAILFISH():
 					fData = utils.LoadOptional(filepath.Join("/srv/mer/targets/SailfishOS-"+utils.QT_SAILFISH_VERSION()+"-i486/usr/include/qt5", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
 				default:
-					fData = utils.Load(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "gcc_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "gcc_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
+					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
+						path = strings.Replace(path, utils.QT_VERSION_MAJOR(), utils.QT_VERSION(), -1)
+					}
+					fData = utils.Load(path)
 				}
 			}
 		}

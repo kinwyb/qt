@@ -42,6 +42,7 @@ func init() {
 		os.Setenv("QML_DISABLE_DISK_CACHE", "true")
 	}
 
+	controller.DEMO = DEMO
 	wcontroller.DEMO = DEMO
 	fcontroller.DEMO = DEMO
 }

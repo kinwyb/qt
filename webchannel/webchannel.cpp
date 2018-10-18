@@ -20,7 +20,6 @@
 #include <QHash>
 #include <QJsonObject>
 #include <QLayout>
-#include <QList>
 #include <QMediaPlaylist>
 #include <QMediaRecorder>
 #include <QMetaMethod>
@@ -32,7 +31,6 @@
 #include <QPdfWriter>
 #include <QQuickItem>
 #include <QRadioData>
-#include <QSignalSpy>
 #include <QString>
 #include <QTime>
 #include <QTimer>
@@ -49,6 +47,8 @@ public:
 	void Signal_BlockUpdatesChanged(bool block) { callbackQWebChannel_BlockUpdatesChanged(this, block); };
 	void connectTo(QWebChannelAbstractTransport * transport) { callbackQWebChannel_ConnectTo(this, transport); };
 	void disconnectFrom(QWebChannelAbstractTransport * transport) { callbackQWebChannel_DisconnectFrom(this, transport); };
+	 ~MyQWebChannel() { callbackQWebChannel_DestroyQWebChannel(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQWebChannel_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool event(QEvent * e) { return callbackQWebChannel_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQWebChannel_EventFilter(this, watched, event) != 0; };
 	void childEvent(QChildEvent * event) { callbackQWebChannel_ChildEvent(this, event); };
@@ -59,12 +59,21 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQWebChannel_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtWebChannel_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQWebChannel_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQWebChannel_TimerEvent(this, event); };
-	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQWebChannel_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 Q_DECLARE_METATYPE(MyQWebChannel*)
 
 int QWebChannel_QWebChannel_QRegisterMetaType(){qRegisterMetaType<QWebChannel*>(); return qRegisterMetaType<MyQWebChannel*>();}
+
+struct QtWebChannel_PackedString QWebChannel_QWebChannel_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t6b827f = QWebChannel::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtWebChannel_PackedString { const_cast<char*>(t6b827f.prepend("WHITESPACE").constData()+10), t6b827f.size()-10 }; });
+}
+
+struct QtWebChannel_PackedString QWebChannel_QWebChannel_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray te85c9d = QWebChannel::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtWebChannel_PackedString { const_cast<char*>(te85c9d.prepend("WHITESPACE").constData()+10), te85c9d.size()-10 }; });
+}
 
 void* QWebChannel_NewQWebChannel(void* parent)
 {
@@ -96,8 +105,6 @@ void* QWebChannel_NewQWebChannel(void* parent)
 		return new MyQWebChannel(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQWebChannel(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQWebChannel(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQWebChannel(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -167,6 +174,12 @@ void QWebChannel_DestroyQWebChannel(void* ptr)
 	static_cast<QWebChannel*>(ptr)->~QWebChannel();
 }
 
+void QWebChannel_DestroyQWebChannelDefault(void* ptr)
+{
+	Q_UNUSED(ptr);
+
+}
+
 struct QtWebChannel_PackedList QWebChannel_RegisteredObjects(void* ptr)
 {
 	return ({ QHash<QString, QObject *>* tmpValue = new QHash<QString, QObject *>(static_cast<QWebChannel*>(ptr)->registeredObjects()); QtWebChannel_PackedList { tmpValue, tmpValue->size() }; });
@@ -175,6 +188,11 @@ struct QtWebChannel_PackedList QWebChannel_RegisteredObjects(void* ptr)
 char QWebChannel_BlockUpdates(void* ptr)
 {
 	return static_cast<QWebChannel*>(ptr)->blockUpdates();
+}
+
+void* QWebChannel_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QWebChannel*>(ptr)->QWebChannel::metaObject());
 }
 
 void* QWebChannel___registerObjects_objects_atList(void* ptr, struct QtWebChannel_PackedString v, int i)
@@ -193,7 +211,7 @@ void* QWebChannel___registerObjects_objects_newList(void* ptr)
 	return new QHash<QString, QObject *>();
 }
 
-struct QtWebChannel_PackedList QWebChannel___registerObjects_keyList(void* ptr)
+struct QtWebChannel_PackedList QWebChannel___registerObjects_objects_keyList(void* ptr)
 {
 	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QHash<QString, QObject *>*>(ptr)->keys()); QtWebChannel_PackedList { tmpValue, tmpValue->size() }; });
 }
@@ -219,17 +237,17 @@ struct QtWebChannel_PackedList QWebChannel___registeredObjects_keyList(void* ptr
 	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QHash<QString, QObject *>*>(ptr)->keys()); QtWebChannel_PackedList { tmpValue, tmpValue->size() }; });
 }
 
-struct QtWebChannel_PackedString QWebChannel_____registerObjects_keyList_atList(void* ptr, int i)
+struct QtWebChannel_PackedString QWebChannel_____registerObjects_objects_keyList_atList(void* ptr, int i)
 {
 	return ({ QByteArray t94aa5e = ({QString tmp = static_cast<QList<QString>*>(ptr)->at(i); if (i == static_cast<QList<QString>*>(ptr)->size()-1) { static_cast<QList<QString>*>(ptr)->~QList(); free(ptr); }; tmp; }).toUtf8(); QtWebChannel_PackedString { const_cast<char*>(t94aa5e.prepend("WHITESPACE").constData()+10), t94aa5e.size()-10 }; });
 }
 
-void QWebChannel_____registerObjects_keyList_setList(void* ptr, struct QtWebChannel_PackedString i)
+void QWebChannel_____registerObjects_objects_keyList_setList(void* ptr, struct QtWebChannel_PackedString i)
 {
 	static_cast<QList<QString>*>(ptr)->append(QString::fromUtf8(i.data, i.len));
 }
 
-void* QWebChannel_____registerObjects_keyList_newList(void* ptr)
+void* QWebChannel_____registerObjects_objects_keyList_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QString>();
@@ -371,11 +389,6 @@ void QWebChannel_TimerEventDefault(void* ptr, void* event)
 		static_cast<QWebChannel*>(ptr)->QWebChannel::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
-void* QWebChannel_MetaObjectDefault(void* ptr)
-{
-		return const_cast<QMetaObject*>(static_cast<QWebChannel*>(ptr)->QWebChannel::metaObject());
-}
-
 class MyQWebChannelAbstractTransport: public QWebChannelAbstractTransport
 {
 public:
@@ -383,6 +396,7 @@ public:
 	void Signal_MessageReceived(const QJsonObject & message, QWebChannelAbstractTransport * transport) { callbackQWebChannelAbstractTransport_MessageReceived(this, const_cast<QJsonObject*>(&message), transport); };
 	void sendMessage(const QJsonObject & message) { callbackQWebChannelAbstractTransport_SendMessage(this, const_cast<QJsonObject*>(&message)); };
 	 ~MyQWebChannelAbstractTransport() { callbackQWebChannelAbstractTransport_DestroyQWebChannelAbstractTransport(this); };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQWebChannelAbstractTransport_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool event(QEvent * e) { return callbackQWebChannelAbstractTransport_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQWebChannelAbstractTransport_EventFilter(this, watched, event) != 0; };
 	void childEvent(QChildEvent * event) { callbackQWebChannelAbstractTransport_ChildEvent(this, event); };
@@ -393,12 +407,21 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQWebChannelAbstractTransport_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtWebChannel_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQWebChannelAbstractTransport_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQWebChannelAbstractTransport_TimerEvent(this, event); };
-	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQWebChannelAbstractTransport_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 Q_DECLARE_METATYPE(MyQWebChannelAbstractTransport*)
 
 int QWebChannelAbstractTransport_QWebChannelAbstractTransport_QRegisterMetaType(){qRegisterMetaType<QWebChannelAbstractTransport*>(); return qRegisterMetaType<MyQWebChannelAbstractTransport*>();}
+
+struct QtWebChannel_PackedString QWebChannelAbstractTransport_QWebChannelAbstractTransport_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t41c0a4 = QWebChannelAbstractTransport::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtWebChannel_PackedString { const_cast<char*>(t41c0a4.prepend("WHITESPACE").constData()+10), t41c0a4.size()-10 }; });
+}
+
+struct QtWebChannel_PackedString QWebChannelAbstractTransport_QWebChannelAbstractTransport_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray t241435 = QWebChannelAbstractTransport::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtWebChannel_PackedString { const_cast<char*>(t241435.prepend("WHITESPACE").constData()+10), t241435.size()-10 }; });
+}
 
 void* QWebChannelAbstractTransport_NewQWebChannelAbstractTransport(void* parent)
 {
@@ -430,8 +453,6 @@ void* QWebChannelAbstractTransport_NewQWebChannelAbstractTransport(void* parent)
 		return new MyQWebChannelAbstractTransport(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQWebChannelAbstractTransport(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQWebChannelAbstractTransport(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQWebChannelAbstractTransport(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -470,6 +491,11 @@ void QWebChannelAbstractTransport_DestroyQWebChannelAbstractTransportDefault(voi
 {
 	Q_UNUSED(ptr);
 
+}
+
+void* QWebChannelAbstractTransport_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QWebChannelAbstractTransport*>(ptr)->QWebChannelAbstractTransport::metaObject());
 }
 
 void* QWebChannelAbstractTransport___dynamicPropertyNames_atList(void* ptr, int i)
@@ -590,10 +616,5 @@ void QWebChannelAbstractTransport_DisconnectNotifyDefault(void* ptr, void* sign)
 void QWebChannelAbstractTransport_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QWebChannelAbstractTransport*>(ptr)->QWebChannelAbstractTransport::timerEvent(static_cast<QTimerEvent*>(event));
-}
-
-void* QWebChannelAbstractTransport_MetaObjectDefault(void* ptr)
-{
-		return const_cast<QMetaObject*>(static_cast<QWebChannelAbstractTransport*>(ptr)->QWebChannelAbstractTransport::metaObject());
 }
 

@@ -19,7 +19,6 @@
 #include <QGraphicsWidget>
 #include <QIODevice>
 #include <QLayout>
-#include <QList>
 #include <QMediaPlaylist>
 #include <QMediaRecorder>
 #include <QMetaMethod>
@@ -33,7 +32,6 @@
 #include <QRadioData>
 #include <QSerialPort>
 #include <QSerialPortInfo>
-#include <QSignalSpy>
 #include <QString>
 #include <QTime>
 #include <QTimer>
@@ -44,9 +42,10 @@
 class MyQSerialPort: public QSerialPort
 {
 public:
-	MyQSerialPort(QObject *parent = nullptr) : QSerialPort(parent) {QSerialPort_QSerialPort_QRegisterMetaType();};
-	MyQSerialPort(const QSerialPortInfo &serialPortInfo, QObject *parent = nullptr) : QSerialPort(serialPortInfo, parent) {QSerialPort_QSerialPort_QRegisterMetaType();};
-	MyQSerialPort(const QString &name, QObject *parent = nullptr) : QSerialPort(name, parent) {QSerialPort_QSerialPort_QRegisterMetaType();};
+	MyQSerialPort(QObject *parent = Q_NULLPTR) : QSerialPort(parent) {QSerialPort_QSerialPort_QRegisterMetaType();};
+	MyQSerialPort(const QSerialPortInfo &serialPortInfo, QObject *parent = Q_NULLPTR) : QSerialPort(serialPortInfo, parent) {QSerialPort_QSerialPort_QRegisterMetaType();};
+	MyQSerialPort(const QString &name, QObject *parent = Q_NULLPTR) : QSerialPort(name, parent) {QSerialPort_QSerialPort_QRegisterMetaType();};
+	bool open(QIODevice::OpenMode mode) { return callbackQSerialPort_Open(this, mode) != 0; };
 	bool waitForBytesWritten(int msecs) { return callbackQSerialPort_WaitForBytesWritten(this, msecs) != 0; };
 	bool waitForReadyRead(int msecs) { return callbackQSerialPort_WaitForReadyRead(this, msecs) != 0; };
 	qint64 readData(char * data, qint64 maxSize) { QtSerialPort_PackedString dataPacked = { data, maxSize };return callbackQSerialPort_ReadData(this, dataPacked, maxSize); };
@@ -66,6 +65,7 @@ public:
 	bool atEnd() const { return callbackQSerialPort_AtEnd(const_cast<void*>(static_cast<const void*>(this))) != 0; };
 	bool canReadLine() const { return callbackQSerialPort_CanReadLine(const_cast<void*>(static_cast<const void*>(this))) != 0; };
 	bool isSequential() const { return callbackQSerialPort_IsSequential(const_cast<void*>(static_cast<const void*>(this))) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSerialPort_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	qint64 bytesAvailable() const { return callbackQSerialPort_BytesAvailable(const_cast<void*>(static_cast<const void*>(this))); };
 	qint64 bytesToWrite() const { return callbackQSerialPort_BytesToWrite(const_cast<void*>(static_cast<const void*>(this))); };
 	bool reset() { return callbackQSerialPort_Reset(this) != 0; };
@@ -88,17 +88,11 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQSerialPort_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtSerialPort_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQSerialPort_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQSerialPort_TimerEvent(this, event); };
-	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSerialPort_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 Q_DECLARE_METATYPE(MyQSerialPort*)
 
 int QSerialPort_QSerialPort_QRegisterMetaType(){qRegisterMetaType<QSerialPort*>(); return qRegisterMetaType<MyQSerialPort*>();}
-
-long long QSerialPort_PinoutSignals(void* ptr)
-{
-	return static_cast<QSerialPort*>(ptr)->pinoutSignals();
-}
 
 void* QSerialPort_NewQSerialPort(void* parent)
 {
@@ -130,8 +124,6 @@ void* QSerialPort_NewQSerialPort(void* parent)
 		return new MyQSerialPort(static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQSerialPort(static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQSerialPort(static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSerialPort(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -171,8 +163,6 @@ void* QSerialPort_NewQSerialPort3(void* serialPortInfo, void* parent)
 		return new MyQSerialPort(*static_cast<QSerialPortInfo*>(serialPortInfo), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQSerialPort(*static_cast<QSerialPortInfo*>(serialPortInfo), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQSerialPort(*static_cast<QSerialPortInfo*>(serialPortInfo), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSerialPort(*static_cast<QSerialPortInfo*>(serialPortInfo), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -212,8 +202,6 @@ void* QSerialPort_NewQSerialPort2(struct QtSerialPort_PackedString name, void* p
 		return new MyQSerialPort(QString::fromUtf8(name.data, name.len), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
 		return new MyQSerialPort(QString::fromUtf8(name.data, name.len), static_cast<QRadioData*>(parent));
-	} else if (dynamic_cast<QSignalSpy*>(static_cast<QObject*>(parent))) {
-		return new MyQSerialPort(QString::fromUtf8(name.data, name.len), static_cast<QSignalSpy*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSerialPort(QString::fromUtf8(name.data, name.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -221,6 +209,21 @@ void* QSerialPort_NewQSerialPort2(struct QtSerialPort_PackedString name, void* p
 	} else {
 		return new MyQSerialPort(QString::fromUtf8(name.data, name.len), static_cast<QObject*>(parent));
 	}
+}
+
+long long QSerialPort_PinoutSignals(void* ptr)
+{
+	return static_cast<QSerialPort*>(ptr)->pinoutSignals();
+}
+
+struct QtSerialPort_PackedString QSerialPort_QSerialPort_Tr(char* s, char* c, int n)
+{
+	return ({ QByteArray t3f56fa = QSerialPort::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSerialPort_PackedString { const_cast<char*>(t3f56fa.prepend("WHITESPACE").constData()+10), t3f56fa.size()-10 }; });
+}
+
+struct QtSerialPort_PackedString QSerialPort_QSerialPort_TrUtf8(char* s, char* c, int n)
+{
+	return ({ QByteArray te313f4 = QSerialPort::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSerialPort_PackedString { const_cast<char*>(te313f4.prepend("WHITESPACE").constData()+10), te313f4.size()-10 }; });
 }
 
 char QSerialPort_Clear(void* ptr, long long directions)
@@ -246,6 +249,11 @@ char QSerialPort_IsRequestToSend(void* ptr)
 char QSerialPort_OpenDefault(void* ptr, long long mode)
 {
 		return static_cast<QSerialPort*>(ptr)->QSerialPort::open(static_cast<QIODevice::OpenModeFlag>(mode));
+}
+
+char QSerialPort_SendBreak(void* ptr, int duration)
+{
+	return static_cast<QSerialPort*>(ptr)->sendBreak(duration);
 }
 
 char QSerialPort_SetBaudRate(void* ptr, int baudRate, long long directions)
@@ -472,6 +480,11 @@ void QSerialPort_SetReadBufferSize(void* ptr, long long size)
 	static_cast<QSerialPort*>(ptr)->setReadBufferSize(size);
 }
 
+void QSerialPort_SetSettingsRestoredOnClose(void* ptr, char restore)
+{
+	static_cast<QSerialPort*>(ptr)->setSettingsRestoredOnClose(restore != 0);
+}
+
 void QSerialPort_ConnectStopBitsChanged(void* ptr)
 {
 	qRegisterMetaType<QSerialPort::StopBits>();
@@ -514,11 +527,6 @@ long long QSerialPort_Parity(void* ptr)
 	return static_cast<QSerialPort*>(ptr)->parity();
 }
 
-struct QtSerialPort_PackedString QSerialPort_PortName(void* ptr)
-{
-	return ({ QByteArray t212a26 = static_cast<QSerialPort*>(ptr)->portName().toUtf8(); QtSerialPort_PackedString { const_cast<char*>(t212a26.prepend("WHITESPACE").constData()+10), t212a26.size()-10 }; });
-}
-
 long long QSerialPort_Error(void* ptr)
 {
 	return static_cast<QSerialPort*>(ptr)->error();
@@ -529,14 +537,9 @@ long long QSerialPort_StopBits(void* ptr)
 	return static_cast<QSerialPort*>(ptr)->stopBits();
 }
 
-char QSerialPort_IsBreakEnabled(void* ptr)
+struct QtSerialPort_PackedString QSerialPort_PortName(void* ptr)
 {
-	return static_cast<QSerialPort*>(ptr)->isBreakEnabled();
-}
-
-int QSerialPort_BaudRate(void* ptr, long long directions)
-{
-	return static_cast<QSerialPort*>(ptr)->baudRate(static_cast<QSerialPort::Direction>(directions));
+	return ({ QByteArray t212a26 = static_cast<QSerialPort*>(ptr)->portName().toUtf8(); QtSerialPort_PackedString { const_cast<char*>(t212a26.prepend("WHITESPACE").constData()+10), t212a26.size()-10 }; });
 }
 
 char QSerialPort_AtEndDefault(void* ptr)
@@ -549,9 +552,29 @@ char QSerialPort_CanReadLineDefault(void* ptr)
 		return static_cast<QSerialPort*>(ptr)->QSerialPort::canReadLine();
 }
 
+char QSerialPort_IsBreakEnabled(void* ptr)
+{
+	return static_cast<QSerialPort*>(ptr)->isBreakEnabled();
+}
+
 char QSerialPort_IsSequentialDefault(void* ptr)
 {
 		return static_cast<QSerialPort*>(ptr)->QSerialPort::isSequential();
+}
+
+char QSerialPort_SettingsRestoredOnClose(void* ptr)
+{
+	return static_cast<QSerialPort*>(ptr)->settingsRestoredOnClose();
+}
+
+void* QSerialPort_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QSerialPort*>(ptr)->QSerialPort::metaObject());
+}
+
+int QSerialPort_BaudRate(void* ptr, long long directions)
+{
+	return static_cast<QSerialPort*>(ptr)->baudRate(static_cast<QSerialPort::Direction>(directions));
 }
 
 long long QSerialPort_BytesAvailableDefault(void* ptr)
@@ -707,11 +730,6 @@ void QSerialPort_DisconnectNotifyDefault(void* ptr, void* sign)
 void QSerialPort_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QSerialPort*>(ptr)->QSerialPort::timerEvent(static_cast<QTimerEvent*>(event));
-}
-
-void* QSerialPort_MetaObjectDefault(void* ptr)
-{
-		return const_cast<QMetaObject*>(static_cast<QSerialPort*>(ptr)->QSerialPort::metaObject());
 }
 
 struct QtSerialPort_PackedList QSerialPortInfo_QSerialPortInfo_AvailablePorts()

@@ -93,6 +93,17 @@ func GoHeaderOutput(f *parser.Function) string {
 	switch f.SignalMode {
 	case parser.CALLBACK:
 		{
+			if parser.UseJs() {
+				cv := parser.CleanValue(f.Output)
+				switch cv {
+				case "char", "qint8", "uchar", "quint8", "GLubyte", "QString", "QStringList":
+					return "*js.Object"
+				}
+				if isClass(cv) || parser.IsPackedList(cv) || parser.IsPackedMap(cv) {
+					return "uintptr"
+				}
+				return goType(f, f.Output, f.PureGoOutput)
+			}
 			return cgoTypeOutput(f, f.Output)
 		}
 
@@ -102,7 +113,7 @@ func GoHeaderOutput(f *parser.Function) string {
 		}
 	}
 
-	if f.PureGoOutput != "" {
+	if f.PureGoOutput != "" && !parser.IsBlackListedPureGoType(f.PureGoOutput) {
 		return f.PureGoOutput
 	}
 
@@ -112,7 +123,7 @@ func GoHeaderOutput(f *parser.Function) string {
 		value = f.Name
 	}
 
-	var o = goType(f, value)
+	var o = goType(f, value, f.PureGoOutput)
 	if isClass(o) {
 		if !strings.HasPrefix(o, "[]") && !strings.HasPrefix(o, "map[") {
 			o = fmt.Sprintf("*%v", o)
@@ -149,10 +160,35 @@ func GoHeaderInput(f *parser.Function) string {
 	}
 
 	if f.SignalMode == parser.CALLBACK {
-		fmt.Fprint(bb, "ptr unsafe.Pointer")
+		if parser.UseJs() {
+			fmt.Fprint(bb, "ptr uintptr")
+		} else {
+			fmt.Fprint(bb, "ptr unsafe.Pointer")
+		}
 		for _, p := range f.Parameters {
-			if v := cgoType(f, p.Value); v != "" {
-				fmt.Fprintf(bb, ", %v %v", parser.CleanName(p.Name, p.Value), v)
+			if parser.UseJs() {
+				if v := goType(f, p.Value, p.PureGoType); v != "" {
+					cv := parser.CleanValue(p.Value)
+					if isEnum(f.ClassName(), cv) {
+						fmt.Fprintf(bb, ", %v int64", parser.CleanName(p.Name, p.Value))
+					} else if isClass(cv) {
+						if cv == "QString" || cv == "QStringList" {
+							fmt.Fprintf(bb, ", %v string", parser.CleanName(p.Name, p.Value))
+						} else {
+							fmt.Fprintf(bb, ", %v uintptr", parser.CleanName(p.Name, p.Value))
+						}
+					} else {
+						if parser.IsPackedList(cv) || parser.IsPackedMap(cv) {
+							fmt.Fprintf(bb, ", %v *js.Object", parser.CleanName(p.Name, p.Value))
+						} else {
+							fmt.Fprintf(bb, ", %v %v", parser.CleanName(p.Name, p.Value), v)
+						}
+					}
+				}
+			} else {
+				if v := cgoType(f, p.Value); v != "" {
+					fmt.Fprintf(bb, ", %v %v", parser.CleanName(p.Name, p.Value), v)
+				}
 			}
 		}
 		return bb.String()
@@ -171,10 +207,10 @@ func GoHeaderInput(f *parser.Function) string {
 
 	var tmp = make([]string, 0)
 	for _, p := range f.Parameters {
-		if p.PureGoType != "" {
+		if p.PureGoType != "" && !parser.IsBlackListedPureGoType(p.PureGoType) {
 			tmp = append(tmp, fmt.Sprintf("%v %v", parser.CleanName(p.Name, p.Value), p.PureGoType))
 		} else {
-			if v := goType(f, p.Value); v != "" {
+			if v := goType(f, p.Value, p.PureGoType); v != "" {
 				if isClass(v) && !parser.IsPackedList(parser.CleanValue(p.Value)) && !parser.IsPackedMap(parser.CleanValue(p.Value)) {
 					if f.SignalMode == parser.CONNECT {
 						tmp = append(tmp, fmt.Sprintf("%v *%v", parser.CleanName(p.Name, p.Value), v))
@@ -195,13 +231,13 @@ func GoHeaderInput(f *parser.Function) string {
 	if f.SignalMode == parser.CONNECT {
 		fmt.Fprint(bb, ")")
 
-		if f.PureGoOutput != "" {
+		if f.PureGoOutput != "" && !parser.IsBlackListedPureGoType(f.PureGoOutput) {
 			fmt.Fprintf(bb, " %v", f.PureGoOutput)
 		} else {
-			if isClass(goType(f, f.Output)) && !parser.IsPackedList(parser.CleanValue(f.Output)) && !parser.IsPackedMap(parser.CleanValue(f.Output)) {
-				fmt.Fprintf(bb, " *%v", goType(f, f.Output))
+			if isClass(goType(f, f.Output, f.PureGoOutput)) && !parser.IsPackedList(parser.CleanValue(f.Output)) && !parser.IsPackedMap(parser.CleanValue(f.Output)) {
+				fmt.Fprintf(bb, " *%v", goType(f, f.Output, f.PureGoOutput))
 			} else {
-				fmt.Fprintf(bb, " %v", goType(f, f.Output))
+				fmt.Fprintf(bb, " %v", goType(f, f.Output, f.PureGoOutput))
 			}
 		}
 	}
@@ -219,10 +255,10 @@ func GoHeaderInputSignalFunction(f *parser.Function) string {
 	var tmp = make([]string, 0)
 
 	for _, p := range f.Parameters {
-		if p.PureGoType != "" {
+		if p.PureGoType != "" && !parser.IsBlackListedPureGoType(p.PureGoType) {
 			tmp = append(tmp, fmt.Sprintf("%v", p.PureGoType))
 		} else {
-			if v := goType(f, p.Value); v != "" {
+			if v := goType(f, p.Value, p.PureGoType); v != "" {
 				if isClass(v) && !parser.IsPackedList(parser.CleanValue(p.Value)) && !parser.IsPackedMap(parser.CleanValue(p.Value)) {
 					tmp = append(tmp, fmt.Sprintf("*%v", v))
 				} else {
@@ -240,13 +276,13 @@ func GoHeaderInputSignalFunction(f *parser.Function) string {
 	fmt.Fprint(bb, ")")
 
 	if f.SignalMode == parser.CALLBACK {
-		if f.PureGoOutput != "" {
+		if f.PureGoOutput != "" && !parser.IsBlackListedPureGoType(f.PureGoOutput) {
 			fmt.Fprintf(bb, " %v", f.PureGoOutput)
 		} else {
-			if isClass(goType(f, f.Output)) && !parser.IsPackedList(parser.CleanValue(f.Output)) && !parser.IsPackedMap(parser.CleanValue(f.Output)) {
-				fmt.Fprintf(bb, " *%v", goType(f, f.Output))
+			if isClass(goType(f, f.Output, f.PureGoOutput)) && !parser.IsPackedList(parser.CleanValue(f.Output)) && !parser.IsPackedMap(parser.CleanValue(f.Output)) {
+				fmt.Fprintf(bb, " *%v", goType(f, f.Output, f.PureGoOutput))
 			} else {
-				fmt.Fprintf(bb, " %v", goType(f, f.Output))
+				fmt.Fprintf(bb, " %v", goType(f, f.Output, f.PureGoOutput))
 			}
 		}
 	}
