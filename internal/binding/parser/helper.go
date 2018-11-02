@@ -40,7 +40,8 @@ const (
 	MOC = "moc"
 )
 
-func UseJs() bool { return State.Target == "js" }
+func UseJs() bool   { return State.Target == "js" || State.Target == "wasm" }
+func UseWasm() bool { return State.Target == "wasm" }
 
 func IsPackedList(v string) bool {
 	return (strings.HasPrefix(v, "QList<") ||
@@ -92,7 +93,22 @@ func CleanValue(v string) string {
 		var inside = strings.Split(strings.Split(v, "<")[1], ">")[0]
 		return strings.Replace(cleanValueUnsafe(v), strings.Split(strings.Split(cleanValueUnsafe(v), "<")[1], ">")[0], inside, -1)
 	}
-	return cleanValueUnsafe(v)
+	v = cleanValueUnsafe(v)
+	if vC, ok := IsClass(v); ok {
+		v = vC
+	}
+	return v
+}
+
+func IsClass(value string) (string, bool) {
+	if strings.Contains(value, ".") {
+		return IsClass(strings.Split(value, ".")[1])
+	}
+	if strings.Contains(value, "::") {
+		return IsClass(strings.Split(value, "::")[1])
+	}
+	var _, ok = State.ClassMap[value]
+	return value, ok
 }
 
 func cleanValueUnsafe(v string) string {
@@ -199,8 +215,8 @@ var LibDeps = map[string][]string{
 
 	"WebKit": {"WebKitWidgets", "Multimedia", "Positioning", "Widgets", "Sql", "Network", "Gui", "Sensors", "Core"},
 
-	MOC:         make([]string, 0),
-	"build_ios": {"Qml"}, //TODO: REVIEW "Core", "Gui"},
+	MOC:            make([]string, 0),
+	"build_static": {"Qml"}, //TODO: REVIEW "Core", "Gui"},
 }
 
 func ShouldBuildForTarget(module, target string) bool {
@@ -257,9 +273,9 @@ func ShouldBuildForTarget(module, target string) bool {
 			}
 		}
 
-	case "js":
+	case "js", "wasm":
 		{
-			if !IsWhiteListedJsLib(module) && module != "build_ios" {
+			if !IsWhiteListedJsLib(module) && module != "build_static" {
 				return false
 			}
 		}

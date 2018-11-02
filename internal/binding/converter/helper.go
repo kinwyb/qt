@@ -56,23 +56,12 @@ func class(input interface{}) string {
 }
 
 func isClass(value string) bool {
-	if strings.Contains(value, ".") {
-		return isClass(strings.Split(value, ".")[1])
-	}
-
-	var _, ok = parser.State.ClassMap[value]
+	_, ok := parser.IsClass(value)
 	return ok
 }
 
 func isEnum(class, value string) bool {
-	if strings.ContainsAny(value, "<>") {
-		return false
-	}
-	if strings.Contains(value, "::") {
-		return true
-	}
-
-	var outE, _ = findEnum(class, value, false)
+	outE, _ := findEnum(class, value, false)
 	return outE != ""
 }
 
@@ -266,7 +255,7 @@ func IsPrivateSignal(f *parser.Function) bool {
 				} else {
 					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
 					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
-						path = strings.Replace(path, utils.QT_VERSION_MAJOR(), utils.QT_VERSION(), -1)
+						path = filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw53_32", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
 					}
 					if !utils.ExistsFile(path) {
 						path = strings.Replace(path, "mingw53_32", "mingw49_32", -1)
@@ -285,7 +274,7 @@ func IsPrivateSignal(f *parser.Function) bool {
 				default:
 					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "gcc_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
 					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
-						path = strings.Replace(path, utils.QT_VERSION_MAJOR(), utils.QT_VERSION(), -1)
+						path = filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "gcc_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
 					}
 					fData = utils.Load(path)
 				}
