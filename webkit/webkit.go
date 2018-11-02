@@ -20,7 +20,7 @@ import (
 )
 
 func cGoUnpackString(s C.struct_QtWebKit_PackedString) string {
-	if len := int(s.len); len == -1 {
+	if int(s.len) == -1 {
 		return C.GoString(s.data)
 	}
 	return C.GoStringN(s.data, C.int(s.len))
@@ -59,31 +59,22 @@ func PointerFromQGraphicsWebView(ptr QGraphicsWebView_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQGraphicsWebViewFromPointer(ptr unsafe.Pointer) *QGraphicsWebView {
-	var n = new(QGraphicsWebView)
+func NewQGraphicsWebViewFromPointer(ptr unsafe.Pointer) (n *QGraphicsWebView) {
+	n = new(QGraphicsWebView)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func NewQGraphicsWebView(parent widgets.QGraphicsItem_ITF) *QGraphicsWebView {
-	var tmpValue = NewQGraphicsWebViewFromPointer(C.QGraphicsWebView_NewQGraphicsWebView(widgets.PointerFromQGraphicsItem(parent)))
+	tmpValue := NewQGraphicsWebViewFromPointer(C.QGraphicsWebView_NewQGraphicsWebView(widgets.PointerFromQGraphicsItem(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
 	return tmpValue
 }
 
-//export callbackQGraphicsWebView_ItemChange
-func callbackQGraphicsWebView_ItemChange(ptr unsafe.Pointer, change C.longlong, value unsafe.Pointer) unsafe.Pointer {
-	if signal := qt.GetSignal(ptr, "itemChange"); signal != nil {
-		return core.PointerFromQVariant(signal.(func(widgets.QGraphicsItem__GraphicsItemChange, *core.QVariant) *core.QVariant)(widgets.QGraphicsItem__GraphicsItemChange(change), core.NewQVariantFromPointer(value)))
-	}
-
-	return core.PointerFromQVariant(NewQGraphicsWebViewFromPointer(ptr).ItemChangeDefault(widgets.QGraphicsItem__GraphicsItemChange(change), core.NewQVariantFromPointer(value)))
-}
-
-func (ptr *QGraphicsWebView) ItemChangeDefault(change widgets.QGraphicsItem__GraphicsItemChange, value core.QVariant_ITF) *core.QVariant {
+func (ptr *QGraphicsWebView) ItemChange(change widgets.QGraphicsItem__GraphicsItemChange, value core.QVariant_ITF) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQVariantFromPointer(C.QGraphicsWebView_ItemChangeDefault(ptr.Pointer(), C.longlong(change), core.PointerFromQVariant(value)))
+		tmpValue := core.NewQVariantFromPointer(C.QGraphicsWebView_ItemChange(ptr.Pointer(), C.longlong(change), core.PointerFromQVariant(value)))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -1032,7 +1023,7 @@ func (ptr *QGraphicsWebView) DestroyQGraphicsWebView() {
 
 func (ptr *QGraphicsWebView) PageAction(action QWebPage__WebAction) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QGraphicsWebView_PageAction(ptr.Pointer(), C.longlong(action)))
+		tmpValue := widgets.NewQActionFromPointer(C.QGraphicsWebView_PageAction(ptr.Pointer(), C.longlong(action)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1043,7 +1034,7 @@ func (ptr *QGraphicsWebView) PageAction(action QWebPage__WebAction) *widgets.QAc
 
 func (ptr *QGraphicsWebView) Icon() *gui.QIcon {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQIconFromPointer(C.QGraphicsWebView_Icon(ptr.Pointer()))
+		tmpValue := gui.NewQIconFromPointer(C.QGraphicsWebView_Icon(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QIcon).DestroyQIcon)
 		return tmpValue
 	}
@@ -1068,7 +1059,7 @@ func callbackQGraphicsWebView_SizeHint(ptr unsafe.Pointer, which C.longlong, con
 
 func (ptr *QGraphicsWebView) SizeHintDefault(which core.Qt__SizeHint, constraint core.QSizeF_ITF) *core.QSizeF {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFFromPointer(C.QGraphicsWebView_SizeHintDefault(ptr.Pointer(), C.longlong(which), core.PointerFromQSizeF(constraint)))
+		tmpValue := core.NewQSizeFFromPointer(C.QGraphicsWebView_SizeHintDefault(ptr.Pointer(), C.longlong(which), core.PointerFromQSizeF(constraint)))
 		runtime.SetFinalizer(tmpValue, (*core.QSizeF).DestroyQSizeF)
 		return tmpValue
 	}
@@ -1084,7 +1075,7 @@ func (ptr *QGraphicsWebView) Title() string {
 
 func (ptr *QGraphicsWebView) Url() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QGraphicsWebView_Url(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QGraphicsWebView_Url(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -1102,7 +1093,7 @@ func callbackQGraphicsWebView_InputMethodQuery(ptr unsafe.Pointer, query C.longl
 
 func (ptr *QGraphicsWebView) InputMethodQueryDefault(query core.Qt__InputMethodQuery) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQVariantFromPointer(C.QGraphicsWebView_InputMethodQueryDefault(ptr.Pointer(), C.longlong(query)))
+		tmpValue := core.NewQVariantFromPointer(C.QGraphicsWebView_InputMethodQueryDefault(ptr.Pointer(), C.longlong(query)))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -1118,7 +1109,7 @@ func (ptr *QGraphicsWebView) History() *QWebHistory {
 
 func (ptr *QGraphicsWebView) Page() *QWebPage {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPageFromPointer(C.QGraphicsWebView_Page(ptr.Pointer()))
+		tmpValue := NewQWebPageFromPointer(C.QGraphicsWebView_Page(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1164,7 +1155,7 @@ func (ptr *QGraphicsWebView) ZoomFactor() float64 {
 
 func (ptr *QGraphicsWebView) __addActions_actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QGraphicsWebView___addActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QGraphicsWebView___addActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1180,12 +1171,12 @@ func (ptr *QGraphicsWebView) __addActions_actions_setList(i widgets.QAction_ITF)
 }
 
 func (ptr *QGraphicsWebView) __addActions_actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___addActions_actions_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___addActions_actions_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __insertActions_actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QGraphicsWebView___insertActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QGraphicsWebView___insertActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1201,12 +1192,12 @@ func (ptr *QGraphicsWebView) __insertActions_actions_setList(i widgets.QAction_I
 }
 
 func (ptr *QGraphicsWebView) __insertActions_actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___insertActions_actions_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___insertActions_actions_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QGraphicsWebView___actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QGraphicsWebView___actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1222,12 +1213,12 @@ func (ptr *QGraphicsWebView) __actions_setList(i widgets.QAction_ITF) {
 }
 
 func (ptr *QGraphicsWebView) __actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___actions_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___actions_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QGraphicsWebView___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QGraphicsWebView___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -1241,12 +1232,12 @@ func (ptr *QGraphicsWebView) __dynamicPropertyNames_setList(i core.QByteArray_IT
 }
 
 func (ptr *QGraphicsWebView) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QGraphicsWebView___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QGraphicsWebView___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1262,12 +1253,12 @@ func (ptr *QGraphicsWebView) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QGraphicsWebView) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___findChildren_newList2(ptr.Pointer()))
+	return C.QGraphicsWebView___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QGraphicsWebView___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QGraphicsWebView___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1283,12 +1274,12 @@ func (ptr *QGraphicsWebView) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QGraphicsWebView) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___findChildren_newList3(ptr.Pointer()))
+	return C.QGraphicsWebView___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QGraphicsWebView___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QGraphicsWebView___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1304,12 +1295,12 @@ func (ptr *QGraphicsWebView) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QGraphicsWebView) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___findChildren_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QGraphicsWebView___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QGraphicsWebView___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1325,12 +1316,12 @@ func (ptr *QGraphicsWebView) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QGraphicsWebView) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___children_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___children_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __setTransformations_transformations_atList(i int) *widgets.QGraphicsTransform {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQGraphicsTransformFromPointer(C.QGraphicsWebView___setTransformations_transformations_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQGraphicsTransformFromPointer(C.QGraphicsWebView___setTransformations_transformations_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1346,7 +1337,7 @@ func (ptr *QGraphicsWebView) __setTransformations_transformations_setList(i widg
 }
 
 func (ptr *QGraphicsWebView) __setTransformations_transformations_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___setTransformations_transformations_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___setTransformations_transformations_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __childItems_atList(i int) *widgets.QGraphicsItem {
@@ -1363,7 +1354,7 @@ func (ptr *QGraphicsWebView) __childItems_setList(i widgets.QGraphicsItem_ITF) {
 }
 
 func (ptr *QGraphicsWebView) __childItems_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___childItems_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___childItems_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __collidingItems_atList(i int) *widgets.QGraphicsItem {
@@ -1380,12 +1371,12 @@ func (ptr *QGraphicsWebView) __collidingItems_setList(i widgets.QGraphicsItem_IT
 }
 
 func (ptr *QGraphicsWebView) __collidingItems_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___collidingItems_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___collidingItems_newList(ptr.Pointer())
 }
 
 func (ptr *QGraphicsWebView) __transformations_atList(i int) *widgets.QGraphicsTransform {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQGraphicsTransformFromPointer(C.QGraphicsWebView___transformations_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQGraphicsTransformFromPointer(C.QGraphicsWebView___transformations_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1401,7 +1392,7 @@ func (ptr *QGraphicsWebView) __transformations_setList(i widgets.QGraphicsTransf
 }
 
 func (ptr *QGraphicsWebView) __transformations_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QGraphicsWebView___transformations_newList(ptr.Pointer()))
+	return C.QGraphicsWebView___transformations_newList(ptr.Pointer())
 }
 
 //export callbackQGraphicsWebView_Close
@@ -1635,7 +1626,7 @@ func callbackQGraphicsWebView_Shape(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QGraphicsWebView) ShapeDefault() *gui.QPainterPath {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQPainterPathFromPointer(C.QGraphicsWebView_ShapeDefault(ptr.Pointer()))
+		tmpValue := gui.NewQPainterPathFromPointer(C.QGraphicsWebView_ShapeDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QPainterPath).DestroyQPainterPath)
 		return tmpValue
 	}
@@ -1653,7 +1644,7 @@ func callbackQGraphicsWebView_BoundingRect(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QGraphicsWebView) BoundingRectDefault() *core.QRectF {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQRectFFromPointer(C.QGraphicsWebView_BoundingRectDefault(ptr.Pointer()))
+		tmpValue := core.NewQRectFFromPointer(C.QGraphicsWebView_BoundingRectDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QRectF).DestroyQRectF)
 		return tmpValue
 	}
@@ -1674,6 +1665,22 @@ func (ptr *QGraphicsWebView) WindowFrameSectionAtDefault(pos core.QPointF_ITF) c
 		return core.Qt__WindowFrameSection(C.QGraphicsWebView_WindowFrameSectionAtDefault(ptr.Pointer(), core.PointerFromQPointF(pos)))
 	}
 	return 0
+}
+
+//export callbackQGraphicsWebView_MetaObject
+func callbackQGraphicsWebView_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
+	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
+		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
+	}
+
+	return core.PointerFromQMetaObject(NewQGraphicsWebViewFromPointer(ptr).MetaObjectDefault())
+}
+
+func (ptr *QGraphicsWebView) MetaObjectDefault() *core.QMetaObject {
+	if ptr.Pointer() != nil {
+		return core.NewQMetaObjectFromPointer(C.QGraphicsWebView_MetaObjectDefault(ptr.Pointer()))
+	}
+	return nil
 }
 
 //export callbackQGraphicsWebView_Type
@@ -1933,22 +1940,6 @@ func (ptr *QGraphicsWebView) TimerEventDefault(event core.QTimerEvent_ITF) {
 	}
 }
 
-//export callbackQGraphicsWebView_MetaObject
-func callbackQGraphicsWebView_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
-	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
-		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
-	}
-
-	return core.PointerFromQMetaObject(NewQGraphicsWebViewFromPointer(ptr).MetaObjectDefault())
-}
-
-func (ptr *QGraphicsWebView) MetaObjectDefault() *core.QMetaObject {
-	if ptr.Pointer() != nil {
-		return core.NewQMetaObjectFromPointer(C.QGraphicsWebView_MetaObjectDefault(ptr.Pointer()))
-	}
-	return nil
-}
-
 //export callbackQGraphicsWebView_SceneEventFilter
 func callbackQGraphicsWebView_SceneEventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "sceneEventFilter"); signal != nil {
@@ -2006,7 +1997,7 @@ func callbackQGraphicsWebView_OpaqueArea(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QGraphicsWebView) OpaqueAreaDefault() *gui.QPainterPath {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQPainterPathFromPointer(C.QGraphicsWebView_OpaqueAreaDefault(ptr.Pointer()))
+		tmpValue := gui.NewQPainterPathFromPointer(C.QGraphicsWebView_OpaqueAreaDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QPainterPath).DestroyQPainterPath)
 		return tmpValue
 	}
@@ -2109,13 +2100,13 @@ func PointerFromQWebDatabase(ptr QWebDatabase_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebDatabaseFromPointer(ptr unsafe.Pointer) *QWebDatabase {
-	var n = new(QWebDatabase)
+func NewQWebDatabaseFromPointer(ptr unsafe.Pointer) (n *QWebDatabase) {
+	n = new(QWebDatabase)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func NewQWebDatabase(other QWebDatabase_ITF) *QWebDatabase {
-	var tmpValue = NewQWebDatabaseFromPointer(C.QWebDatabase_NewQWebDatabase(PointerFromQWebDatabase(other)))
+	tmpValue := NewQWebDatabaseFromPointer(C.QWebDatabase_NewQWebDatabase(PointerFromQWebDatabase(other)))
 	runtime.SetFinalizer(tmpValue, (*QWebDatabase).DestroyQWebDatabase)
 	return tmpValue
 }
@@ -2167,7 +2158,7 @@ func (ptr *QWebDatabase) Name() string {
 
 func (ptr *QWebDatabase) Origin() *QWebSecurityOrigin {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebSecurityOriginFromPointer(C.QWebDatabase_Origin(ptr.Pointer()))
+		tmpValue := NewQWebSecurityOriginFromPointer(C.QWebDatabase_Origin(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebSecurityOrigin).DestroyQWebSecurityOrigin)
 		return tmpValue
 	}
@@ -2220,10 +2211,10 @@ func PointerFromQWebElement(ptr QWebElement_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebElementFromPointer(ptr unsafe.Pointer) *QWebElement {
-	var n = new(QWebElement)
+func NewQWebElementFromPointer(ptr unsafe.Pointer) (n *QWebElement) {
+	n = new(QWebElement)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 //go:generate stringer -type=QWebElement__StyleResolveStrategy
@@ -2243,7 +2234,7 @@ func (ptr *QWebElement) EvaluateJavaScript(scriptSource string) *core.QVariant {
 			scriptSourceC = C.CString(scriptSource)
 			defer C.free(unsafe.Pointer(scriptSourceC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebElement_EvaluateJavaScript(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: scriptSourceC, len: C.longlong(len(scriptSource))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebElement_EvaluateJavaScript(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: scriptSourceC, len: C.longlong(len(scriptSource))}))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -2252,7 +2243,7 @@ func (ptr *QWebElement) EvaluateJavaScript(scriptSource string) *core.QVariant {
 
 func (ptr *QWebElement) TakeFromDocument() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_TakeFromDocument(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_TakeFromDocument(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2260,13 +2251,13 @@ func (ptr *QWebElement) TakeFromDocument() *QWebElement {
 }
 
 func NewQWebElement() *QWebElement {
-	var tmpValue = NewQWebElementFromPointer(C.QWebElement_NewQWebElement())
+	tmpValue := NewQWebElementFromPointer(C.QWebElement_NewQWebElement())
 	runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 	return tmpValue
 }
 
 func NewQWebElement2(other QWebElement_ITF) *QWebElement {
-	var tmpValue = NewQWebElementFromPointer(C.QWebElement_NewQWebElement2(PointerFromQWebElement(other)))
+	tmpValue := NewQWebElementFromPointer(C.QWebElement_NewQWebElement2(PointerFromQWebElement(other)))
 	runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 	return tmpValue
 }
@@ -2576,7 +2567,7 @@ func (ptr *QWebElement) DestroyQWebElement() {
 
 func (ptr *QWebElement) Geometry() *core.QRect {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQRectFromPointer(C.QWebElement_Geometry(ptr.Pointer()))
+		tmpValue := core.NewQRectFromPointer(C.QWebElement_Geometry(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QRect).DestroyQRect)
 		return tmpValue
 	}
@@ -2704,7 +2695,7 @@ func (ptr *QWebElement) Classes() []string {
 
 func (ptr *QWebElement) Clone() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_Clone(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_Clone(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2713,7 +2704,7 @@ func (ptr *QWebElement) Clone() *QWebElement {
 
 func (ptr *QWebElement) Document() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_Document(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_Document(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2727,7 +2718,7 @@ func (ptr *QWebElement) FindFirst(selectorQuery string) *QWebElement {
 			selectorQueryC = C.CString(selectorQuery)
 			defer C.free(unsafe.Pointer(selectorQueryC))
 		}
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_FindFirst(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_FindFirst(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2736,7 +2727,7 @@ func (ptr *QWebElement) FindFirst(selectorQuery string) *QWebElement {
 
 func (ptr *QWebElement) FirstChild() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_FirstChild(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_FirstChild(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2745,7 +2736,7 @@ func (ptr *QWebElement) FirstChild() *QWebElement {
 
 func (ptr *QWebElement) LastChild() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_LastChild(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_LastChild(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2754,7 +2745,7 @@ func (ptr *QWebElement) LastChild() *QWebElement {
 
 func (ptr *QWebElement) NextSibling() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_NextSibling(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_NextSibling(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2763,7 +2754,7 @@ func (ptr *QWebElement) NextSibling() *QWebElement {
 
 func (ptr *QWebElement) Parent() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_Parent(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_Parent(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2772,7 +2763,7 @@ func (ptr *QWebElement) Parent() *QWebElement {
 
 func (ptr *QWebElement) PreviousSibling() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElement_PreviousSibling(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElement_PreviousSibling(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2786,7 +2777,7 @@ func (ptr *QWebElement) FindAll(selectorQuery string) *QWebElementCollection {
 			selectorQueryC = C.CString(selectorQuery)
 			defer C.free(unsafe.Pointer(selectorQueryC))
 		}
-		var tmpValue = NewQWebElementCollectionFromPointer(C.QWebElement_FindAll(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
+		tmpValue := NewQWebElementCollectionFromPointer(C.QWebElement_FindAll(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
 		runtime.SetFinalizer(tmpValue, (*QWebElementCollection).DestroyQWebElementCollection)
 		return tmpValue
 	}
@@ -2795,7 +2786,7 @@ func (ptr *QWebElement) FindAll(selectorQuery string) *QWebElementCollection {
 
 func (ptr *QWebElement) WebFrame() *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebElement_WebFrame(ptr.Pointer()))
+		tmpValue := NewQWebFrameFromPointer(C.QWebElement_WebFrame(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -2898,13 +2889,13 @@ func PointerFromQWebElementCollection(ptr QWebElementCollection_ITF) unsafe.Poin
 	return nil
 }
 
-func NewQWebElementCollectionFromPointer(ptr unsafe.Pointer) *QWebElementCollection {
-	var n = new(QWebElementCollection)
+func NewQWebElementCollectionFromPointer(ptr unsafe.Pointer) (n *QWebElementCollection) {
+	n = new(QWebElementCollection)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func NewQWebElementCollection() *QWebElementCollection {
-	var tmpValue = NewQWebElementCollectionFromPointer(C.QWebElementCollection_NewQWebElementCollection())
+	tmpValue := NewQWebElementCollectionFromPointer(C.QWebElementCollection_NewQWebElementCollection())
 	runtime.SetFinalizer(tmpValue, (*QWebElementCollection).DestroyQWebElementCollection)
 	return tmpValue
 }
@@ -2915,13 +2906,13 @@ func NewQWebElementCollection2(contextElement QWebElement_ITF, query string) *QW
 		queryC = C.CString(query)
 		defer C.free(unsafe.Pointer(queryC))
 	}
-	var tmpValue = NewQWebElementCollectionFromPointer(C.QWebElementCollection_NewQWebElementCollection2(PointerFromQWebElement(contextElement), C.struct_QtWebKit_PackedString{data: queryC, len: C.longlong(len(query))}))
+	tmpValue := NewQWebElementCollectionFromPointer(C.QWebElementCollection_NewQWebElementCollection2(PointerFromQWebElement(contextElement), C.struct_QtWebKit_PackedString{data: queryC, len: C.longlong(len(query))}))
 	runtime.SetFinalizer(tmpValue, (*QWebElementCollection).DestroyQWebElementCollection)
 	return tmpValue
 }
 
 func NewQWebElementCollection3(other QWebElementCollection_ITF) *QWebElementCollection {
-	var tmpValue = NewQWebElementCollectionFromPointer(C.QWebElementCollection_NewQWebElementCollection3(PointerFromQWebElementCollection(other)))
+	tmpValue := NewQWebElementCollectionFromPointer(C.QWebElementCollection_NewQWebElementCollection3(PointerFromQWebElementCollection(other)))
 	runtime.SetFinalizer(tmpValue, (*QWebElementCollection).DestroyQWebElementCollection)
 	return tmpValue
 }
@@ -2943,9 +2934,10 @@ func (ptr *QWebElementCollection) DestroyQWebElementCollection() {
 func (ptr *QWebElementCollection) ToList() []*QWebElement {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []*QWebElement {
-			var out = make([]*QWebElement, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebElementCollectionFromPointer(l.data).__toList_atList(i)
+			out := make([]*QWebElement, int(l.len))
+			tmpList := NewQWebElementCollectionFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__toList_atList(i)
 			}
 			return out
 		}(C.QWebElementCollection_ToList(ptr.Pointer()))
@@ -2955,7 +2947,7 @@ func (ptr *QWebElementCollection) ToList() []*QWebElement {
 
 func (ptr *QWebElementCollection) At(i int) *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElementCollection_At(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebElementFromPointer(C.QWebElementCollection_At(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2964,7 +2956,7 @@ func (ptr *QWebElementCollection) At(i int) *QWebElement {
 
 func (ptr *QWebElementCollection) First() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElementCollection_First(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElementCollection_First(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2973,7 +2965,7 @@ func (ptr *QWebElementCollection) First() *QWebElement {
 
 func (ptr *QWebElementCollection) Last() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElementCollection_Last(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebElementCollection_Last(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -2989,7 +2981,7 @@ func (ptr *QWebElementCollection) Count() int {
 
 func (ptr *QWebElementCollection) __toList_atList(i int) *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebElementCollection___toList_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebElementFromPointer(C.QWebElementCollection___toList_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -3003,7 +2995,7 @@ func (ptr *QWebElementCollection) __toList_setList(i QWebElement_ITF) {
 }
 
 func (ptr *QWebElementCollection) __toList_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebElementCollection___toList_newList(ptr.Pointer()))
+	return C.QWebElementCollection___toList_newList(ptr.Pointer())
 }
 
 type QWebFrame struct {
@@ -3039,10 +3031,10 @@ func PointerFromQWebFrame(ptr QWebFrame_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebFrameFromPointer(ptr unsafe.Pointer) *QWebFrame {
-	var n = new(QWebFrame)
+func NewQWebFrameFromPointer(ptr unsafe.Pointer) (n *QWebFrame) {
+	n = new(QWebFrame)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 //go:generate stringer -type=QWebFrame__RenderLayer
@@ -3130,7 +3122,7 @@ func (ptr *QWebFrame) EvaluateJavaScript(scriptSource string) *core.QVariant {
 			scriptSourceC = C.CString(scriptSource)
 			defer C.free(unsafe.Pointer(scriptSourceC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebFrame_EvaluateJavaScript(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: scriptSourceC, len: C.longlong(len(scriptSource))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebFrame_EvaluateJavaScript(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: scriptSourceC, len: C.longlong(len(scriptSource))}))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -3144,7 +3136,7 @@ func (ptr *QWebFrame) EvaluateJavaScriptDefault(scriptSource string) *core.QVari
 			scriptSourceC = C.CString(scriptSource)
 			defer C.free(unsafe.Pointer(scriptSourceC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebFrame_EvaluateJavaScriptDefault(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: scriptSourceC, len: C.longlong(len(scriptSource))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebFrame_EvaluateJavaScriptDefault(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: scriptSourceC, len: C.longlong(len(scriptSource))}))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -3614,7 +3606,7 @@ func (ptr *QWebFrame) UrlChanged(url core.QUrl_ITF) {
 
 func (ptr *QWebFrame) Icon() *gui.QIcon {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQIconFromPointer(C.QWebFrame_Icon(ptr.Pointer()))
+		tmpValue := gui.NewQIconFromPointer(C.QWebFrame_Icon(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QIcon).DestroyQIcon)
 		return tmpValue
 	}
@@ -3624,9 +3616,10 @@ func (ptr *QWebFrame) Icon() *gui.QIcon {
 func (ptr *QWebFrame) ChildFrames() []*QWebFrame {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []*QWebFrame {
-			var out = make([]*QWebFrame, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebFrameFromPointer(l.data).__childFrames_atList(i)
+			out := make([]*QWebFrame, int(l.len))
+			tmpList := NewQWebFrameFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__childFrames_atList(i)
 			}
 			return out
 		}(C.QWebFrame_ChildFrames(ptr.Pointer()))
@@ -3637,9 +3630,10 @@ func (ptr *QWebFrame) ChildFrames() []*QWebFrame {
 func (ptr *QWebFrame) MetaData() map[string]string {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) map[string]string {
-			var out = make(map[string]string, int(l.len))
-			for _, i := range NewQWebFrameFromPointer(l.data).__metaData_keyList() {
-				out[i] = NewQWebFrameFromPointer(l.data).__metaData_atList(i)
+			out := make(map[string]string, int(l.len))
+			tmpList := NewQWebFrameFromPointer(l.data)
+			for i, v := range tmpList.__metaData_keyList() {
+				out[v] = tmpList.__metaData_atList(v, i)
 			}
 			return out
 		}(C.QWebFrame_MetaData(ptr.Pointer()))
@@ -3649,7 +3643,7 @@ func (ptr *QWebFrame) MetaData() map[string]string {
 
 func (ptr *QWebFrame) Pos() *core.QPoint {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQPointFromPointer(C.QWebFrame_Pos(ptr.Pointer()))
+		tmpValue := core.NewQPointFromPointer(C.QWebFrame_Pos(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QPoint).DestroyQPoint)
 		return tmpValue
 	}
@@ -3658,7 +3652,7 @@ func (ptr *QWebFrame) Pos() *core.QPoint {
 
 func (ptr *QWebFrame) ScrollPosition() *core.QPoint {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQPointFromPointer(C.QWebFrame_ScrollPosition(ptr.Pointer()))
+		tmpValue := core.NewQPointFromPointer(C.QWebFrame_ScrollPosition(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QPoint).DestroyQPoint)
 		return tmpValue
 	}
@@ -3667,7 +3661,7 @@ func (ptr *QWebFrame) ScrollPosition() *core.QPoint {
 
 func (ptr *QWebFrame) Geometry() *core.QRect {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQRectFromPointer(C.QWebFrame_Geometry(ptr.Pointer()))
+		tmpValue := core.NewQRectFromPointer(C.QWebFrame_Geometry(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QRect).DestroyQRect)
 		return tmpValue
 	}
@@ -3676,7 +3670,7 @@ func (ptr *QWebFrame) Geometry() *core.QRect {
 
 func (ptr *QWebFrame) ScrollBarGeometry(orientation core.Qt__Orientation) *core.QRect {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQRectFromPointer(C.QWebFrame_ScrollBarGeometry(ptr.Pointer(), C.longlong(orientation)))
+		tmpValue := core.NewQRectFromPointer(C.QWebFrame_ScrollBarGeometry(ptr.Pointer(), C.longlong(orientation)))
 		runtime.SetFinalizer(tmpValue, (*core.QRect).DestroyQRect)
 		return tmpValue
 	}
@@ -3685,7 +3679,7 @@ func (ptr *QWebFrame) ScrollBarGeometry(orientation core.Qt__Orientation) *core.
 
 func (ptr *QWebFrame) ContentsSize() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebFrame_ContentsSize(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebFrame_ContentsSize(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -3722,7 +3716,7 @@ func (ptr *QWebFrame) ToPlainText() string {
 
 func (ptr *QWebFrame) BaseUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebFrame_BaseUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebFrame_BaseUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -3731,7 +3725,7 @@ func (ptr *QWebFrame) BaseUrl() *core.QUrl {
 
 func (ptr *QWebFrame) RequestedUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebFrame_RequestedUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebFrame_RequestedUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -3740,7 +3734,7 @@ func (ptr *QWebFrame) RequestedUrl() *core.QUrl {
 
 func (ptr *QWebFrame) Url() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebFrame_Url(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebFrame_Url(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -3749,7 +3743,7 @@ func (ptr *QWebFrame) Url() *core.QUrl {
 
 func (ptr *QWebFrame) DocumentElement() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebFrame_DocumentElement(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebFrame_DocumentElement(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -3763,7 +3757,7 @@ func (ptr *QWebFrame) FindFirstElement(selectorQuery string) *QWebElement {
 			selectorQueryC = C.CString(selectorQuery)
 			defer C.free(unsafe.Pointer(selectorQueryC))
 		}
-		var tmpValue = NewQWebElementFromPointer(C.QWebFrame_FindFirstElement(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
+		tmpValue := NewQWebElementFromPointer(C.QWebFrame_FindFirstElement(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -3772,7 +3766,7 @@ func (ptr *QWebFrame) FindFirstElement(selectorQuery string) *QWebElement {
 
 func (ptr *QWebFrame) OwnerElement() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebFrame_OwnerElement(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebFrame_OwnerElement(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -3786,7 +3780,7 @@ func (ptr *QWebFrame) FindAllElements(selectorQuery string) *QWebElementCollecti
 			selectorQueryC = C.CString(selectorQuery)
 			defer C.free(unsafe.Pointer(selectorQueryC))
 		}
-		var tmpValue = NewQWebElementCollectionFromPointer(C.QWebFrame_FindAllElements(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
+		tmpValue := NewQWebElementCollectionFromPointer(C.QWebFrame_FindAllElements(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: selectorQueryC, len: C.longlong(len(selectorQuery))}))
 		runtime.SetFinalizer(tmpValue, (*QWebElementCollection).DestroyQWebElementCollection)
 		return tmpValue
 	}
@@ -3795,7 +3789,7 @@ func (ptr *QWebFrame) FindAllElements(selectorQuery string) *QWebElementCollecti
 
 func (ptr *QWebFrame) ParentFrame() *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebFrame_ParentFrame(ptr.Pointer()))
+		tmpValue := NewQWebFrameFromPointer(C.QWebFrame_ParentFrame(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -3806,7 +3800,7 @@ func (ptr *QWebFrame) ParentFrame() *QWebFrame {
 
 func (ptr *QWebFrame) HitTestContent(pos core.QPoint_ITF) *QWebHitTestResult {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHitTestResultFromPointer(C.QWebFrame_HitTestContent(ptr.Pointer(), core.PointerFromQPoint(pos)))
+		tmpValue := NewQWebHitTestResultFromPointer(C.QWebFrame_HitTestContent(ptr.Pointer(), core.PointerFromQPoint(pos)))
 		runtime.SetFinalizer(tmpValue, (*QWebHitTestResult).DestroyQWebHitTestResult)
 		return tmpValue
 	}
@@ -3815,7 +3809,7 @@ func (ptr *QWebFrame) HitTestContent(pos core.QPoint_ITF) *QWebHitTestResult {
 
 func (ptr *QWebFrame) Page() *QWebPage {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPageFromPointer(C.QWebFrame_Page(ptr.Pointer()))
+		tmpValue := NewQWebPageFromPointer(C.QWebFrame_Page(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -3826,7 +3820,7 @@ func (ptr *QWebFrame) Page() *QWebPage {
 
 func (ptr *QWebFrame) SecurityOrigin() *QWebSecurityOrigin {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebSecurityOriginFromPointer(C.QWebFrame_SecurityOrigin(ptr.Pointer()))
+		tmpValue := NewQWebSecurityOriginFromPointer(C.QWebFrame_SecurityOrigin(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebSecurityOrigin).DestroyQWebSecurityOrigin)
 		return tmpValue
 	}
@@ -3926,7 +3920,7 @@ func (ptr *QWebFrame) PrintDefault(printer printsupport.QPrinter_ITF) {
 
 func (ptr *QWebFrame) __childFrames_atList(i int) *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebFrame___childFrames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebFrameFromPointer(C.QWebFrame___childFrames_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -3942,17 +3936,17 @@ func (ptr *QWebFrame) __childFrames_setList(i QWebFrame_ITF) {
 }
 
 func (ptr *QWebFrame) __childFrames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___childFrames_newList(ptr.Pointer()))
+	return C.QWebFrame___childFrames_newList(ptr.Pointer())
 }
 
-func (ptr *QWebFrame) __metaData_atList(i string) string {
+func (ptr *QWebFrame) __metaData_atList(v string, i int) string {
 	if ptr.Pointer() != nil {
-		var iC *C.char
-		if i != "" {
-			iC = C.CString(i)
-			defer C.free(unsafe.Pointer(iC))
+		var vC *C.char
+		if v != "" {
+			vC = C.CString(v)
+			defer C.free(unsafe.Pointer(vC))
 		}
-		return cGoUnpackString(C.QWebFrame___metaData_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))}))
+		return cGoUnpackString(C.QWebFrame___metaData_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: vC, len: C.longlong(len(v))}, C.int(int32(i))))
 	}
 	return ""
 }
@@ -3974,15 +3968,16 @@ func (ptr *QWebFrame) __metaData_setList(key string, i string) {
 }
 
 func (ptr *QWebFrame) __metaData_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___metaData_newList(ptr.Pointer()))
+	return C.QWebFrame___metaData_newList(ptr.Pointer())
 }
 
 func (ptr *QWebFrame) __metaData_keyList() []string {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []string {
-			var out = make([]string, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebFrameFromPointer(l.data).____metaData_keyList_atList(i)
+			out := make([]string, int(l.len))
+			tmpList := NewQWebFrameFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.____metaData_keyList_atList(i)
 			}
 			return out
 		}(C.QWebFrame___metaData_keyList(ptr.Pointer()))
@@ -4009,12 +4004,12 @@ func (ptr *QWebFrame) ____metaData_keyList_setList(i string) {
 }
 
 func (ptr *QWebFrame) ____metaData_keyList_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame_____metaData_keyList_newList(ptr.Pointer()))
+	return C.QWebFrame_____metaData_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *QWebFrame) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QWebFrame___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QWebFrame___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -4028,12 +4023,12 @@ func (ptr *QWebFrame) __dynamicPropertyNames_setList(i core.QByteArray_ITF) {
 }
 
 func (ptr *QWebFrame) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QWebFrame___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QWebFrame) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebFrame___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebFrame___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4049,12 +4044,12 @@ func (ptr *QWebFrame) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QWebFrame) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___findChildren_newList2(ptr.Pointer()))
+	return C.QWebFrame___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QWebFrame) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebFrame___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebFrame___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4070,12 +4065,12 @@ func (ptr *QWebFrame) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QWebFrame) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___findChildren_newList3(ptr.Pointer()))
+	return C.QWebFrame___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QWebFrame) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebFrame___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebFrame___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4091,12 +4086,12 @@ func (ptr *QWebFrame) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebFrame) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___findChildren_newList(ptr.Pointer()))
+	return C.QWebFrame___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QWebFrame) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebFrame___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebFrame___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4112,7 +4107,7 @@ func (ptr *QWebFrame) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebFrame) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebFrame___children_newList(ptr.Pointer()))
+	return C.QWebFrame___children_newList(ptr.Pointer())
 }
 
 //export callbackQWebFrame_EventFilter
@@ -4287,10 +4282,10 @@ func PointerFromQWebHistory(ptr QWebHistory_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebHistoryFromPointer(ptr unsafe.Pointer) *QWebHistory {
-	var n = new(QWebHistory)
+func NewQWebHistoryFromPointer(ptr unsafe.Pointer) (n *QWebHistory) {
+	n = new(QWebHistory)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 func (ptr *QWebHistory) DestroyQWebHistory() {
@@ -4334,9 +4329,10 @@ func (ptr *QWebHistory) SetMaximumItemCount(count int) {
 func (ptr *QWebHistory) BackItems(maxItems int) []*QWebHistoryItem {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []*QWebHistoryItem {
-			var out = make([]*QWebHistoryItem, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryFromPointer(l.data).__backItems_atList(i)
+			out := make([]*QWebHistoryItem, int(l.len))
+			tmpList := NewQWebHistoryFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__backItems_atList(i)
 			}
 			return out
 		}(C.QWebHistory_BackItems(ptr.Pointer(), C.int(int32(maxItems))))
@@ -4347,9 +4343,10 @@ func (ptr *QWebHistory) BackItems(maxItems int) []*QWebHistoryItem {
 func (ptr *QWebHistory) ForwardItems(maxItems int) []*QWebHistoryItem {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []*QWebHistoryItem {
-			var out = make([]*QWebHistoryItem, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryFromPointer(l.data).__forwardItems_atList(i)
+			out := make([]*QWebHistoryItem, int(l.len))
+			tmpList := NewQWebHistoryFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__forwardItems_atList(i)
 			}
 			return out
 		}(C.QWebHistory_ForwardItems(ptr.Pointer(), C.int(int32(maxItems))))
@@ -4360,9 +4357,10 @@ func (ptr *QWebHistory) ForwardItems(maxItems int) []*QWebHistoryItem {
 func (ptr *QWebHistory) Items() []*QWebHistoryItem {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []*QWebHistoryItem {
-			var out = make([]*QWebHistoryItem, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryFromPointer(l.data).__items_atList(i)
+			out := make([]*QWebHistoryItem, int(l.len))
+			tmpList := NewQWebHistoryFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__items_atList(i)
 			}
 			return out
 		}(C.QWebHistory_Items(ptr.Pointer()))
@@ -4373,9 +4371,10 @@ func (ptr *QWebHistory) Items() []*QWebHistoryItem {
 func (ptr *QWebHistory) ToMap() map[string]*core.QVariant {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) map[string]*core.QVariant {
-			var out = make(map[string]*core.QVariant, int(l.len))
-			for _, i := range NewQWebHistoryFromPointer(l.data).__toMap_keyList() {
-				out[i] = NewQWebHistoryFromPointer(l.data).__toMap_atList(i)
+			out := make(map[string]*core.QVariant, int(l.len))
+			tmpList := NewQWebHistoryFromPointer(l.data)
+			for i, v := range tmpList.__toMap_keyList() {
+				out[v] = tmpList.__toMap_atList(v, i)
 			}
 			return out
 		}(C.QWebHistory_ToMap(ptr.Pointer()))
@@ -4385,7 +4384,7 @@ func (ptr *QWebHistory) ToMap() map[string]*core.QVariant {
 
 func (ptr *QWebHistory) BackItem() *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory_BackItem(ptr.Pointer()))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory_BackItem(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4394,7 +4393,7 @@ func (ptr *QWebHistory) BackItem() *QWebHistoryItem {
 
 func (ptr *QWebHistory) CurrentItem() *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory_CurrentItem(ptr.Pointer()))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory_CurrentItem(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4403,7 +4402,7 @@ func (ptr *QWebHistory) CurrentItem() *QWebHistoryItem {
 
 func (ptr *QWebHistory) ForwardItem() *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory_ForwardItem(ptr.Pointer()))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory_ForwardItem(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4412,7 +4411,7 @@ func (ptr *QWebHistory) ForwardItem() *QWebHistoryItem {
 
 func (ptr *QWebHistory) ItemAt(i int) *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory_ItemAt(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory_ItemAt(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4454,14 +4453,14 @@ func (ptr *QWebHistory) MaximumItemCount() int {
 	return 0
 }
 
-func (ptr *QWebHistory) __loadFromMap_map_atList(i string) *core.QVariant {
+func (ptr *QWebHistory) __loadFromMap_map_atList(v string, i int) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var iC *C.char
-		if i != "" {
-			iC = C.CString(i)
-			defer C.free(unsafe.Pointer(iC))
+		var vC *C.char
+		if v != "" {
+			vC = C.CString(v)
+			defer C.free(unsafe.Pointer(vC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebHistory___loadFromMap_map_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebHistory___loadFromMap_map_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: vC, len: C.longlong(len(v))}, C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -4480,25 +4479,26 @@ func (ptr *QWebHistory) __loadFromMap_map_setList(key string, i core.QVariant_IT
 }
 
 func (ptr *QWebHistory) __loadFromMap_map_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory___loadFromMap_map_newList(ptr.Pointer()))
+	return C.QWebHistory___loadFromMap_map_newList(ptr.Pointer())
 }
 
-func (ptr *QWebHistory) __loadFromMap_keyList() []string {
+func (ptr *QWebHistory) __loadFromMap_map_keyList() []string {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []string {
-			var out = make([]string, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryFromPointer(l.data).____loadFromMap_keyList_atList(i)
+			out := make([]string, int(l.len))
+			tmpList := NewQWebHistoryFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.____loadFromMap_map_keyList_atList(i)
 			}
 			return out
-		}(C.QWebHistory___loadFromMap_keyList(ptr.Pointer()))
+		}(C.QWebHistory___loadFromMap_map_keyList(ptr.Pointer()))
 	}
 	return make([]string, 0)
 }
 
 func (ptr *QWebHistory) __backItems_atList(i int) *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory___backItems_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory___backItems_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4512,12 +4512,12 @@ func (ptr *QWebHistory) __backItems_setList(i QWebHistoryItem_ITF) {
 }
 
 func (ptr *QWebHistory) __backItems_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory___backItems_newList(ptr.Pointer()))
+	return C.QWebHistory___backItems_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistory) __forwardItems_atList(i int) *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory___forwardItems_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory___forwardItems_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4531,12 +4531,12 @@ func (ptr *QWebHistory) __forwardItems_setList(i QWebHistoryItem_ITF) {
 }
 
 func (ptr *QWebHistory) __forwardItems_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory___forwardItems_newList(ptr.Pointer()))
+	return C.QWebHistory___forwardItems_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistory) __items_atList(i int) *QWebHistoryItem {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistory___items_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistory___items_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 		return tmpValue
 	}
@@ -4550,17 +4550,17 @@ func (ptr *QWebHistory) __items_setList(i QWebHistoryItem_ITF) {
 }
 
 func (ptr *QWebHistory) __items_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory___items_newList(ptr.Pointer()))
+	return C.QWebHistory___items_newList(ptr.Pointer())
 }
 
-func (ptr *QWebHistory) __toMap_atList(i string) *core.QVariant {
+func (ptr *QWebHistory) __toMap_atList(v string, i int) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var iC *C.char
-		if i != "" {
-			iC = C.CString(i)
-			defer C.free(unsafe.Pointer(iC))
+		var vC *C.char
+		if v != "" {
+			vC = C.CString(v)
+			defer C.free(unsafe.Pointer(vC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebHistory___toMap_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebHistory___toMap_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: vC, len: C.longlong(len(v))}, C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -4579,15 +4579,16 @@ func (ptr *QWebHistory) __toMap_setList(key string, i core.QVariant_ITF) {
 }
 
 func (ptr *QWebHistory) __toMap_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory___toMap_newList(ptr.Pointer()))
+	return C.QWebHistory___toMap_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistory) __toMap_keyList() []string {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []string {
-			var out = make([]string, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryFromPointer(l.data).____toMap_keyList_atList(i)
+			out := make([]string, int(l.len))
+			tmpList := NewQWebHistoryFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.____toMap_keyList_atList(i)
 			}
 			return out
 		}(C.QWebHistory___toMap_keyList(ptr.Pointer()))
@@ -4595,26 +4596,26 @@ func (ptr *QWebHistory) __toMap_keyList() []string {
 	return make([]string, 0)
 }
 
-func (ptr *QWebHistory) ____loadFromMap_keyList_atList(i int) string {
+func (ptr *QWebHistory) ____loadFromMap_map_keyList_atList(i int) string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.QWebHistory_____loadFromMap_keyList_atList(ptr.Pointer(), C.int(int32(i))))
+		return cGoUnpackString(C.QWebHistory_____loadFromMap_map_keyList_atList(ptr.Pointer(), C.int(int32(i))))
 	}
 	return ""
 }
 
-func (ptr *QWebHistory) ____loadFromMap_keyList_setList(i string) {
+func (ptr *QWebHistory) ____loadFromMap_map_keyList_setList(i string) {
 	if ptr.Pointer() != nil {
 		var iC *C.char
 		if i != "" {
 			iC = C.CString(i)
 			defer C.free(unsafe.Pointer(iC))
 		}
-		C.QWebHistory_____loadFromMap_keyList_setList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))})
+		C.QWebHistory_____loadFromMap_map_keyList_setList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))})
 	}
 }
 
-func (ptr *QWebHistory) ____loadFromMap_keyList_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory_____loadFromMap_keyList_newList(ptr.Pointer()))
+func (ptr *QWebHistory) ____loadFromMap_map_keyList_newList() unsafe.Pointer {
+	return C.QWebHistory_____loadFromMap_map_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistory) ____toMap_keyList_atList(i int) string {
@@ -4636,7 +4637,7 @@ func (ptr *QWebHistory) ____toMap_keyList_setList(i string) {
 }
 
 func (ptr *QWebHistory) ____toMap_keyList_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistory_____toMap_keyList_newList(ptr.Pointer()))
+	return C.QWebHistory_____toMap_keyList_newList(ptr.Pointer())
 }
 
 type QWebHistoryInterface struct {
@@ -4672,13 +4673,13 @@ func PointerFromQWebHistoryInterface(ptr QWebHistoryInterface_ITF) unsafe.Pointe
 	return nil
 }
 
-func NewQWebHistoryInterfaceFromPointer(ptr unsafe.Pointer) *QWebHistoryInterface {
-	var n = new(QWebHistoryInterface)
+func NewQWebHistoryInterfaceFromPointer(ptr unsafe.Pointer) (n *QWebHistoryInterface) {
+	n = new(QWebHistoryInterface)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func QWebHistoryInterface_DefaultInterface() *QWebHistoryInterface {
-	var tmpValue = NewQWebHistoryInterfaceFromPointer(C.QWebHistoryInterface_QWebHistoryInterface_DefaultInterface())
+	tmpValue := NewQWebHistoryInterfaceFromPointer(C.QWebHistoryInterface_QWebHistoryInterface_DefaultInterface())
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
@@ -4686,7 +4687,7 @@ func QWebHistoryInterface_DefaultInterface() *QWebHistoryInterface {
 }
 
 func (ptr *QWebHistoryInterface) DefaultInterface() *QWebHistoryInterface {
-	var tmpValue = NewQWebHistoryInterfaceFromPointer(C.QWebHistoryInterface_QWebHistoryInterface_DefaultInterface())
+	tmpValue := NewQWebHistoryInterfaceFromPointer(C.QWebHistoryInterface_QWebHistoryInterface_DefaultInterface())
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
@@ -4694,7 +4695,7 @@ func (ptr *QWebHistoryInterface) DefaultInterface() *QWebHistoryInterface {
 }
 
 func NewQWebHistoryInterface(parent core.QObject_ITF) *QWebHistoryInterface {
-	var tmpValue = NewQWebHistoryInterfaceFromPointer(C.QWebHistoryInterface_NewQWebHistoryInterface(core.PointerFromQObject(parent)))
+	tmpValue := NewQWebHistoryInterfaceFromPointer(C.QWebHistoryInterface_NewQWebHistoryInterface(core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
@@ -4801,7 +4802,7 @@ func (ptr *QWebHistoryInterface) HistoryContains(url string) bool {
 
 func (ptr *QWebHistoryInterface) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QWebHistoryInterface___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QWebHistoryInterface___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -4815,12 +4816,12 @@ func (ptr *QWebHistoryInterface) __dynamicPropertyNames_setList(i core.QByteArra
 }
 
 func (ptr *QWebHistoryInterface) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryInterface___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QWebHistoryInterface___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistoryInterface) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebHistoryInterface___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebHistoryInterface___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4836,12 +4837,12 @@ func (ptr *QWebHistoryInterface) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QWebHistoryInterface) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryInterface___findChildren_newList2(ptr.Pointer()))
+	return C.QWebHistoryInterface___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QWebHistoryInterface) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebHistoryInterface___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebHistoryInterface___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4857,12 +4858,12 @@ func (ptr *QWebHistoryInterface) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QWebHistoryInterface) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryInterface___findChildren_newList3(ptr.Pointer()))
+	return C.QWebHistoryInterface___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QWebHistoryInterface) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebHistoryInterface___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebHistoryInterface___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4878,12 +4879,12 @@ func (ptr *QWebHistoryInterface) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebHistoryInterface) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryInterface___findChildren_newList(ptr.Pointer()))
+	return C.QWebHistoryInterface___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistoryInterface) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebHistoryInterface___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebHistoryInterface___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4899,7 +4900,7 @@ func (ptr *QWebHistoryInterface) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebHistoryInterface) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryInterface___children_newList(ptr.Pointer()))
+	return C.QWebHistoryInterface___children_newList(ptr.Pointer())
 }
 
 //export callbackQWebHistoryInterface_Event
@@ -5090,13 +5091,13 @@ func PointerFromQWebHistoryItem(ptr QWebHistoryItem_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebHistoryItemFromPointer(ptr unsafe.Pointer) *QWebHistoryItem {
-	var n = new(QWebHistoryItem)
+func NewQWebHistoryItemFromPointer(ptr unsafe.Pointer) (n *QWebHistoryItem) {
+	n = new(QWebHistoryItem)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func NewQWebHistoryItem(other QWebHistoryItem_ITF) *QWebHistoryItem {
-	var tmpValue = NewQWebHistoryItemFromPointer(C.QWebHistoryItem_NewQWebHistoryItem(PointerFromQWebHistoryItem(other)))
+	tmpValue := NewQWebHistoryItemFromPointer(C.QWebHistoryItem_NewQWebHistoryItem(PointerFromQWebHistoryItem(other)))
 	runtime.SetFinalizer(tmpValue, (*QWebHistoryItem).DestroyQWebHistoryItem)
 	return tmpValue
 }
@@ -5117,7 +5118,7 @@ func (ptr *QWebHistoryItem) DestroyQWebHistoryItem() {
 
 func (ptr *QWebHistoryItem) LastVisited() *core.QDateTime {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQDateTimeFromPointer(C.QWebHistoryItem_LastVisited(ptr.Pointer()))
+		tmpValue := core.NewQDateTimeFromPointer(C.QWebHistoryItem_LastVisited(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QDateTime).DestroyQDateTime)
 		return tmpValue
 	}
@@ -5126,7 +5127,7 @@ func (ptr *QWebHistoryItem) LastVisited() *core.QDateTime {
 
 func (ptr *QWebHistoryItem) Icon() *gui.QIcon {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQIconFromPointer(C.QWebHistoryItem_Icon(ptr.Pointer()))
+		tmpValue := gui.NewQIconFromPointer(C.QWebHistoryItem_Icon(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QIcon).DestroyQIcon)
 		return tmpValue
 	}
@@ -5142,7 +5143,7 @@ func (ptr *QWebHistoryItem) Title() string {
 
 func (ptr *QWebHistoryItem) OriginalUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebHistoryItem_OriginalUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebHistoryItem_OriginalUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -5151,7 +5152,7 @@ func (ptr *QWebHistoryItem) OriginalUrl() *core.QUrl {
 
 func (ptr *QWebHistoryItem) Url() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebHistoryItem_Url(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebHistoryItem_Url(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -5160,7 +5161,7 @@ func (ptr *QWebHistoryItem) Url() *core.QUrl {
 
 func (ptr *QWebHistoryItem) UserData() *core.QVariant {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQVariantFromPointer(C.QWebHistoryItem_UserData(ptr.Pointer()))
+		tmpValue := core.NewQVariantFromPointer(C.QWebHistoryItem_UserData(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -5170,9 +5171,10 @@ func (ptr *QWebHistoryItem) UserData() *core.QVariant {
 func (ptr *QWebHistoryItem) ToMap() map[string]*core.QVariant {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) map[string]*core.QVariant {
-			var out = make(map[string]*core.QVariant, int(l.len))
-			for _, i := range NewQWebHistoryItemFromPointer(l.data).__toMap_keyList() {
-				out[i] = NewQWebHistoryItemFromPointer(l.data).__toMap_atList(i)
+			out := make(map[string]*core.QVariant, int(l.len))
+			tmpList := NewQWebHistoryItemFromPointer(l.data)
+			for i, v := range tmpList.__toMap_keyList() {
+				out[v] = tmpList.__toMap_atList(v, i)
 			}
 			return out
 		}(C.QWebHistoryItem_ToMap(ptr.Pointer()))
@@ -5187,14 +5189,14 @@ func (ptr *QWebHistoryItem) IsValid() bool {
 	return false
 }
 
-func (ptr *QWebHistoryItem) __loadFromMap_map_atList(i string) *core.QVariant {
+func (ptr *QWebHistoryItem) __loadFromMap_map_atList(v string, i int) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var iC *C.char
-		if i != "" {
-			iC = C.CString(i)
-			defer C.free(unsafe.Pointer(iC))
+		var vC *C.char
+		if v != "" {
+			vC = C.CString(v)
+			defer C.free(unsafe.Pointer(vC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebHistoryItem___loadFromMap_map_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebHistoryItem___loadFromMap_map_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: vC, len: C.longlong(len(v))}, C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -5213,30 +5215,31 @@ func (ptr *QWebHistoryItem) __loadFromMap_map_setList(key string, i core.QVarian
 }
 
 func (ptr *QWebHistoryItem) __loadFromMap_map_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryItem___loadFromMap_map_newList(ptr.Pointer()))
+	return C.QWebHistoryItem___loadFromMap_map_newList(ptr.Pointer())
 }
 
-func (ptr *QWebHistoryItem) __loadFromMap_keyList() []string {
+func (ptr *QWebHistoryItem) __loadFromMap_map_keyList() []string {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []string {
-			var out = make([]string, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryItemFromPointer(l.data).____loadFromMap_keyList_atList(i)
+			out := make([]string, int(l.len))
+			tmpList := NewQWebHistoryItemFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.____loadFromMap_map_keyList_atList(i)
 			}
 			return out
-		}(C.QWebHistoryItem___loadFromMap_keyList(ptr.Pointer()))
+		}(C.QWebHistoryItem___loadFromMap_map_keyList(ptr.Pointer()))
 	}
 	return make([]string, 0)
 }
 
-func (ptr *QWebHistoryItem) __toMap_atList(i string) *core.QVariant {
+func (ptr *QWebHistoryItem) __toMap_atList(v string, i int) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var iC *C.char
-		if i != "" {
-			iC = C.CString(i)
-			defer C.free(unsafe.Pointer(iC))
+		var vC *C.char
+		if v != "" {
+			vC = C.CString(v)
+			defer C.free(unsafe.Pointer(vC))
 		}
-		var tmpValue = core.NewQVariantFromPointer(C.QWebHistoryItem___toMap_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))}))
+		tmpValue := core.NewQVariantFromPointer(C.QWebHistoryItem___toMap_atList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: vC, len: C.longlong(len(v))}, C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -5255,15 +5258,16 @@ func (ptr *QWebHistoryItem) __toMap_setList(key string, i core.QVariant_ITF) {
 }
 
 func (ptr *QWebHistoryItem) __toMap_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryItem___toMap_newList(ptr.Pointer()))
+	return C.QWebHistoryItem___toMap_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistoryItem) __toMap_keyList() []string {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []string {
-			var out = make([]string, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebHistoryItemFromPointer(l.data).____toMap_keyList_atList(i)
+			out := make([]string, int(l.len))
+			tmpList := NewQWebHistoryItemFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.____toMap_keyList_atList(i)
 			}
 			return out
 		}(C.QWebHistoryItem___toMap_keyList(ptr.Pointer()))
@@ -5271,26 +5275,26 @@ func (ptr *QWebHistoryItem) __toMap_keyList() []string {
 	return make([]string, 0)
 }
 
-func (ptr *QWebHistoryItem) ____loadFromMap_keyList_atList(i int) string {
+func (ptr *QWebHistoryItem) ____loadFromMap_map_keyList_atList(i int) string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.QWebHistoryItem_____loadFromMap_keyList_atList(ptr.Pointer(), C.int(int32(i))))
+		return cGoUnpackString(C.QWebHistoryItem_____loadFromMap_map_keyList_atList(ptr.Pointer(), C.int(int32(i))))
 	}
 	return ""
 }
 
-func (ptr *QWebHistoryItem) ____loadFromMap_keyList_setList(i string) {
+func (ptr *QWebHistoryItem) ____loadFromMap_map_keyList_setList(i string) {
 	if ptr.Pointer() != nil {
 		var iC *C.char
 		if i != "" {
 			iC = C.CString(i)
 			defer C.free(unsafe.Pointer(iC))
 		}
-		C.QWebHistoryItem_____loadFromMap_keyList_setList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))})
+		C.QWebHistoryItem_____loadFromMap_map_keyList_setList(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: iC, len: C.longlong(len(i))})
 	}
 }
 
-func (ptr *QWebHistoryItem) ____loadFromMap_keyList_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryItem_____loadFromMap_keyList_newList(ptr.Pointer()))
+func (ptr *QWebHistoryItem) ____loadFromMap_map_keyList_newList() unsafe.Pointer {
+	return C.QWebHistoryItem_____loadFromMap_map_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *QWebHistoryItem) ____toMap_keyList_atList(i int) string {
@@ -5312,7 +5316,7 @@ func (ptr *QWebHistoryItem) ____toMap_keyList_setList(i string) {
 }
 
 func (ptr *QWebHistoryItem) ____toMap_keyList_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebHistoryItem_____toMap_keyList_newList(ptr.Pointer()))
+	return C.QWebHistoryItem_____toMap_keyList_newList(ptr.Pointer())
 }
 
 type QWebHitTestResult struct {
@@ -5347,19 +5351,19 @@ func PointerFromQWebHitTestResult(ptr QWebHitTestResult_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebHitTestResultFromPointer(ptr unsafe.Pointer) *QWebHitTestResult {
-	var n = new(QWebHitTestResult)
+func NewQWebHitTestResultFromPointer(ptr unsafe.Pointer) (n *QWebHitTestResult) {
+	n = new(QWebHitTestResult)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func NewQWebHitTestResult() *QWebHitTestResult {
-	var tmpValue = NewQWebHitTestResultFromPointer(C.QWebHitTestResult_NewQWebHitTestResult())
+	tmpValue := NewQWebHitTestResultFromPointer(C.QWebHitTestResult_NewQWebHitTestResult())
 	runtime.SetFinalizer(tmpValue, (*QWebHitTestResult).DestroyQWebHitTestResult)
 	return tmpValue
 }
 
 func NewQWebHitTestResult2(other QWebHitTestResult_ITF) *QWebHitTestResult {
-	var tmpValue = NewQWebHitTestResultFromPointer(C.QWebHitTestResult_NewQWebHitTestResult2(PointerFromQWebHitTestResult(other)))
+	tmpValue := NewQWebHitTestResultFromPointer(C.QWebHitTestResult_NewQWebHitTestResult2(PointerFromQWebHitTestResult(other)))
 	runtime.SetFinalizer(tmpValue, (*QWebHitTestResult).DestroyQWebHitTestResult)
 	return tmpValue
 }
@@ -5374,7 +5378,7 @@ func (ptr *QWebHitTestResult) DestroyQWebHitTestResult() {
 
 func (ptr *QWebHitTestResult) Pixmap() *gui.QPixmap {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQPixmapFromPointer(C.QWebHitTestResult_Pixmap(ptr.Pointer()))
+		tmpValue := gui.NewQPixmapFromPointer(C.QWebHitTestResult_Pixmap(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QPixmap).DestroyQPixmap)
 		return tmpValue
 	}
@@ -5383,7 +5387,7 @@ func (ptr *QWebHitTestResult) Pixmap() *gui.QPixmap {
 
 func (ptr *QWebHitTestResult) Pos() *core.QPoint {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQPointFromPointer(C.QWebHitTestResult_Pos(ptr.Pointer()))
+		tmpValue := core.NewQPointFromPointer(C.QWebHitTestResult_Pos(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QPoint).DestroyQPoint)
 		return tmpValue
 	}
@@ -5392,7 +5396,7 @@ func (ptr *QWebHitTestResult) Pos() *core.QPoint {
 
 func (ptr *QWebHitTestResult) BoundingRect() *core.QRect {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQRectFromPointer(C.QWebHitTestResult_BoundingRect(ptr.Pointer()))
+		tmpValue := core.NewQRectFromPointer(C.QWebHitTestResult_BoundingRect(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QRect).DestroyQRect)
 		return tmpValue
 	}
@@ -5429,7 +5433,7 @@ func (ptr *QWebHitTestResult) Title() string {
 
 func (ptr *QWebHitTestResult) ImageUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebHitTestResult_ImageUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebHitTestResult_ImageUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -5438,7 +5442,7 @@ func (ptr *QWebHitTestResult) ImageUrl() *core.QUrl {
 
 func (ptr *QWebHitTestResult) LinkUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebHitTestResult_LinkUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebHitTestResult_LinkUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -5447,7 +5451,7 @@ func (ptr *QWebHitTestResult) LinkUrl() *core.QUrl {
 
 func (ptr *QWebHitTestResult) MediaUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebHitTestResult_MediaUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebHitTestResult_MediaUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -5456,7 +5460,7 @@ func (ptr *QWebHitTestResult) MediaUrl() *core.QUrl {
 
 func (ptr *QWebHitTestResult) Element() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebHitTestResult_Element(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebHitTestResult_Element(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -5465,7 +5469,7 @@ func (ptr *QWebHitTestResult) Element() *QWebElement {
 
 func (ptr *QWebHitTestResult) EnclosingBlockElement() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebHitTestResult_EnclosingBlockElement(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebHitTestResult_EnclosingBlockElement(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -5474,7 +5478,7 @@ func (ptr *QWebHitTestResult) EnclosingBlockElement() *QWebElement {
 
 func (ptr *QWebHitTestResult) LinkElement() *QWebElement {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebElementFromPointer(C.QWebHitTestResult_LinkElement(ptr.Pointer()))
+		tmpValue := NewQWebElementFromPointer(C.QWebHitTestResult_LinkElement(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*QWebElement).DestroyQWebElement)
 		return tmpValue
 	}
@@ -5483,7 +5487,7 @@ func (ptr *QWebHitTestResult) LinkElement() *QWebElement {
 
 func (ptr *QWebHitTestResult) Frame() *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebHitTestResult_Frame(ptr.Pointer()))
+		tmpValue := NewQWebFrameFromPointer(C.QWebHitTestResult_Frame(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5494,7 +5498,7 @@ func (ptr *QWebHitTestResult) Frame() *QWebFrame {
 
 func (ptr *QWebHitTestResult) LinkTargetFrame() *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebHitTestResult_LinkTargetFrame(ptr.Pointer()))
+		tmpValue := NewQWebFrameFromPointer(C.QWebHitTestResult_LinkTargetFrame(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5557,13 +5561,13 @@ func PointerFromQWebInspector(ptr QWebInspector_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebInspectorFromPointer(ptr unsafe.Pointer) *QWebInspector {
-	var n = new(QWebInspector)
+func NewQWebInspectorFromPointer(ptr unsafe.Pointer) (n *QWebInspector) {
+	n = new(QWebInspector)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 func NewQWebInspector(parent widgets.QWidget_ITF) *QWebInspector {
-	var tmpValue = NewQWebInspectorFromPointer(C.QWebInspector_NewQWebInspector(widgets.PointerFromQWidget(parent)))
+	tmpValue := NewQWebInspectorFromPointer(C.QWebInspector_NewQWebInspector(widgets.PointerFromQWidget(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
@@ -5671,7 +5675,7 @@ func callbackQWebInspector_SizeHint(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QWebInspector) SizeHintDefault() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebInspector_SizeHintDefault(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebInspector_SizeHintDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -5680,7 +5684,7 @@ func (ptr *QWebInspector) SizeHintDefault() *core.QSize {
 
 func (ptr *QWebInspector) Page() *QWebPage {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPageFromPointer(C.QWebInspector_Page(ptr.Pointer()))
+		tmpValue := NewQWebPageFromPointer(C.QWebInspector_Page(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5691,7 +5695,7 @@ func (ptr *QWebInspector) Page() *QWebPage {
 
 func (ptr *QWebInspector) __addActions_actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebInspector___addActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebInspector___addActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5707,12 +5711,12 @@ func (ptr *QWebInspector) __addActions_actions_setList(i widgets.QAction_ITF) {
 }
 
 func (ptr *QWebInspector) __addActions_actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___addActions_actions_newList(ptr.Pointer()))
+	return C.QWebInspector___addActions_actions_newList(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __insertActions_actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebInspector___insertActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebInspector___insertActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5728,12 +5732,12 @@ func (ptr *QWebInspector) __insertActions_actions_setList(i widgets.QAction_ITF)
 }
 
 func (ptr *QWebInspector) __insertActions_actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___insertActions_actions_newList(ptr.Pointer()))
+	return C.QWebInspector___insertActions_actions_newList(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebInspector___actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebInspector___actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5749,12 +5753,12 @@ func (ptr *QWebInspector) __actions_setList(i widgets.QAction_ITF) {
 }
 
 func (ptr *QWebInspector) __actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___actions_newList(ptr.Pointer()))
+	return C.QWebInspector___actions_newList(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QWebInspector___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QWebInspector___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -5768,12 +5772,12 @@ func (ptr *QWebInspector) __dynamicPropertyNames_setList(i core.QByteArray_ITF) 
 }
 
 func (ptr *QWebInspector) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QWebInspector___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebInspector___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebInspector___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5789,12 +5793,12 @@ func (ptr *QWebInspector) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QWebInspector) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___findChildren_newList2(ptr.Pointer()))
+	return C.QWebInspector___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebInspector___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebInspector___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5810,12 +5814,12 @@ func (ptr *QWebInspector) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QWebInspector) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___findChildren_newList3(ptr.Pointer()))
+	return C.QWebInspector___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebInspector___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebInspector___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5831,12 +5835,12 @@ func (ptr *QWebInspector) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebInspector) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___findChildren_newList(ptr.Pointer()))
+	return C.QWebInspector___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QWebInspector) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebInspector___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebInspector___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -5852,7 +5856,7 @@ func (ptr *QWebInspector) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebInspector) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebInspector___children_newList(ptr.Pointer()))
+	return C.QWebInspector___children_newList(ptr.Pointer())
 }
 
 //export callbackQWebInspector_Close
@@ -6563,7 +6567,7 @@ func callbackQWebInspector_MinimumSizeHint(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QWebInspector) MinimumSizeHintDefault() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebInspector_MinimumSizeHintDefault(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebInspector_MinimumSizeHintDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -6581,7 +6585,7 @@ func callbackQWebInspector_InputMethodQuery(ptr unsafe.Pointer, query C.longlong
 
 func (ptr *QWebInspector) InputMethodQueryDefault(query core.Qt__InputMethodQuery) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQVariantFromPointer(C.QWebInspector_InputMethodQueryDefault(ptr.Pointer(), C.longlong(query)))
+		tmpValue := core.NewQVariantFromPointer(C.QWebInspector_InputMethodQueryDefault(ptr.Pointer(), C.longlong(query)))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -6602,6 +6606,22 @@ func (ptr *QWebInspector) HasHeightForWidthDefault() bool {
 		return C.QWebInspector_HasHeightForWidthDefault(ptr.Pointer()) != 0
 	}
 	return false
+}
+
+//export callbackQWebInspector_MetaObject
+func callbackQWebInspector_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
+	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
+		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
+	}
+
+	return core.PointerFromQMetaObject(NewQWebInspectorFromPointer(ptr).MetaObjectDefault())
+}
+
+func (ptr *QWebInspector) MetaObjectDefault() *core.QMetaObject {
+	if ptr.Pointer() != nil {
+		return core.NewQMetaObjectFromPointer(C.QWebInspector_MetaObjectDefault(ptr.Pointer()))
+	}
+	return nil
 }
 
 //export callbackQWebInspector_HeightForWidth
@@ -6634,6 +6654,21 @@ func (ptr *QWebInspector) MetricDefault(m gui.QPaintDevice__PaintDeviceMetric) i
 		return int(int32(C.QWebInspector_MetricDefault(ptr.Pointer(), C.longlong(m))))
 	}
 	return 0
+}
+
+//export callbackQWebInspector_InitPainter
+func callbackQWebInspector_InitPainter(ptr unsafe.Pointer, painter unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "initPainter"); signal != nil {
+		signal.(func(*gui.QPainter))(gui.NewQPainterFromPointer(painter))
+	} else {
+		NewQWebInspectorFromPointer(ptr).InitPainterDefault(gui.NewQPainterFromPointer(painter))
+	}
+}
+
+func (ptr *QWebInspector) InitPainterDefault(painter gui.QPainter_ITF) {
+	if ptr.Pointer() != nil {
+		C.QWebInspector_InitPainterDefault(ptr.Pointer(), gui.PointerFromQPainter(painter))
+	}
 }
 
 //export callbackQWebInspector_EventFilter
@@ -6760,22 +6795,6 @@ func (ptr *QWebInspector) TimerEventDefault(event core.QTimerEvent_ITF) {
 	}
 }
 
-//export callbackQWebInspector_MetaObject
-func callbackQWebInspector_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
-	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
-		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
-	}
-
-	return core.PointerFromQMetaObject(NewQWebInspectorFromPointer(ptr).MetaObjectDefault())
-}
-
-func (ptr *QWebInspector) MetaObjectDefault() *core.QMetaObject {
-	if ptr.Pointer() != nil {
-		return core.NewQMetaObjectFromPointer(C.QWebInspector_MetaObjectDefault(ptr.Pointer()))
-	}
-	return nil
-}
-
 type QWebPage struct {
 	core.QObject
 }
@@ -6809,10 +6828,10 @@ func PointerFromQWebPage(ptr QWebPage_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebPageFromPointer(ptr unsafe.Pointer) *QWebPage {
-	var n = new(QWebPage)
+func NewQWebPageFromPointer(ptr unsafe.Pointer) (n *QWebPage) {
+	n = new(QWebPage)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 //go:generate stringer -type=QWebPage__ErrorDomain
@@ -7028,7 +7047,7 @@ const (
 
 func (ptr *QWebPage) CreateStandardContextMenu() *widgets.QMenu {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQMenuFromPointer(C.QWebPage_CreateStandardContextMenu(ptr.Pointer()))
+		tmpValue := widgets.NewQMenuFromPointer(C.QWebPage_CreateStandardContextMenu(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -7074,11 +7093,11 @@ func (ptr *QWebPage) CreatePlugin(classid string, url core.QUrl_ITF, paramNames 
 			classidC = C.CString(classid)
 			defer C.free(unsafe.Pointer(classidC))
 		}
-		var paramNamesC = C.CString(strings.Join(paramNames, "|"))
+		paramNamesC := C.CString(strings.Join(paramNames, "|"))
 		defer C.free(unsafe.Pointer(paramNamesC))
-		var paramValuesC = C.CString(strings.Join(paramValues, "|"))
+		paramValuesC := C.CString(strings.Join(paramValues, "|"))
 		defer C.free(unsafe.Pointer(paramValuesC))
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPage_CreatePlugin(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: classidC, len: C.longlong(len(classid))}, core.PointerFromQUrl(url), C.struct_QtWebKit_PackedString{data: paramNamesC, len: C.longlong(len(strings.Join(paramNames, "|")))}, C.struct_QtWebKit_PackedString{data: paramValuesC, len: C.longlong(len(strings.Join(paramValues, "|")))}))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPage_CreatePlugin(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: classidC, len: C.longlong(len(classid))}, core.PointerFromQUrl(url), C.struct_QtWebKit_PackedString{data: paramNamesC, len: C.longlong(len(strings.Join(paramNames, "|")))}, C.struct_QtWebKit_PackedString{data: paramValuesC, len: C.longlong(len(strings.Join(paramValues, "|")))}))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -7094,11 +7113,11 @@ func (ptr *QWebPage) CreatePluginDefault(classid string, url core.QUrl_ITF, para
 			classidC = C.CString(classid)
 			defer C.free(unsafe.Pointer(classidC))
 		}
-		var paramNamesC = C.CString(strings.Join(paramNames, "|"))
+		paramNamesC := C.CString(strings.Join(paramNames, "|"))
 		defer C.free(unsafe.Pointer(paramNamesC))
-		var paramValuesC = C.CString(strings.Join(paramValues, "|"))
+		paramValuesC := C.CString(strings.Join(paramValues, "|"))
 		defer C.free(unsafe.Pointer(paramValuesC))
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPage_CreatePluginDefault(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: classidC, len: C.longlong(len(classid))}, core.PointerFromQUrl(url), C.struct_QtWebKit_PackedString{data: paramNamesC, len: C.longlong(len(strings.Join(paramNames, "|")))}, C.struct_QtWebKit_PackedString{data: paramValuesC, len: C.longlong(len(strings.Join(paramValues, "|")))}))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPage_CreatePluginDefault(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: classidC, len: C.longlong(len(classid))}, core.PointerFromQUrl(url), C.struct_QtWebKit_PackedString{data: paramNamesC, len: C.longlong(len(strings.Join(paramNames, "|")))}, C.struct_QtWebKit_PackedString{data: paramValuesC, len: C.longlong(len(strings.Join(paramValues, "|")))}))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -7194,7 +7213,7 @@ func (ptr *QWebPage) DisconnectCreateWindow() {
 
 func (ptr *QWebPage) CreateWindow(ty QWebPage__WebWindowType) *QWebPage {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPageFromPointer(C.QWebPage_CreateWindow(ptr.Pointer(), C.longlong(ty)))
+		tmpValue := NewQWebPageFromPointer(C.QWebPage_CreateWindow(ptr.Pointer(), C.longlong(ty)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -7205,7 +7224,7 @@ func (ptr *QWebPage) CreateWindow(ty QWebPage__WebWindowType) *QWebPage {
 
 func (ptr *QWebPage) CreateWindowDefault(ty QWebPage__WebWindowType) *QWebPage {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPageFromPointer(C.QWebPage_CreateWindowDefault(ptr.Pointer(), C.longlong(ty)))
+		tmpValue := NewQWebPageFromPointer(C.QWebPage_CreateWindowDefault(ptr.Pointer(), C.longlong(ty)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -7215,7 +7234,7 @@ func (ptr *QWebPage) CreateWindowDefault(ty QWebPage__WebWindowType) *QWebPage {
 }
 
 func NewQWebPage(parent core.QObject_ITF) *QWebPage {
-	var tmpValue = NewQWebPageFromPointer(C.QWebPage_NewQWebPage(core.PointerFromQObject(parent)))
+	tmpValue := NewQWebPageFromPointer(C.QWebPage_NewQWebPage(core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
@@ -8918,7 +8937,7 @@ func (ptr *QWebPage) LinkDelegationPolicy() QWebPage__LinkDelegationPolicy {
 
 func (ptr *QWebPage) Action(action QWebPage__WebAction) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebPage_Action(ptr.Pointer(), C.longlong(action)))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebPage_Action(ptr.Pointer(), C.longlong(action)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -8929,7 +8948,7 @@ func (ptr *QWebPage) Action(action QWebPage__WebAction) *widgets.QAction {
 
 func (ptr *QWebPage) CustomAction(action int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebPage_CustomAction(ptr.Pointer(), C.int(int32(action))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebPage_CustomAction(ptr.Pointer(), C.int(int32(action))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -8940,7 +8959,7 @@ func (ptr *QWebPage) CustomAction(action int) *widgets.QAction {
 
 func (ptr *QWebPage) NetworkAccessManager() *network.QNetworkAccessManager {
 	if ptr.Pointer() != nil {
-		var tmpValue = network.NewQNetworkAccessManagerFromPointer(C.QWebPage_NetworkAccessManager(ptr.Pointer()))
+		tmpValue := network.NewQNetworkAccessManagerFromPointer(C.QWebPage_NetworkAccessManager(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -8951,7 +8970,7 @@ func (ptr *QWebPage) NetworkAccessManager() *network.QNetworkAccessManager {
 
 func (ptr *QWebPage) Palette() *gui.QPalette {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQPaletteFromPointer(C.QWebPage_Palette(ptr.Pointer()))
+		tmpValue := gui.NewQPaletteFromPointer(C.QWebPage_Palette(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QPalette).DestroyQPalette)
 		return tmpValue
 	}
@@ -8960,7 +8979,7 @@ func (ptr *QWebPage) Palette() *gui.QPalette {
 
 func (ptr *QWebPage) PreferredContentsSize() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebPage_PreferredContentsSize(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebPage_PreferredContentsSize(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -8969,7 +8988,7 @@ func (ptr *QWebPage) PreferredContentsSize() *core.QSize {
 
 func (ptr *QWebPage) ViewportSize() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebPage_ViewportSize(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebPage_ViewportSize(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -9044,7 +9063,7 @@ func (ptr *QWebPage) SupportedContentTypes() []string {
 
 func (ptr *QWebPage) UndoStack() *widgets.QUndoStack {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQUndoStackFromPointer(C.QWebPage_UndoStack(ptr.Pointer()))
+		tmpValue := widgets.NewQUndoStackFromPointer(C.QWebPage_UndoStack(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9055,7 +9074,7 @@ func (ptr *QWebPage) UndoStack() *widgets.QUndoStack {
 
 func (ptr *QWebPage) InputMethodQuery(property core.Qt__InputMethodQuery) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQVariantFromPointer(C.QWebPage_InputMethodQuery(ptr.Pointer(), C.longlong(property)))
+		tmpValue := core.NewQVariantFromPointer(C.QWebPage_InputMethodQuery(ptr.Pointer(), C.longlong(property)))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -9064,7 +9083,7 @@ func (ptr *QWebPage) InputMethodQuery(property core.Qt__InputMethodQuery) *core.
 
 func (ptr *QWebPage) CurrentFrame() *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebPage_CurrentFrame(ptr.Pointer()))
+		tmpValue := NewQWebFrameFromPointer(C.QWebPage_CurrentFrame(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9075,7 +9094,7 @@ func (ptr *QWebPage) CurrentFrame() *QWebFrame {
 
 func (ptr *QWebPage) FrameAt(pos core.QPoint_ITF) *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebPage_FrameAt(ptr.Pointer(), core.PointerFromQPoint(pos)))
+		tmpValue := NewQWebFrameFromPointer(C.QWebPage_FrameAt(ptr.Pointer(), core.PointerFromQPoint(pos)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9086,7 +9105,7 @@ func (ptr *QWebPage) FrameAt(pos core.QPoint_ITF) *QWebFrame {
 
 func (ptr *QWebPage) MainFrame() *QWebFrame {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebFrameFromPointer(C.QWebPage_MainFrame(ptr.Pointer()))
+		tmpValue := NewQWebFrameFromPointer(C.QWebPage_MainFrame(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9104,7 +9123,7 @@ func (ptr *QWebPage) History() *QWebHistory {
 
 func (ptr *QWebPage) PluginFactory() *QWebPluginFactory {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPluginFactoryFromPointer(C.QWebPage_PluginFactory(ptr.Pointer()))
+		tmpValue := NewQWebPluginFactoryFromPointer(C.QWebPage_PluginFactory(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9122,7 +9141,7 @@ func (ptr *QWebPage) Settings() *QWebSettings {
 
 func (ptr *QWebPage) View() *widgets.QWidget {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQWidgetFromPointer(C.QWebPage_View(ptr.Pointer()))
+		tmpValue := widgets.NewQWidgetFromPointer(C.QWebPage_View(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9263,7 +9282,7 @@ func (ptr *QWebPage) SetViewportSize(size core.QSize_ITF) {
 
 func (ptr *QWebPage) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QWebPage___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QWebPage___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -9277,12 +9296,12 @@ func (ptr *QWebPage) __dynamicPropertyNames_setList(i core.QByteArray_ITF) {
 }
 
 func (ptr *QWebPage) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPage___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QWebPage___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QWebPage) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPage___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPage___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9298,12 +9317,12 @@ func (ptr *QWebPage) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPage) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPage___findChildren_newList2(ptr.Pointer()))
+	return C.QWebPage___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QWebPage) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPage___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPage___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9319,12 +9338,12 @@ func (ptr *QWebPage) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPage) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPage___findChildren_newList3(ptr.Pointer()))
+	return C.QWebPage___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QWebPage) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPage___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPage___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9340,12 +9359,12 @@ func (ptr *QWebPage) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPage) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPage___findChildren_newList(ptr.Pointer()))
+	return C.QWebPage___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QWebPage) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPage___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPage___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9361,7 +9380,7 @@ func (ptr *QWebPage) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPage) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPage___children_newList(ptr.Pointer()))
+	return C.QWebPage___children_newList(ptr.Pointer())
 }
 
 //export callbackQWebPage_EventFilter
@@ -9537,10 +9556,10 @@ func PointerFromQWebPluginFactory(ptr QWebPluginFactory_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebPluginFactoryFromPointer(ptr unsafe.Pointer) *QWebPluginFactory {
-	var n = new(QWebPluginFactory)
+func NewQWebPluginFactoryFromPointer(ptr unsafe.Pointer) (n *QWebPluginFactory) {
+	n = new(QWebPluginFactory)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 //export callbackQWebPluginFactory_RefreshPlugins
@@ -9668,11 +9687,11 @@ func (ptr *QWebPluginFactory) Create(mimeType string, url core.QUrl_ITF, argumen
 			mimeTypeC = C.CString(mimeType)
 			defer C.free(unsafe.Pointer(mimeTypeC))
 		}
-		var argumentNamesC = C.CString(strings.Join(argumentNames, "|"))
+		argumentNamesC := C.CString(strings.Join(argumentNames, "|"))
 		defer C.free(unsafe.Pointer(argumentNamesC))
-		var argumentValuesC = C.CString(strings.Join(argumentValues, "|"))
+		argumentValuesC := C.CString(strings.Join(argumentValues, "|"))
 		defer C.free(unsafe.Pointer(argumentValuesC))
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPluginFactory_Create(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: mimeTypeC, len: C.longlong(len(mimeType))}, core.PointerFromQUrl(url), C.struct_QtWebKit_PackedString{data: argumentNamesC, len: C.longlong(len(strings.Join(argumentNames, "|")))}, C.struct_QtWebKit_PackedString{data: argumentValuesC, len: C.longlong(len(strings.Join(argumentValues, "|")))}))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPluginFactory_Create(ptr.Pointer(), C.struct_QtWebKit_PackedString{data: mimeTypeC, len: C.longlong(len(mimeType))}, core.PointerFromQUrl(url), C.struct_QtWebKit_PackedString{data: argumentNamesC, len: C.longlong(len(strings.Join(argumentNames, "|")))}, C.struct_QtWebKit_PackedString{data: argumentValuesC, len: C.longlong(len(strings.Join(argumentValues, "|")))}))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9683,7 +9702,7 @@ func (ptr *QWebPluginFactory) Create(mimeType string, url core.QUrl_ITF, argumen
 
 func (ptr *QWebPluginFactory) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QWebPluginFactory___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QWebPluginFactory___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -9697,12 +9716,12 @@ func (ptr *QWebPluginFactory) __dynamicPropertyNames_setList(i core.QByteArray_I
 }
 
 func (ptr *QWebPluginFactory) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPluginFactory___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QWebPluginFactory___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QWebPluginFactory) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPluginFactory___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPluginFactory___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9718,12 +9737,12 @@ func (ptr *QWebPluginFactory) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPluginFactory) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPluginFactory___findChildren_newList2(ptr.Pointer()))
+	return C.QWebPluginFactory___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QWebPluginFactory) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPluginFactory___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPluginFactory___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9739,12 +9758,12 @@ func (ptr *QWebPluginFactory) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPluginFactory) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPluginFactory___findChildren_newList3(ptr.Pointer()))
+	return C.QWebPluginFactory___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QWebPluginFactory) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPluginFactory___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPluginFactory___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9760,12 +9779,12 @@ func (ptr *QWebPluginFactory) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPluginFactory) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPluginFactory___findChildren_newList(ptr.Pointer()))
+	return C.QWebPluginFactory___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QWebPluginFactory) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebPluginFactory___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebPluginFactory___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -9781,7 +9800,7 @@ func (ptr *QWebPluginFactory) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebPluginFactory) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebPluginFactory___children_newList(ptr.Pointer()))
+	return C.QWebPluginFactory___children_newList(ptr.Pointer())
 }
 
 //export callbackQWebPluginFactory_Event
@@ -9972,10 +9991,10 @@ func PointerFromQWebSecurityOrigin(ptr QWebSecurityOrigin_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebSecurityOriginFromPointer(ptr unsafe.Pointer) *QWebSecurityOrigin {
-	var n = new(QWebSecurityOrigin)
+func NewQWebSecurityOriginFromPointer(ptr unsafe.Pointer) (n *QWebSecurityOrigin) {
+	n = new(QWebSecurityOrigin)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 //go:generate stringer -type=QWebSecurityOrigin__SubdomainSetting
@@ -9989,9 +10008,10 @@ const (
 
 func QWebSecurityOrigin_AllOrigins() []*QWebSecurityOrigin {
 	return func(l C.struct_QtWebKit_PackedList) []*QWebSecurityOrigin {
-		var out = make([]*QWebSecurityOrigin, int(l.len))
-		for i := 0; i < int(l.len); i++ {
-			out[i] = NewQWebSecurityOriginFromPointer(l.data).__allOrigins_atList(i)
+		out := make([]*QWebSecurityOrigin, int(l.len))
+		tmpList := NewQWebSecurityOriginFromPointer(l.data)
+		for i := 0; i < len(out); i++ {
+			out[i] = tmpList.__allOrigins_atList(i)
 		}
 		return out
 	}(C.QWebSecurityOrigin_QWebSecurityOrigin_AllOrigins())
@@ -9999,9 +10019,10 @@ func QWebSecurityOrigin_AllOrigins() []*QWebSecurityOrigin {
 
 func (ptr *QWebSecurityOrigin) AllOrigins() []*QWebSecurityOrigin {
 	return func(l C.struct_QtWebKit_PackedList) []*QWebSecurityOrigin {
-		var out = make([]*QWebSecurityOrigin, int(l.len))
-		for i := 0; i < int(l.len); i++ {
-			out[i] = NewQWebSecurityOriginFromPointer(l.data).__allOrigins_atList(i)
+		out := make([]*QWebSecurityOrigin, int(l.len))
+		tmpList := NewQWebSecurityOriginFromPointer(l.data)
+		for i := 0; i < len(out); i++ {
+			out[i] = tmpList.__allOrigins_atList(i)
 		}
 		return out
 	}(C.QWebSecurityOrigin_QWebSecurityOrigin_AllOrigins())
@@ -10016,13 +10037,13 @@ func (ptr *QWebSecurityOrigin) LocalSchemes() []string {
 }
 
 func NewQWebSecurityOrigin(url core.QUrl_ITF) *QWebSecurityOrigin {
-	var tmpValue = NewQWebSecurityOriginFromPointer(C.QWebSecurityOrigin_NewQWebSecurityOrigin(core.PointerFromQUrl(url)))
+	tmpValue := NewQWebSecurityOriginFromPointer(C.QWebSecurityOrigin_NewQWebSecurityOrigin(core.PointerFromQUrl(url)))
 	runtime.SetFinalizer(tmpValue, (*QWebSecurityOrigin).DestroyQWebSecurityOrigin)
 	return tmpValue
 }
 
 func NewQWebSecurityOrigin2(other QWebSecurityOrigin_ITF) *QWebSecurityOrigin {
-	var tmpValue = NewQWebSecurityOriginFromPointer(C.QWebSecurityOrigin_NewQWebSecurityOrigin2(PointerFromQWebSecurityOrigin(other)))
+	tmpValue := NewQWebSecurityOriginFromPointer(C.QWebSecurityOrigin_NewQWebSecurityOrigin2(PointerFromQWebSecurityOrigin(other)))
 	runtime.SetFinalizer(tmpValue, (*QWebSecurityOrigin).DestroyQWebSecurityOrigin)
 	return tmpValue
 }
@@ -10118,9 +10139,10 @@ func (ptr *QWebSecurityOrigin) DestroyQWebSecurityOrigin() {
 func (ptr *QWebSecurityOrigin) Databases() []*QWebDatabase {
 	if ptr.Pointer() != nil {
 		return func(l C.struct_QtWebKit_PackedList) []*QWebDatabase {
-			var out = make([]*QWebDatabase, int(l.len))
-			for i := 0; i < int(l.len); i++ {
-				out[i] = NewQWebSecurityOriginFromPointer(l.data).__databases_atList(i)
+			out := make([]*QWebDatabase, int(l.len))
+			tmpList := NewQWebSecurityOriginFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__databases_atList(i)
 			}
 			return out
 		}(C.QWebSecurityOrigin_Databases(ptr.Pointer()))
@@ -10165,7 +10187,7 @@ func (ptr *QWebSecurityOrigin) DatabaseUsage() int64 {
 
 func (ptr *QWebSecurityOrigin) __allOrigins_atList(i int) *QWebSecurityOrigin {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebSecurityOriginFromPointer(C.QWebSecurityOrigin___allOrigins_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebSecurityOriginFromPointer(C.QWebSecurityOrigin___allOrigins_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebSecurityOrigin).DestroyQWebSecurityOrigin)
 		return tmpValue
 	}
@@ -10179,12 +10201,12 @@ func (ptr *QWebSecurityOrigin) __allOrigins_setList(i QWebSecurityOrigin_ITF) {
 }
 
 func (ptr *QWebSecurityOrigin) __allOrigins_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebSecurityOrigin___allOrigins_newList(ptr.Pointer()))
+	return C.QWebSecurityOrigin___allOrigins_newList(ptr.Pointer())
 }
 
 func (ptr *QWebSecurityOrigin) __databases_atList(i int) *QWebDatabase {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebDatabaseFromPointer(C.QWebSecurityOrigin___databases_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewQWebDatabaseFromPointer(C.QWebSecurityOrigin___databases_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*QWebDatabase).DestroyQWebDatabase)
 		return tmpValue
 	}
@@ -10198,7 +10220,7 @@ func (ptr *QWebSecurityOrigin) __databases_setList(i QWebDatabase_ITF) {
 }
 
 func (ptr *QWebSecurityOrigin) __databases_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebSecurityOrigin___databases_newList(ptr.Pointer()))
+	return C.QWebSecurityOrigin___databases_newList(ptr.Pointer())
 }
 
 type QWebSettings struct {
@@ -10233,10 +10255,10 @@ func PointerFromQWebSettings(ptr QWebSettings_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebSettingsFromPointer(ptr unsafe.Pointer) *QWebSettings {
-	var n = new(QWebSettings)
+func NewQWebSettingsFromPointer(ptr unsafe.Pointer) (n *QWebSettings) {
+	n = new(QWebSettings)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 func (ptr *QWebSettings) DestroyQWebSettings() {
@@ -10342,25 +10364,25 @@ const (
 )
 
 func QWebSettings_IconForUrl(url core.QUrl_ITF) *gui.QIcon {
-	var tmpValue = gui.NewQIconFromPointer(C.QWebSettings_QWebSettings_IconForUrl(core.PointerFromQUrl(url)))
+	tmpValue := gui.NewQIconFromPointer(C.QWebSettings_QWebSettings_IconForUrl(core.PointerFromQUrl(url)))
 	runtime.SetFinalizer(tmpValue, (*gui.QIcon).DestroyQIcon)
 	return tmpValue
 }
 
 func (ptr *QWebSettings) IconForUrl(url core.QUrl_ITF) *gui.QIcon {
-	var tmpValue = gui.NewQIconFromPointer(C.QWebSettings_QWebSettings_IconForUrl(core.PointerFromQUrl(url)))
+	tmpValue := gui.NewQIconFromPointer(C.QWebSettings_QWebSettings_IconForUrl(core.PointerFromQUrl(url)))
 	runtime.SetFinalizer(tmpValue, (*gui.QIcon).DestroyQIcon)
 	return tmpValue
 }
 
 func QWebSettings_WebGraphic(ty QWebSettings__WebGraphic) *gui.QPixmap {
-	var tmpValue = gui.NewQPixmapFromPointer(C.QWebSettings_QWebSettings_WebGraphic(C.longlong(ty)))
+	tmpValue := gui.NewQPixmapFromPointer(C.QWebSettings_QWebSettings_WebGraphic(C.longlong(ty)))
 	runtime.SetFinalizer(tmpValue, (*gui.QPixmap).DestroyQPixmap)
 	return tmpValue
 }
 
 func (ptr *QWebSettings) WebGraphic(ty QWebSettings__WebGraphic) *gui.QPixmap {
-	var tmpValue = gui.NewQPixmapFromPointer(C.QWebSettings_QWebSettings_WebGraphic(C.longlong(ty)))
+	tmpValue := gui.NewQPixmapFromPointer(C.QWebSettings_QWebSettings_WebGraphic(C.longlong(ty)))
 	runtime.SetFinalizer(tmpValue, (*gui.QPixmap).DestroyQPixmap)
 	return tmpValue
 }
@@ -10624,13 +10646,13 @@ func (ptr *QWebSettings) SetOfflineWebApplicationCacheQuota(maximumSize int64) {
 }
 
 func QWebSettings_SetPluginSearchPaths(paths []string) {
-	var pathsC = C.CString(strings.Join(paths, "|"))
+	pathsC := C.CString(strings.Join(paths, "|"))
 	defer C.free(unsafe.Pointer(pathsC))
 	C.QWebSettings_QWebSettings_SetPluginSearchPaths(C.struct_QtWebKit_PackedString{data: pathsC, len: C.longlong(len(strings.Join(paths, "|")))})
 }
 
 func (ptr *QWebSettings) SetPluginSearchPaths(paths []string) {
-	var pathsC = C.CString(strings.Join(paths, "|"))
+	pathsC := C.CString(strings.Join(paths, "|"))
 	defer C.free(unsafe.Pointer(pathsC))
 	C.QWebSettings_QWebSettings_SetPluginSearchPaths(C.struct_QtWebKit_PackedString{data: pathsC, len: C.longlong(len(strings.Join(paths, "|")))})
 }
@@ -10685,7 +10707,7 @@ func (ptr *QWebSettings) LocalStoragePath() string {
 
 func (ptr *QWebSettings) UserStyleSheetUrl() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebSettings_UserStyleSheetUrl(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebSettings_UserStyleSheetUrl(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -10746,10 +10768,10 @@ func PointerFromQWebView(ptr QWebView_ITF) unsafe.Pointer {
 	return nil
 }
 
-func NewQWebViewFromPointer(ptr unsafe.Pointer) *QWebView {
-	var n = new(QWebView)
+func NewQWebViewFromPointer(ptr unsafe.Pointer) (n *QWebView) {
+	n = new(QWebView)
 	n.SetPointer(ptr)
-	return n
+	return
 }
 
 //export callbackQWebView_CreateWindow
@@ -10784,7 +10806,7 @@ func (ptr *QWebView) DisconnectCreateWindow() {
 
 func (ptr *QWebView) CreateWindow(ty QWebPage__WebWindowType) *QWebView {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebViewFromPointer(C.QWebView_CreateWindow(ptr.Pointer(), C.longlong(ty)))
+		tmpValue := NewQWebViewFromPointer(C.QWebView_CreateWindow(ptr.Pointer(), C.longlong(ty)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -10795,7 +10817,7 @@ func (ptr *QWebView) CreateWindow(ty QWebPage__WebWindowType) *QWebView {
 
 func (ptr *QWebView) CreateWindowDefault(ty QWebPage__WebWindowType) *QWebView {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebViewFromPointer(C.QWebView_CreateWindowDefault(ptr.Pointer(), C.longlong(ty)))
+		tmpValue := NewQWebViewFromPointer(C.QWebView_CreateWindowDefault(ptr.Pointer(), C.longlong(ty)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -10805,7 +10827,7 @@ func (ptr *QWebView) CreateWindowDefault(ty QWebPage__WebWindowType) *QWebView {
 }
 
 func NewQWebView(parent widgets.QWidget_ITF) *QWebView {
-	var tmpValue = NewQWebViewFromPointer(C.QWebView_NewQWebView(widgets.PointerFromQWidget(parent)))
+	tmpValue := NewQWebViewFromPointer(C.QWebView_NewQWebView(widgets.PointerFromQWidget(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 	}
@@ -11741,7 +11763,7 @@ func (ptr *QWebView) DestroyQWebView() {
 
 func (ptr *QWebView) PageAction(action QWebPage__WebAction) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebView_PageAction(ptr.Pointer(), C.longlong(action)))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebView_PageAction(ptr.Pointer(), C.longlong(action)))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -11752,7 +11774,7 @@ func (ptr *QWebView) PageAction(action QWebPage__WebAction) *widgets.QAction {
 
 func (ptr *QWebView) Icon() *gui.QIcon {
 	if ptr.Pointer() != nil {
-		var tmpValue = gui.NewQIconFromPointer(C.QWebView_Icon(ptr.Pointer()))
+		tmpValue := gui.NewQIconFromPointer(C.QWebView_Icon(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*gui.QIcon).DestroyQIcon)
 		return tmpValue
 	}
@@ -11777,7 +11799,7 @@ func callbackQWebView_SizeHint(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QWebView) SizeHintDefault() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebView_SizeHintDefault(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebView_SizeHintDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -11807,7 +11829,7 @@ func (ptr *QWebView) Title() string {
 
 func (ptr *QWebView) Url() *core.QUrl {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQUrlFromPointer(C.QWebView_Url(ptr.Pointer()))
+		tmpValue := core.NewQUrlFromPointer(C.QWebView_Url(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QUrl).DestroyQUrl)
 		return tmpValue
 	}
@@ -11825,7 +11847,7 @@ func callbackQWebView_InputMethodQuery(ptr unsafe.Pointer, property C.longlong) 
 
 func (ptr *QWebView) InputMethodQueryDefault(property core.Qt__InputMethodQuery) *core.QVariant {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQVariantFromPointer(C.QWebView_InputMethodQueryDefault(ptr.Pointer(), C.longlong(property)))
+		tmpValue := core.NewQVariantFromPointer(C.QWebView_InputMethodQueryDefault(ptr.Pointer(), C.longlong(property)))
 		runtime.SetFinalizer(tmpValue, (*core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -11841,7 +11863,7 @@ func (ptr *QWebView) History() *QWebHistory {
 
 func (ptr *QWebView) Page() *QWebPage {
 	if ptr.Pointer() != nil {
-		var tmpValue = NewQWebPageFromPointer(C.QWebView_Page(ptr.Pointer()))
+		tmpValue := NewQWebPageFromPointer(C.QWebView_Page(ptr.Pointer()))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -11929,7 +11951,7 @@ func (ptr *QWebView) PrintDefault(printer printsupport.QPrinter_ITF) {
 
 func (ptr *QWebView) __addActions_actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebView___addActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebView___addActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -11945,12 +11967,12 @@ func (ptr *QWebView) __addActions_actions_setList(i widgets.QAction_ITF) {
 }
 
 func (ptr *QWebView) __addActions_actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___addActions_actions_newList(ptr.Pointer()))
+	return C.QWebView___addActions_actions_newList(ptr.Pointer())
 }
 
 func (ptr *QWebView) __insertActions_actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebView___insertActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebView___insertActions_actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -11966,12 +11988,12 @@ func (ptr *QWebView) __insertActions_actions_setList(i widgets.QAction_ITF) {
 }
 
 func (ptr *QWebView) __insertActions_actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___insertActions_actions_newList(ptr.Pointer()))
+	return C.QWebView___insertActions_actions_newList(ptr.Pointer())
 }
 
 func (ptr *QWebView) __actions_atList(i int) *widgets.QAction {
 	if ptr.Pointer() != nil {
-		var tmpValue = widgets.NewQActionFromPointer(C.QWebView___actions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := widgets.NewQActionFromPointer(C.QWebView___actions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -11987,12 +12009,12 @@ func (ptr *QWebView) __actions_setList(i widgets.QAction_ITF) {
 }
 
 func (ptr *QWebView) __actions_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___actions_newList(ptr.Pointer()))
+	return C.QWebView___actions_newList(ptr.Pointer())
 }
 
 func (ptr *QWebView) __dynamicPropertyNames_atList(i int) *core.QByteArray {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQByteArrayFromPointer(C.QWebView___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQByteArrayFromPointer(C.QWebView___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -12006,12 +12028,12 @@ func (ptr *QWebView) __dynamicPropertyNames_setList(i core.QByteArray_ITF) {
 }
 
 func (ptr *QWebView) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___dynamicPropertyNames_newList(ptr.Pointer()))
+	return C.QWebView___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *QWebView) __findChildren_atList2(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebView___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebView___findChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -12027,12 +12049,12 @@ func (ptr *QWebView) __findChildren_setList2(i core.QObject_ITF) {
 }
 
 func (ptr *QWebView) __findChildren_newList2() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___findChildren_newList2(ptr.Pointer()))
+	return C.QWebView___findChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *QWebView) __findChildren_atList3(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebView___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebView___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -12048,12 +12070,12 @@ func (ptr *QWebView) __findChildren_setList3(i core.QObject_ITF) {
 }
 
 func (ptr *QWebView) __findChildren_newList3() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___findChildren_newList3(ptr.Pointer()))
+	return C.QWebView___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *QWebView) __findChildren_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebView___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebView___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -12069,12 +12091,12 @@ func (ptr *QWebView) __findChildren_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebView) __findChildren_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___findChildren_newList(ptr.Pointer()))
+	return C.QWebView___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *QWebView) __children_atList(i int) *core.QObject {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQObjectFromPointer(C.QWebView___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := core.NewQObjectFromPointer(C.QWebView___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -12090,7 +12112,7 @@ func (ptr *QWebView) __children_setList(i core.QObject_ITF) {
 }
 
 func (ptr *QWebView) __children_newList() unsafe.Pointer {
-	return unsafe.Pointer(C.QWebView___children_newList(ptr.Pointer()))
+	return C.QWebView___children_newList(ptr.Pointer())
 }
 
 //export callbackQWebView_Close
@@ -12575,7 +12597,7 @@ func callbackQWebView_MinimumSizeHint(ptr unsafe.Pointer) unsafe.Pointer {
 
 func (ptr *QWebView) MinimumSizeHintDefault() *core.QSize {
 	if ptr.Pointer() != nil {
-		var tmpValue = core.NewQSizeFromPointer(C.QWebView_MinimumSizeHintDefault(ptr.Pointer()))
+		tmpValue := core.NewQSizeFromPointer(C.QWebView_MinimumSizeHintDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*core.QSize).DestroyQSize)
 		return tmpValue
 	}
@@ -12596,6 +12618,22 @@ func (ptr *QWebView) HasHeightForWidthDefault() bool {
 		return C.QWebView_HasHeightForWidthDefault(ptr.Pointer()) != 0
 	}
 	return false
+}
+
+//export callbackQWebView_MetaObject
+func callbackQWebView_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
+	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
+		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
+	}
+
+	return core.PointerFromQMetaObject(NewQWebViewFromPointer(ptr).MetaObjectDefault())
+}
+
+func (ptr *QWebView) MetaObjectDefault() *core.QMetaObject {
+	if ptr.Pointer() != nil {
+		return core.NewQMetaObjectFromPointer(C.QWebView_MetaObjectDefault(ptr.Pointer()))
+	}
+	return nil
 }
 
 //export callbackQWebView_HeightForWidth
@@ -12628,6 +12666,21 @@ func (ptr *QWebView) MetricDefault(m gui.QPaintDevice__PaintDeviceMetric) int {
 		return int(int32(C.QWebView_MetricDefault(ptr.Pointer(), C.longlong(m))))
 	}
 	return 0
+}
+
+//export callbackQWebView_InitPainter
+func callbackQWebView_InitPainter(ptr unsafe.Pointer, painter unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "initPainter"); signal != nil {
+		signal.(func(*gui.QPainter))(gui.NewQPainterFromPointer(painter))
+	} else {
+		NewQWebViewFromPointer(ptr).InitPainterDefault(gui.NewQPainterFromPointer(painter))
+	}
+}
+
+func (ptr *QWebView) InitPainterDefault(painter gui.QPainter_ITF) {
+	if ptr.Pointer() != nil {
+		C.QWebView_InitPainterDefault(ptr.Pointer(), gui.PointerFromQPainter(painter))
+	}
 }
 
 //export callbackQWebView_EventFilter
@@ -12752,20 +12805,4 @@ func (ptr *QWebView) TimerEventDefault(event core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
 		C.QWebView_TimerEventDefault(ptr.Pointer(), core.PointerFromQTimerEvent(event))
 	}
-}
-
-//export callbackQWebView_MetaObject
-func callbackQWebView_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
-	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
-		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
-	}
-
-	return core.PointerFromQMetaObject(NewQWebViewFromPointer(ptr).MetaObjectDefault())
-}
-
-func (ptr *QWebView) MetaObjectDefault() *core.QMetaObject {
-	if ptr.Pointer() != nil {
-		return core.NewQMetaObjectFromPointer(C.QWebView_MetaObjectDefault(ptr.Pointer()))
-	}
-	return nil
 }
