@@ -4002,14 +4002,14 @@ void* QByteArray_Replace2(void* ptr, int pos, int l, char* after, int alen)
 	return new QByteArray(static_cast<QByteArray*>(ptr)->replace(pos, l, const_cast<const char*>(after), alen));
 }
 
-void* QByteArray_SetNum8(void* ptr, double n, char* fo, int prec)
+void* QByteArray_SetNum8(void* ptr, double n, char* ff, int prec)
 {
-	return new QByteArray(static_cast<QByteArray*>(ptr)->setNum(n, *fo, prec));
+	return new QByteArray(static_cast<QByteArray*>(ptr)->setNum(n, *ff, prec));
 }
 
-void* QByteArray_SetNum7(void* ptr, float n, char* fo, int prec)
+void* QByteArray_SetNum7(void* ptr, float n, char* ff, int prec)
 {
-	return new QByteArray(static_cast<QByteArray*>(ptr)->setNum(n, *fo, prec));
+	return new QByteArray(static_cast<QByteArray*>(ptr)->setNum(n, *ff, prec));
 }
 
 void* QByteArray_SetNum(void* ptr, int n, int base)
@@ -4072,9 +4072,9 @@ void* QByteArray_QByteArray_FromRawData(char* data, int size)
 	return new QByteArray(QByteArray::fromRawData(const_cast<const char*>(data), size));
 }
 
-void* QByteArray_QByteArray_Number5(double n, char* fo, int prec)
+void* QByteArray_QByteArray_Number5(double n, char* ff, int prec)
 {
-	return new QByteArray(QByteArray::number(n, *fo, prec));
+	return new QByteArray(QByteArray::number(n, *ff, prec));
 }
 
 void* QByteArray_QByteArray_Number(int n, int base)
@@ -6046,19 +6046,19 @@ void* QDateTime_NewQDateTime2(void* date)
 	return new QDateTime(*static_cast<QDate*>(date));
 }
 
-void* QDateTime_NewQDateTime3(void* date, void* time, long long spec)
+void* QDateTime_NewQDateTime3(void* date, void* ti, long long spec)
 {
-	return new QDateTime(*static_cast<QDate*>(date), *static_cast<QTime*>(time), static_cast<Qt::TimeSpec>(spec));
+	return new QDateTime(*static_cast<QDate*>(date), *static_cast<QTime*>(ti), static_cast<Qt::TimeSpec>(spec));
 }
 
-void* QDateTime_NewQDateTime4(void* date, void* time, long long spec, int offsetSeconds)
+void* QDateTime_NewQDateTime4(void* date, void* ti, long long spec, int offsetSeconds)
 {
-	return new QDateTime(*static_cast<QDate*>(date), *static_cast<QTime*>(time), static_cast<Qt::TimeSpec>(spec), offsetSeconds);
+	return new QDateTime(*static_cast<QDate*>(date), *static_cast<QTime*>(ti), static_cast<Qt::TimeSpec>(spec), offsetSeconds);
 }
 
-void* QDateTime_NewQDateTime5(void* date, void* time, void* timeZone)
+void* QDateTime_NewQDateTime5(void* date, void* ti, void* timeZone)
 {
-	return new QDateTime(*static_cast<QDate*>(date), *static_cast<QTime*>(time), *static_cast<QTimeZone*>(timeZone));
+	return new QDateTime(*static_cast<QDate*>(date), *static_cast<QTime*>(ti), *static_cast<QTimeZone*>(timeZone));
 }
 
 void* QDateTime_NewQDateTime6(void* other)
@@ -6096,9 +6096,9 @@ void QDateTime_SetSecsSinceEpoch(void* ptr, long long secs)
 	static_cast<QDateTime*>(ptr)->setSecsSinceEpoch(secs);
 }
 
-void QDateTime_SetTime(void* ptr, void* time)
+void QDateTime_SetTime(void* ptr, void* ti)
 {
-	static_cast<QDateTime*>(ptr)->setTime(*static_cast<QTime*>(time));
+	static_cast<QDateTime*>(ptr)->setTime(*static_cast<QTime*>(ti));
 }
 
 void QDateTime_SetTimeSpec(void* ptr, long long spec)
@@ -7726,9 +7726,9 @@ void QFileDevice_DestroyQFileDeviceDefault(void* ptr)
 
 }
 
-void* QFileDevice_FileTime(void* ptr, long long time)
+void* QFileDevice_FileTime(void* ptr, long long ti)
 {
-	return new QDateTime(static_cast<QFileDevice*>(ptr)->fileTime(static_cast<QFileDevice::FileTime>(time)));
+	return new QDateTime(static_cast<QFileDevice*>(ptr)->fileTime(static_cast<QFileDevice::FileTime>(ti)));
 }
 
 long long QFileDevice_Error(void* ptr)
@@ -11356,9 +11356,9 @@ double QLineF_Y2(void* ptr)
 	return static_cast<QLineF*>(ptr)->y2();
 }
 
-struct QtCore_PackedList QLocale_QLocale_MatchingLocales(long long language, long long script, long long country)
+struct QtCore_PackedList QLocale_QLocale_MatchingLocales(long long language, long long scri, long long country)
 {
-	return ({ QList<QLocale>* tmpValue = new QList<QLocale>(QLocale::matchingLocales(static_cast<QLocale::Language>(language), static_cast<QLocale::Script>(script), static_cast<QLocale::Country>(country))); QtCore_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QLocale>* tmpValue = new QList<QLocale>(QLocale::matchingLocales(static_cast<QLocale::Language>(language), static_cast<QLocale::Script>(scri), static_cast<QLocale::Country>(country))); QtCore_PackedList { tmpValue, tmpValue->size() }; });
 }
 
 void* QLocale_QLocale_C()
@@ -11381,9 +11381,9 @@ void* QLocale_NewQLocale3(long long language, long long country)
 	return new QLocale(static_cast<QLocale::Language>(language), static_cast<QLocale::Country>(country));
 }
 
-void* QLocale_NewQLocale4(long long language, long long script, long long country)
+void* QLocale_NewQLocale4(long long language, long long scri, long long country)
 {
-	return new QLocale(static_cast<QLocale::Language>(language), static_cast<QLocale::Script>(script), static_cast<QLocale::Country>(country));
+	return new QLocale(static_cast<QLocale::Language>(language), static_cast<QLocale::Script>(scri), static_cast<QLocale::Country>(country));
 }
 
 void* QLocale_NewQLocale5(void* other)
@@ -11411,9 +11411,9 @@ struct QtCore_PackedString QLocale_QLocale_LanguageToString(long long language)
 	return ({ QByteArray t29d017 = QLocale::languageToString(static_cast<QLocale::Language>(language)).toUtf8(); QtCore_PackedString { const_cast<char*>(t29d017.prepend("WHITESPACE").constData()+10), t29d017.size()-10 }; });
 }
 
-struct QtCore_PackedString QLocale_QLocale_ScriptToString(long long script)
+struct QtCore_PackedString QLocale_QLocale_ScriptToString(long long scri)
 {
-	return ({ QByteArray tfce283 = QLocale::scriptToString(static_cast<QLocale::Script>(script)).toUtf8(); QtCore_PackedString { const_cast<char*>(tfce283.prepend("WHITESPACE").constData()+10), tfce283.size()-10 }; });
+	return ({ QByteArray t535509 = QLocale::scriptToString(static_cast<QLocale::Script>(scri)).toUtf8(); QtCore_PackedString { const_cast<char*>(t535509.prepend("WHITESPACE").constData()+10), t535509.size()-10 }; });
 }
 
 void QLocale_QLocale_SetDefault(void* locale)
@@ -11691,29 +11691,29 @@ struct QtCore_PackedString QLocale_ToString11(void* ptr, void* dateTime, struct 
 	return ({ QByteArray t336e5f = static_cast<QLocale*>(ptr)->toString(*static_cast<QDateTime*>(dateTime), QString::fromUtf8(format.data, format.len)).toUtf8(); QtCore_PackedString { const_cast<char*>(t336e5f.prepend("WHITESPACE").constData()+10), t336e5f.size()-10 }; });
 }
 
-struct QtCore_PackedString QLocale_ToString16(void* ptr, void* time, long long format)
+struct QtCore_PackedString QLocale_ToString16(void* ptr, void* ti, long long format)
 {
-	return ({ QByteArray taedd07 = static_cast<QLocale*>(ptr)->toString(*static_cast<QTime*>(time), static_cast<QLocale::FormatType>(format)).toUtf8(); QtCore_PackedString { const_cast<char*>(taedd07.prepend("WHITESPACE").constData()+10), taedd07.size()-10 }; });
+	return ({ QByteArray tb6230e = static_cast<QLocale*>(ptr)->toString(*static_cast<QTime*>(ti), static_cast<QLocale::FormatType>(format)).toUtf8(); QtCore_PackedString { const_cast<char*>(tb6230e.prepend("WHITESPACE").constData()+10), tb6230e.size()-10 }; });
 }
 
-struct QtCore_PackedString QLocale_ToString13(void* ptr, void* time, void* format)
+struct QtCore_PackedString QLocale_ToString13(void* ptr, void* ti, void* format)
 {
-	return ({ QByteArray t0bdfb5 = static_cast<QLocale*>(ptr)->toString(*static_cast<QTime*>(time), *static_cast<QStringView*>(format)).toUtf8(); QtCore_PackedString { const_cast<char*>(t0bdfb5.prepend("WHITESPACE").constData()+10), t0bdfb5.size()-10 }; });
+	return ({ QByteArray t697961 = static_cast<QLocale*>(ptr)->toString(*static_cast<QTime*>(ti), *static_cast<QStringView*>(format)).toUtf8(); QtCore_PackedString { const_cast<char*>(t697961.prepend("WHITESPACE").constData()+10), t697961.size()-10 }; });
 }
 
-struct QtCore_PackedString QLocale_ToString10(void* ptr, void* time, struct QtCore_PackedString format)
+struct QtCore_PackedString QLocale_ToString10(void* ptr, void* ti, struct QtCore_PackedString format)
 {
-	return ({ QByteArray t30c966 = static_cast<QLocale*>(ptr)->toString(*static_cast<QTime*>(time), QString::fromUtf8(format.data, format.len)).toUtf8(); QtCore_PackedString { const_cast<char*>(t30c966.prepend("WHITESPACE").constData()+10), t30c966.size()-10 }; });
+	return ({ QByteArray t607af9 = static_cast<QLocale*>(ptr)->toString(*static_cast<QTime*>(ti), QString::fromUtf8(format.data, format.len)).toUtf8(); QtCore_PackedString { const_cast<char*>(t607af9.prepend("WHITESPACE").constData()+10), t607af9.size()-10 }; });
 }
 
-struct QtCore_PackedString QLocale_ToString7(void* ptr, double i, char* fo, int prec)
+struct QtCore_PackedString QLocale_ToString7(void* ptr, double i, char* ff, int prec)
 {
-	return ({ QByteArray tb2c8bc = static_cast<QLocale*>(ptr)->toString(i, *fo, prec).toUtf8(); QtCore_PackedString { const_cast<char*>(tb2c8bc.prepend("WHITESPACE").constData()+10), tb2c8bc.size()-10 }; });
+	return ({ QByteArray t07d146 = static_cast<QLocale*>(ptr)->toString(i, *ff, prec).toUtf8(); QtCore_PackedString { const_cast<char*>(t07d146.prepend("WHITESPACE").constData()+10), t07d146.size()-10 }; });
 }
 
-struct QtCore_PackedString QLocale_ToString8(void* ptr, float i, char* fo, int prec)
+struct QtCore_PackedString QLocale_ToString8(void* ptr, float i, char* ff, int prec)
 {
-	return ({ QByteArray tb2c8bc = static_cast<QLocale*>(ptr)->toString(i, *fo, prec).toUtf8(); QtCore_PackedString { const_cast<char*>(tb2c8bc.prepend("WHITESPACE").constData()+10), tb2c8bc.size()-10 }; });
+	return ({ QByteArray t07d146 = static_cast<QLocale*>(ptr)->toString(i, *ff, prec).toUtf8(); QtCore_PackedString { const_cast<char*>(t07d146.prepend("WHITESPACE").constData()+10), t07d146.size()-10 }; });
 }
 
 struct QtCore_PackedString QLocale_ToString5(void* ptr, int i)
@@ -21644,9 +21644,9 @@ void* QThread_NewQThread(void* parent)
 	}
 }
 
-char QThread_Wait(void* ptr, unsigned long time)
+char QThread_Wait(void* ptr, unsigned long ti)
 {
-	return static_cast<QThread*>(ptr)->wait(time);
+	return static_cast<QThread*>(ptr)->wait(ti);
 }
 
 int QThread_Exec(void* ptr)
@@ -24619,14 +24619,14 @@ void* QWaitCondition_NewQWaitCondition()
 	return new QWaitCondition();
 }
 
-char QWaitCondition_Wait(void* ptr, void* lockedMutex, unsigned long time)
+char QWaitCondition_Wait(void* ptr, void* lockedMutex, unsigned long ti)
 {
-	return static_cast<QWaitCondition*>(ptr)->wait(static_cast<QMutex*>(lockedMutex), time);
+	return static_cast<QWaitCondition*>(ptr)->wait(static_cast<QMutex*>(lockedMutex), ti);
 }
 
-char QWaitCondition_Wait2(void* ptr, void* lockedReadWriteLock, unsigned long time)
+char QWaitCondition_Wait2(void* ptr, void* lockedReadWriteLock, unsigned long ti)
 {
-	return static_cast<QWaitCondition*>(ptr)->wait(static_cast<QReadWriteLock*>(lockedReadWriteLock), time);
+	return static_cast<QWaitCondition*>(ptr)->wait(static_cast<QReadWriteLock*>(lockedReadWriteLock), ti);
 }
 
 void QWaitCondition_Notify_all(void* ptr)
