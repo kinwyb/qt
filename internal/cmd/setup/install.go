@@ -63,7 +63,13 @@ func Install(target string, docker, vagrant bool) {
 		if utils.QT_STUB() || docker {
 			mode = "stub"
 		}
-		utils.Log.Infof("installing %v qt/%v", mode, strings.ToLower(module))
+
+		var license string
+		switch module {
+		case "Charts", "DataVisualization":
+			license = strings.Repeat(" ", 20-len(module)) + "[GPLv3]"
+		}
+		utils.Log.Infof("installing %v qt/%v %v", mode, strings.ToLower(module), license)
 
 		if utils.QT_DYNAMIC_SETUP() && mode == "full" {
 			cc, com := templater.ParseCgo(strings.ToLower(module), target)
@@ -108,12 +114,16 @@ func Install(target string, docker, vagrant bool) {
 		if target == "js" {
 			cmd.Args = append(cmd.Args, "-v")
 		} else {
+			if target == "linux" {
+				delete(env, "CGO_LDFLAGS")
+			}
 			for key, value := range env {
 				cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", key, value))
 			}
 		}
 
-		if _, err := utils.RunCmdOptionalError(cmd, fmt.Sprintf("install %v", strings.ToLower(module))); err != nil {
+		if msg, err := utils.RunCmdOptionalError(cmd, fmt.Sprintf("install %v", strings.ToLower(module))); err != nil {
+			println(msg)
 			failed = append(failed, strings.ToLower(module))
 		}
 	}

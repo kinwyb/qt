@@ -233,6 +233,13 @@ func (c *Class) IsSupported() bool {
 		return false
 	}
 
+	switch c.Name {
+	case "QCborStreamReader", "QCborStreamWriter", "QCborValue", "QScopeGuard", "QTest",
+		"QImageReaderWriterHelpers", "QPasswordDigestor", "QDtls", "QDtlsClientVerifier":
+		c.Access = "unsupported_isBlockedClass"
+		return false
+	}
+
 	if utils.QT_VERSION_NUM() >= 5080 {
 		switch c.Name {
 		case "QSctpServer", "QSctpSocket", "Http2", "QAbstractExtensionFactory":
@@ -326,6 +333,11 @@ func (c *Class) IsSupported() bool {
 			c.Access = "unsupported_isBlockedClass"
 			return false
 		}
+	}
+
+	if strings.HasPrefix(c.Name, "QOpenGLFunctions_") && !utils.QT_GEN_OPENGL() {
+		c.Access = "unsupported_isBlockedClass"
+		return false
 	}
 
 	if State.Minimal {

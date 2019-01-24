@@ -5,8 +5,8 @@ ENV HOME /home/$USER
 ENV GOPATH $HOME/work
 
 RUN apt-get -qq update && apt-get --no-install-recommends -qq -y install ca-certificates curl git
-RUN GO=go1.11.1.linux-386.tar.gz && curl -sL --retry 10 --retry-delay 60 -O https://storage.googleapis.com/golang/$GO && tar -xzf $GO -C /usr/local
-RUN /usr/local/go/bin/go get github.com/therecipe/qt/cmd/...
+RUN GO=go1.11.2.linux-386.tar.gz && curl -sL --retry 10 --retry-delay 60 -O https://dl.google.com/go/$GO && tar -xzf $GO -C /usr/local
+RUN /usr/local/go/bin/go get -tags=no_env github.com/therecipe/qt/cmd/...
 
 
 FROM i386/ubuntu:14.04

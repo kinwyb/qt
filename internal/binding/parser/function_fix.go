@@ -139,6 +139,14 @@ func (f *Function) fixGeneral_Version() {
 			f.Signature = strings.Replace(f.Signature, "const int", "const QWebEngineCertificateError", -1)
 			f.Parameters[0].Value = strings.Replace(f.Parameters[0].Value, "const int", "const QWebEngineCertificateError", -1)
 		}
+	case "QTextLayout::formats":
+		{
+			f.Output = "QVector<QTextLayout::FormatRange>"
+		}
+	case "QWebEnginePage::print":
+		{
+			f.Parameters = append(f.Parameters[:len(f.Parameters)-1], f.Parameters[len(f.Parameters):]...)
+		}
 	}
 }
 

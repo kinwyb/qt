@@ -240,7 +240,10 @@ func IsPrivateSignal(f *parser.Function) bool {
 						}
 					}
 				} else {
-					fData = utils.Load(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
+					fData = utils.LoadOptional(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
+					if len(fData) == 0 {
+						fData = utils.LoadOptional(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Headers", fPath))
+					}
 				}
 			}
 
@@ -253,9 +256,12 @@ func IsPrivateSignal(f *parser.Function) bool {
 						fData = utils.LoadOptional(filepath.Join(utils.QT_MSYS2_DIR(), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
 					}
 				} else {
-					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
+					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw73_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
 					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
-						path = filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw53_32", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
+						path = filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw73_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
+					}
+					if !utils.ExistsFile(path) {
+						path = strings.Replace(path, "mingw73_64", "mingw53_32", -1)
 					}
 					if !utils.ExistsFile(path) {
 						path = strings.Replace(path, "mingw53_32", "mingw49_32", -1)

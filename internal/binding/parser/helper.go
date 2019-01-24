@@ -3,7 +3,6 @@ package parser
 import (
 	"bytes"
 	"fmt"
-	"os/exec"
 	"runtime"
 	"sort"
 	"strings"
@@ -167,6 +166,7 @@ func CleanName(name, value string) string {
 }
 
 //TODO: remove global
+var LibDepsMutex = new(sync.Mutex)
 var LibDeps = map[string][]string{
 	"Core":          {"Widgets", "Gui", "Svg"}, //Widgets, Gui //Svg
 	"AndroidExtras": {"Core"},
@@ -242,7 +242,7 @@ func ShouldBuildForTarget(module, target string) bool {
 
 	case "android", "android-emulator":
 		switch module {
-		case "DBus", "WebEngine", "Designer", "PrintSupport": //TODO: PrintSupport
+		case "DBus", "WebEngine", "Designer", "SerialPort", "SerialBus", "PrintSupport": //TODO: PrintSupport
 			return false
 		}
 		if strings.HasSuffix(module, "Extras") && module != "AndroidExtras" {
@@ -367,10 +367,11 @@ func GetLibs() []string {
 		"Scxml",
 		"Gamepad",
 
-		"Purchasing",        //GPLv3 & LGPLv3
+		"Purchasing",
 		"DataVisualization", //GPLv3
 		"Charts",            //GPLv3
-		//"Quick2DRenderer",   //GPLv3
+		//"Quick2DRenderer", //GPLv3
+		//"VirtualKeyboard", //GPLv3
 
 		"Speech",
 		"QuickControls2",
@@ -441,7 +442,7 @@ func GetCustomLibs(target, tags string) map[string]string {
 				getCustomLibsCacheMutex.Unlock()
 
 				if !ok {
-					cmd := exec.Command("go", "list", "-e", "-f", "{{.ImportPath}}", fmt.Sprintf("-tags=\"%v\"", tags))
+					cmd := utils.GoList("{{.ImportPath}}", fmt.Sprintf("-tags=\"%v\"", tags))
 					cmd.Dir = c.Pkg
 
 					/*TODO: cycle dep of cmd.BuildEnv

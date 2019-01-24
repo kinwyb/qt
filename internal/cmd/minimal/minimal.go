@@ -20,9 +20,16 @@ import (
 )
 
 func Minimal(path, target, tags string) {
+	if utils.UseGOMOD(path) {
+		if !utils.ExistsDir(filepath.Join(path, "vendor")) {
+			cmd := exec.Command("go", "mod", "vendor")
+			cmd.Dir = path
+			utils.RunCmd(cmd, "go mod vendor")
+		}
+	}
 
 	env, tagsEnv, _, _ := cmd.BuildEnv(target, "", "")
-	scmd := exec.Command("go", "list")
+	scmd := utils.GoList("'{{.Stale}}':'{{.StaleReason}}'")
 	scmd.Dir = path
 
 	tagsEnv = append(tagsEnv, "minimal")
@@ -39,8 +46,6 @@ func Minimal(path, target, tags string) {
 	for key, value := range env {
 		scmd.Env = append(scmd.Env, fmt.Sprintf("%v=%v", key, value))
 	}
-
-	scmd.Args = append(scmd.Args, "-f", "'{{.Stale}}':'{{.StaleReason}}'")
 
 	if out := utils.RunCmdOptional(scmd, fmt.Sprintf("go check stale for %v on %v", target, runtime.GOOS)); strings.Contains(out, "but available in build cache") || strings.Contains(out, "false") {
 		utils.Log.WithField("path", path).Debug("skipping already cached minimal")
@@ -249,6 +254,7 @@ func Minimal(path, target, tags string) {
 			continue
 		}
 
+		utils.MkdirAll(utils.GoQtPkgPath(strings.ToLower(m)))
 		utils.SaveBytes(utils.GoQtPkgPath(strings.ToLower(m), strings.ToLower(m)+"-minimal.cpp"), templater.CppTemplate(m, templater.MINIMAL, target, ""))
 		utils.SaveBytes(utils.GoQtPkgPath(strings.ToLower(m), strings.ToLower(m)+"-minimal.h"), templater.HTemplate(m, templater.MINIMAL, ""))
 		utils.SaveBytes(utils.GoQtPkgPath(strings.ToLower(m), strings.ToLower(m)+"-minimal.go"), templater.GoTemplate(m, false, templater.MINIMAL, m, target, ""))

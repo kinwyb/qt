@@ -5,29 +5,48 @@ Introduction
 
 [Go](https://en.wikipedia.org/wiki/Go_(programming_language)) (often referred to as golang) is a programming language created at Google.
 
-This package allows you to write Qt applications entirely in Go.
+This package allows you to write Qt applications entirely in Go and makes deploying them later very easy.
 
-[Gallery](https://github.com/therecipe/qt/wiki/Gallery) of applications making use of this package.
+[Gallery](https://github.com/therecipe/qt/wiki/Gallery) of example applications making use of this package.
+
+[WebAssembly Demo](https://therecipe.github.io/widgets_playground) | *[repo](https://github.com/therecipe/widgets_playground)*
 
 Status
 ------
 
-**WIP**
+Almost all Qt functions and classes are accessible from Go and you should be able to find everything you need to build fully featured applications.
 
-Most Qt functions are accessible from Go.
+(A special exception are the WebEngine/WebView packages, these aren't available for Windows yet.)
 
-The package should already contain everything you need to build fully featured applications, the webengine/webview packages don't work on Windows though.
+Installation
+------------
 
-Please pin the repo to a commit that is known to work for you, because there have been no releases so far.
+##### Windows [(more info)](https://github.com/therecipe/qt/wiki/Installation-on-Windows)
+
+```powershell
+go get -u -v github.com/therecipe/qt/cmd/... && for /f %v in ('go env GOPATH') do %v\bin\qtsetup test && %v\bin\qtsetup
+```
+
+##### macOS [(more info)](https://github.com/therecipe/qt/wiki/Installation-on-macOS)
+
+```bash
+xcode-select --install; go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup test && $(go env GOPATH)/bin/qtsetup
+```
+
+##### Linux [(more info)](https://github.com/therecipe/qt/wiki/Installation-on-Linux)
+
+```bash
+go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup test && $(go env GOPATH)/bin/qtsetup
+```
 
 Resources
 ---------
 
--	[Wiki](https://github.com/therecipe/qt/wiki)
--	[FAQ](https://github.com/therecipe/qt/wiki/FAQ)
--	[Installation](https://github.com/therecipe/qt/wiki/Installation)
+-	[General Installation](https://github.com/therecipe/qt/wiki/Installation)
 -	[Getting Started](https://github.com/therecipe/qt/wiki/Getting-Started)
+-	[Wiki](https://github.com/therecipe/qt/wiki)
 -	[Qt Documentation](https://doc.qt.io/qt-5/classes.html)
+-	[FAQ](https://github.com/therecipe/qt/wiki/FAQ)
 -	[#qt-binding](https://gophers.slack.com/messages/qt-binding/details) Slack channel ([invite](https://invite.slack.golangbridge.org)\)
 
 Deployment Targets

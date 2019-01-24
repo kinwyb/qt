@@ -24,6 +24,7 @@ func GoTemplate(module string, stub bool, mode int, pkg, target, tags string) []
 
 	if !(UseStub(stub, module, mode) || UseJs()) {
 		fmt.Fprintf(bb, "func cGoUnpackString(s C.struct_%v_PackedString) string { if int(s.len) == -1 {\n return C.GoString(s.data)\n }\n return C.GoStringN(s.data, C.int(s.len)) }\n", strings.Title(module))
+		fmt.Fprintf(bb, "func cGoUnpackBytes(s C.struct_%v_PackedString) []byte { if int(s.len) == -1 {\n return []byte(C.GoString(s.data))\n }\n return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len)) }\n", strings.Title(module))
 	}
 
 	if UseJs() {
@@ -633,7 +634,7 @@ import "C"
 	}
 
 	fmt.Fprint(bb, "import (\n")
-	for _, m := range append(parser.GetLibs(), "qt", "strings", "unsafe", "log", "runtime", "fmt", "errors", "js", "time", "hex") {
+	for _, m := range append(parser.GetLibs(), "qt", "strings", "unsafe", "log", "runtime", "fmt", "errors", "js", "time", "hex", "reflect") {
 		mlow := strings.ToLower(m)
 		if strings.Contains(inputString, fmt.Sprintf(" %v.", mlow)) ||
 			strings.Contains(inputString, fmt.Sprintf("\t%v.", mlow)) ||
@@ -645,7 +646,7 @@ import "C"
 			strings.Contains(inputString, fmt.Sprintf(")%v.", mlow)) ||
 			strings.Contains(inputString, fmt.Sprintf("std_%v.", mlow)) {
 			switch mlow {
-			case "strings", "unsafe", "log", "runtime", "fmt", "errors", "time":
+			case "strings", "unsafe", "log", "runtime", "fmt", "errors", "time", "reflect":
 				fmt.Fprintf(bb, "\"%v\"\n", mlow)
 
 			case "hex":

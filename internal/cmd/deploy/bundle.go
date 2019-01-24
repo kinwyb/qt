@@ -1,6 +1,7 @@
 package deploy
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -86,9 +87,25 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		utils.RunCmd(dep, fmt.Sprintf("deploy for %v on %v", target, runtime.GOOS))
 
 	case "linux", "rpi1", "rpi2", "rpi3":
+		defer func() {
+			filepath.Walk(depPath, func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+				if info.IsDir() {
+					return nil
+				}
+				if strings.HasPrefix(filepath.Base(path), "lib") {
+					utils.RunCmd(exec.Command("strip", "-s", path), "strip binaries on linux")
+				}
+				return nil
+			})
+		}()
 
 		//copy default assets
-		utils.SaveExec(filepath.Join(depPath, fmt.Sprintf("%v.sh", name)), linux_sh(target, name))
+		if target != "linux" || name == "lib" {
+			utils.SaveExec(filepath.Join(depPath, fmt.Sprintf("%v.sh", name)), linux_sh(target, name))
+		}
 
 		//copy custom assets
 		assets := filepath.Join(path, target)
@@ -140,7 +157,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 					}
 
 					if utils.ExistsFile(filepath.Join(libraryPath, libName)) {
-						utils.RunCmd(exec.Command("cp", "-L", filepath.Join(libraryPath, libName), filepath.Join(depPath, libDir, libName)), fmt.Sprintf("copy %v for %v on %v", libName, target, runtime.GOOS))
+						utils.RunCmd(exec.Command("cp", "-L", strings.TrimSuffix(filepath.Join(libraryPath, libName), ".5"), filepath.Join(depPath, libDir, libName)), fmt.Sprintf("copy %v for %v on %v", libName, target, runtime.GOOS))
 					}
 
 					if strings.Contains(dep, "WebEngine") || strings.Contains(dep, "WebView") {
@@ -160,8 +177,8 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 				libs = append(libs, []string{"WebEngine", "WebEngineCore", "WebChannel", "Positioning"}...)
 			}
 			for _, libName := range libs {
-				if utils.ExistsFile(filepath.Join(libraryPath, fmt.Sprintf("libQt5%v.so.5", libName))) {
-					utils.RunCmd(exec.Command("cp", "-L", filepath.Join(libraryPath, fmt.Sprintf("libQt5%v.so.5", libName)), filepath.Join(depPath, libDir, fmt.Sprintf("libQt5%v.so.5", libName))), fmt.Sprintf("copy %v for %v on %v", libName, target, runtime.GOOS))
+				if utils.ExistsFile(filepath.Join(libraryPath, fmt.Sprintf("libQt5%v.so", libName))) {
+					utils.RunCmd(exec.Command("cp", "-L", filepath.Join(libraryPath, fmt.Sprintf("libQt5%v.so", libName)), filepath.Join(depPath, libDir, fmt.Sprintf("libQt5%v.so.5", libName))), fmt.Sprintf("copy %v for %v on %v", libName, target, runtime.GOOS))
 				}
 			}
 			if utils.ExistsFile(filepath.Join(libraryPath, "libqgsttools_p.so.1.0.0")) {
@@ -179,7 +196,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 				if info.IsDir() {
 					return nil
 				}
-				if filepath.Ext(info.Name()) == ".debug" || filepath.Ext(info.Name()) == ".qmlc" {
+				if filepath.Ext(info.Name()) == ".debug" || filepath.Ext(info.Name()) == ".qmlc" || filepath.Ext(info.Name()) == ".jsc" {
 					utils.RemoveAll(path)
 				}
 				return nil
@@ -196,6 +213,41 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 				}
 				utils.RunCmd(exec.Command("cp", "-R", filepath.Join(libraryPath, "translations/qtwebengine_locales/"), depPath), fmt.Sprintf("copy qtwebengine_locales dir for %v on %v", target, runtime.GOOS))
 			}
+
+			//patch QtCore path
+			pPath := "."
+			fn := filepath.Join(depPath, "/lib/", "libQt5Core.so.5")
+			data, err := ioutil.ReadFile(fn)
+			if err != nil {
+				utils.Log.WithError(err).Warn("couldn't find", fn)
+				break
+			}
+
+			prefPath := "qt_prfxpath="
+
+			start := bytes.Index(data, []byte(prefPath))
+			if start == -1 {
+				break
+			}
+
+			end := bytes.IndexByte(data[start:], byte(0))
+			if end == -1 {
+				break
+			}
+
+			rep := append([]byte(prefPath), []byte(pPath)...)
+			if lendiff := end - len(rep); lendiff < 0 {
+				end -= lendiff
+			} else {
+				rep = append(rep, bytes.Repeat([]byte{0}, lendiff)...)
+			}
+			data = bytes.Replace(data, data[start:start+end], rep, -1)
+
+			if err := ioutil.WriteFile(fn, data, 0644); err != nil {
+				utils.Log.WithError(err).Warn("couldn't patch", fn)
+			} else {
+				utils.Log.Debug("patched", fn)
+			}
 		}
 		//<--
 
@@ -209,7 +261,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			}
 
 			var libraryPath = filepath.Join(utils.QT_MXE_DIR(), "usr", utils.QT_MXE_TRIPLET(), "bin")
-			for _, d := range []string{"libbz2", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libeay32", "ssleay32", "libcrypto-1_1", "libpcre2-16-0", "libssl-1_1"} {
+			for _, d := range []string{"libbz2", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libicudt62", "libicuin62", "libicuuc62", "libeay32", "ssleay32", "libcrypto-1_1-x64", "libpcre2-16-0", "libssl-1_1-x64"} {
 				utils.RunCmdOptional(exec.Command("cp", filepath.Join(libraryPath, fmt.Sprintf("%v.dll", d)), depPath), fmt.Sprintf("copy %v for %v on %v", d, target, runtime.GOOS))
 			}
 			for _, d := range []string{"libjasper-1", "libjpeg-9", "libmng-2", "libtiff-5", "libwebp-5", "liblcms2-2", "liblzma-5", "libwebpdemux-1"} {
@@ -252,20 +304,17 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			paths = append(paths, os.Getenv("PATH"))
 			os.Setenv("PATH", strings.Join(paths, ";"))
 
-			var copyCmd = "xcopy"
+			copyCmd := "xcopy"
 			if utils.MSYSTEM() != "" {
 				copyCmd = "cp"
 			}
 
-			var deploy = exec.Command(filepath.Join(utils.QT_MSYS2_DIR(), "bin", "windeployqt"))
-			deploy.Args = append(deploy.Args,
-				filepath.Join(depPath, name+".exe"),
-				fmt.Sprintf("-qmldir=%v", path),
-				"-force")
+			deploy := exec.Command(filepath.Join(utils.QT_MSYS2_DIR(), "bin", "windeployqt"))
+			deploy.Args = append(deploy.Args, "--verbose=2", "--force", fmt.Sprintf("--qmldir=%v", path), filepath.Join(depPath, name+".exe"))
 			utils.RunCmd(deploy, fmt.Sprintf("depoy %v on %v", target, runtime.GOOS))
 
 			var libraryPath = filepath.Join(utils.QT_MSYS2_DIR(), "bin")
-			for _, d := range []string{"libbz2-1", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libicudt62", "libicuin62", "libicuuc62", "libpcre2-16-0"} {
+			for _, d := range []string{"libbz2-1", "libfreetype-6", "libglib-2.0-0", "libharfbuzz-0", "libiconv-2", "libintl-8", "libpcre-1", "libpcre16-0", "libpng16-16", "libstdc++-6", "libwinpthread-1", "zlib1", "libgraphite2", "libicudt62", "libicuin62", "libicuuc62", "libeay32", "ssleay32", "libcrypto-1_1", "libpcre2-16-0", "libssl-1_1"} {
 				utils.RunCmdOptional(exec.Command(copyCmd, filepath.Join(libraryPath, fmt.Sprintf("%v.dll", d)), depPath), fmt.Sprintf("copy %v for %v on %v", d, target, runtime.GOOS))
 			}
 
@@ -301,7 +350,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 				}
 			}
 
-			deps := []string{"Qt5OpenGL"}
+			deps := []string{"Qt5OpenGL", "Qt5Quick", "Qt5QuickControls2", "Qt5QuickTemplates2"}
 			if utils.QT_WEBKIT() {
 				deps = append(deps, []string{"libjpeg-8", "libsqlite3-0", "libwebp-7", "libxml2-2", "liblzma-5", "libxslt-1"}...)
 			}
@@ -322,21 +371,6 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			filepath.Walk(depPath, walkFn)
 
 		default:
-			paths := make([]string, 0)
-			// make windeployqt run correctly
-			path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32", "bin")
-			if !utils.ExistsDir(path) {
-				path = strings.Replace(path, "mingw53_32", "mingw49_32", -1)
-			}
-			paths = append(paths, path)
-			path = filepath.Join(utils.QT_DIR(), "Tools", "mingw530_32", "bin")
-			if !utils.ExistsDir(path) {
-				path = strings.Replace(path, "mingw530_32", "mingw492_32", -1)
-			}
-			paths = append(paths, path)
-			paths = append(paths, os.Getenv("PATH"))
-			os.Setenv("PATH", strings.Join(paths, ";"))
-
 			//copy default assets
 			//TODO: windres icon
 
@@ -346,10 +380,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			copy(assets, depPath)
 
 			if utils.QT_WEBKIT() {
-				libraryPath := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32", "bin")
-				if !utils.ExistsDir(libraryPath) {
-					libraryPath = strings.Replace(libraryPath, "mingw53_32", "mingw49_32", -1)
-				}
+				libraryPath := filepath.Dir(utils.ToolPath("qmake", target))
 				output := utils.RunCmd(exec.Command(filepath.Join("objdump"), "-x", filepath.Join(depPath, name+".exe")), fmt.Sprintf("objdump binary for %v on %v", target, runtime.GOOS))
 				for lib, deps := range parser.LibDeps {
 					if strings.Contains(output, lib) && lib == "WebKit" {
@@ -370,7 +401,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			}
 
 			dep := exec.Command(utils.ToolPath("windeployqt", target))
-			dep.Args = append(dep.Args, filepath.Join(depPath, name+".exe"), "-qmldir="+path)
+			dep.Args = append(dep.Args, "--verbose=2", "--force", fmt.Sprintf("--qmldir=%v", path), filepath.Join(depPath, name+".exe"))
 			utils.RunCmd(dep, fmt.Sprintf("deploy for %v on %v", target, runtime.GOOS))
 		}
 		//<--
@@ -388,18 +419,18 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 
 		wrapper := filepath.Join(depPath, "c_main_wrapper.cpp")
 		utils.Save(wrapper, "#include \"libgo_base.h\"\nint main(int argc, char *argv[]) { go_main_wrapper(argc, argv); }")
-		cmd := exec.Command(compiler, "c_main_wrapper.cpp", "-o", filepath.Join(depPath, "libgo.so"), "-I../..", "-L.", "-lgo_base", "-Wl,-soname,libgo.so", "--sysroot="+filepath.Join(utils.ANDROID_NDK_DIR(), "platforms", "android-16", "arch-arm"), "-shared")
+		cmd := exec.Command(compiler, "c_main_wrapper.cpp", "-o", filepath.Join(depPath, "libgo.so"), "-I../..", "-L.", "-lgo_base", "-Wl,-soname,libgo.so", "-shared")
 		if target == "android-emulator" {
-			cmd = exec.Command(compiler, "c_main_wrapper.cpp", "-o", filepath.Join(depPath, "libgo.so"), "-I../..", "-L.", "-lgo_base", "-Wl,-soname,libgo.so", "--sysroot="+filepath.Join(utils.ANDROID_NDK_DIR(), "platforms", "android-16", "arch-x86"), "-shared")
+			cmd = exec.Command(compiler, "c_main_wrapper.cpp", "-o", filepath.Join(depPath, "libgo.so"), "-I../..", "-L.", "-lgo_base", "-Wl,-soname,libgo.so", "-shared")
 		}
+		cmd.Args = append(cmd.Args, strings.Split(env["CGO_CPPFLAGS"], " ")...)
+		cmd.Args = append(cmd.Args, "-I"+filepath.Join(utils.ANDROID_NDK_DIR(), "sysroot", "usr", "include"))
+		cmd.Args = append(cmd.Args, strings.Split(env["CGO_LDFLAGS"], " ")...)
 		cmd.Dir = depPath
 		utils.RunCmd(cmd, fmt.Sprintf("compile wrapper for %v on %v", target, runtime.GOOS))
 		utils.RemoveAll(wrapper)
 
-		strip := exec.Command(filepath.Join(filepath.Dir(compiler), "arm-linux-androideabi-strip"), "libgo.so")
-		if target == "android-emulator" {
-			strip = exec.Command(filepath.Join(filepath.Dir(compiler), "i686-linux-android-strip"), "libgo.so")
-		}
+		strip := exec.Command(filepath.Join(filepath.Dir(compiler), "llvm-strip"), "--strip-all", "libgo.so")
 		strip.Dir = depPath
 		utils.RunCmd(strip, fmt.Sprintf("strip binary for %v on %v", target, runtime.GOOS))
 
@@ -467,15 +498,15 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		if utils.QT_VAGRANT() {
 			depPathUNC := strings.Replace(depPath, "C:\\media\\sf_GOPATH", "C:\\media\\UNC\\vboxsrv\\media_sf_GOPATH", -1)
 			if utils.ExistsFile(filepath.Join(path, target, name+".jks")) {
-				copy(filepath.Join(depPathUNC, "build", "build", "outputs", "apk", "build-release-signed.apk"), depPath)
+				copy(filepath.Join(depPathUNC, "build", "build", "outputs", "apk", "release", "build-release-signed.apk"), depPath)
 			} else {
-				copy(filepath.Join(depPathUNC, "build", "build", "outputs", "apk", "build-debug.apk"), depPath)
+				copy(filepath.Join(depPathUNC, "build", "build", "outputs", "apk", "debug", "build-debug.apk"), depPath)
 			}
 		} else {
 			if utils.ExistsFile(filepath.Join(path, target, name+".jks")) {
-				copy(filepath.Join(depPath, "build", "build", "outputs", "apk", "build-release-signed.apk"), depPath)
+				copy(filepath.Join(depPath, "build", "build", "outputs", "apk", "release", "build-release-signed.apk"), depPath)
 			} else {
-				copy(filepath.Join(depPath, "build", "build", "outputs", "apk", "build-debug.apk"), depPath)
+				copy(filepath.Join(depPath, "build", "build", "outputs", "apk", "debug", "build-debug.apk"), depPath)
 			}
 		}
 
@@ -670,7 +701,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			if tagsCustom != "" {
 				tags = append(tags, strings.Split(tagsCustom, " ")...)
 			}
-			lcmd := exec.Command("go", "list", "-e", "-f", "{{ join .Deps \"|\" }}", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
+			lcmd := utils.GoList("{{ join .Deps \"|\" }}", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
 			lcmd.Dir = path
 			for k, v := range env {
 				lcmd.Env = append(lcmd.Env, fmt.Sprintf("%v=%v", k, v))

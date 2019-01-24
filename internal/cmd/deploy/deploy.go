@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -16,6 +17,13 @@ import (
 func Deploy(mode, target, path string, docker bool, ldFlags, tags string, fast bool, device string, vagrant bool, vagrantsystem string, comply bool) {
 	utils.Log.WithField("mode", mode).WithField("target", target).WithField("path", path).WithField("docker", docker).WithField("ldFlags", ldFlags).WithField("fast", fast).WithField("comply", comply).Debug("running Deploy")
 	name := filepath.Base(path)
+	switch name {
+	case "lib", "plugins", "qml",
+		"audio", "bearer", "iconengines", "imageformats", "mediaservice",
+		"platforminputcontexts", "platforms", "playlistformats", "qmltooling",
+		"qt", "Qt", "QT", "styles", "translations":
+		name += "_project"
+	}
 	depPath := filepath.Join(path, "deploy", target)
 
 	switch mode {
@@ -47,6 +55,14 @@ func Deploy(mode, target, path string, docker bool, ldFlags, tags string, fast b
 			if err != nil {
 				utils.Log.WithError(err).Panic("failed to remove deploy folder")
 			}
+
+			if utils.UseGOMOD(path) {
+				if !utils.ExistsDir(filepath.Join(path, "vendor")) {
+					cmd := exec.Command("go", "mod", "vendor")
+					cmd.Dir = path
+					utils.RunCmd(cmd, "go mod vendor")
+				}
+			}
 		}
 
 		if utils.ExistsDir(depPath + "_obj") {
@@ -66,6 +82,13 @@ func Deploy(mode, target, path string, docker bool, ldFlags, tags string, fast b
 
 		if !(fast || (utils.QT_DEBUG_QML() && target == runtime.GOOS)) || (target == "js" || target == "wasm") {
 			bundle(mode, target, path, name, depPath, tags, fast)
+		} else if fast {
+			switch target {
+			case "darwin":
+				if fn := filepath.Join(depPath, name+".app", "Contents", "Info.plist"); !utils.ExistsFile(fn) {
+					utils.Save(fn, darwin_plist(name))
+				}
+			}
 		}
 	}
 

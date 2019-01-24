@@ -38,7 +38,7 @@ func run(target, name, depPath, device string) {
 		exec.Command("open", filepath.Join(depPath, fmt.Sprintf("%v.app", name))).Start()
 
 	case "linux":
-		exec.Command(filepath.Join(depPath, fmt.Sprintf("%v.sh", name))).Start()
+		exec.Command(filepath.Join(depPath, name)).Start()
 
 	case "windows":
 		if runtime.GOOS == target {
@@ -72,7 +72,7 @@ func run(target, name, depPath, device string) {
 			utils.Log.WithError(err).Errorf("failed to run %v for %v", name, target)
 		}
 
-	case "js", "wasm": //TODO: REVIEW
+	case "js", "wasm": //TODO: REVIEW and use emscripten wrapper instead
 		if runtime.GOOS == "darwin" {
 			exec.Command("/Applications/Firefox Nightly.app/Contents/MacOS/firefox", filepath.Join(depPath, "index.html")).Start()
 		}

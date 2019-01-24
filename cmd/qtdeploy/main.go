@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -100,6 +101,27 @@ func main() {
 	if target == "desktop" {
 		target = runtime.GOOS
 	}
+	utils.CheckBuildTarget(target)
+	cmd.InitEnv(target)
+
+	if !filepath.IsAbs(path) {
+		oPath := path
+		path, err = filepath.Abs(path)
+		if err != nil || !utils.ExistsDir(path) {
+			utils.Log.WithError(err).WithField("path", path).Debug("can't resolve absolute path")
+			dirFunc := func() (string, error) {
+				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath), "get pkg dir")
+				return strings.TrimSpace(out), err
+			}
+			if dir, err := dirFunc(); err != nil {
+				utils.RunCmd(exec.Command("go", "get", "-d", "-v", oPath), "go get pkg")
+				path, _ = dirFunc()
+			} else {
+				path = dir
+			}
+		}
+	}
+
 	if !(target == runtime.GOOS || target == "js" || target == "wasm") {
 		fast = false
 	}
@@ -107,17 +129,9 @@ func main() {
 		fast = false
 	}
 
-	if !filepath.IsAbs(path) {
-		path, err = filepath.Abs(path)
-		if err != nil {
-			utils.Log.WithError(err).WithField("path", path).Fatal("can't resolve absolute path")
-		}
-	}
-
-	if target == "js" || target == "wasm" || strings.HasPrefix(target, "ios") {
+	if target == "js" || target == "wasm" { //TODO: remove for module support + resolve dependencies
 		os.Setenv("GOCACHE", "off")
 	}
 
-	utils.CheckBuildTarget(target)
 	deploy.Deploy(mode, target, path, docker, ldFlags, tags, fast, device, vagrant, vagrant_system, comply)
 }

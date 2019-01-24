@@ -18,6 +18,10 @@ func CppInputParameters(function *parser.Function) string {
 		input[i] = CppInput(parameter.Name, parameter.Value, function)
 	}
 
+	if function.Fullname == "QWebEnginePage::print" {
+		input = append(input, "[](bool){}")
+	}
+
 	return strings.Join(input, ", ")
 }
 
@@ -171,11 +175,16 @@ func CppRegisterMetaType(function *parser.Function) string {
 			"QAbstract3DGraph::ElementType", "QImage::Format", "QItemModelBarDataProxy::MultiMatchBehavior", "QSurface3DSeries::DrawFlags",
 			"QAbstractBarSeries::LabelsPosition", "QScatterSeries::MarkerShape", "QWebPage::MessageSource", "QWebPage::MessageLevel",
 			"QWebPage::Feature", "QItemModelSurfaceDataProxy::MultiMatchBehavior", "QCategoryAxis::AxisLabelsPosition",
-			"QLegend::MarkerShape", "QDesignerFormWindowInterface::Feature", "QValidator::State":
+			"QLegend::MarkerShape", "QDesignerFormWindowInterface::Feature", "QValidator::State", "QBluetoothDeviceInfo::Fields", "QValueAxis::TickType":
 			out = append(out[:i], out[i+1:]...)
 
 		default:
-			if utils.QT_VERSION_NUM() <= 5042 {
+			if utils.QT_VERSION_NUM() <= 5063 {
+				switch out[i] {
+				case "QNetworkAccessManager::NetworkAccessibility":
+					out = append(out[:i], out[i+1:]...)
+				}
+			} else if utils.QT_VERSION_NUM() <= 5042 {
 				switch out[i] {
 				case "QAbstractAnimation::Direction", "QAbstractAnimation::State", "QAbstractItemModel::LayoutChangeHint", "QItemSelectionModel::SelectionFlags",
 					"QInputMethod::Action", "QMovie::MovieState", "QOpenGLDebugLogger::LoggingMode", "QWindow::Visibility", "QDnsLookup::Type", "QNetworkAccessManager::NetworkAccessibility",
