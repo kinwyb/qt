@@ -462,10 +462,10 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 					pFix := []string{
 						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw49_32"),
 						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw53_32"),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw73_64"),
+						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), utils.MINGWDIR()),
 						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw49_32"),
 						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32"),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw73_64"),
+						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), utils.MINGWDIR()),
 						filepath.Join(utils.QT_MXE_DIR(), "usr", utils.QT_MXE_TRIPLET(), "qt5"),
 						utils.QT_MSYS2_DIR(),
 					}
@@ -496,11 +496,11 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 	case "windows":
 		fmt.Fprint(bb, "#cgo LDFLAGS: -Wl,--allow-multiple-definition\n")
 	case "ios":
-		fmt.Fprintf(bb, "#cgo CXXFLAGS: -isysroot %v/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/%v -miphoneos-version-min=10.0\n", utils.XCODE_DIR(), utils.IPHONEOS_SDK_DIR())
-		fmt.Fprintf(bb, "#cgo LDFLAGS: -Wl,-syslibroot,%v/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/%v -miphoneos-version-min=10.0\n", utils.XCODE_DIR(), utils.IPHONEOS_SDK_DIR())
+		fmt.Fprintf(bb, "#cgo CXXFLAGS: -isysroot %v/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/%v -miphoneos-version-min=11.0\n", utils.XCODE_DIR(), utils.IPHONEOS_SDK_DIR())
+		fmt.Fprintf(bb, "#cgo LDFLAGS: -Wl,-syslibroot,%v/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/%v -miphoneos-version-min=11.0\n", utils.XCODE_DIR(), utils.IPHONEOS_SDK_DIR())
 	case "ios-simulator":
-		fmt.Fprintf(bb, "#cgo CXXFLAGS: -isysroot %v/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/%v -mios-simulator-version-min=10.0\n", utils.XCODE_DIR(), utils.IPHONESIMULATOR_SDK_DIR())
-		fmt.Fprintf(bb, "#cgo LDFLAGS: -Wl,-syslibroot,%v/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/%v -mios-simulator-version-min=10.0\n", utils.XCODE_DIR(), utils.IPHONESIMULATOR_SDK_DIR())
+		fmt.Fprintf(bb, "#cgo CXXFLAGS: -isysroot %v/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/%v -mios-simulator-version-min=11.0\n", utils.XCODE_DIR(), utils.IPHONESIMULATOR_SDK_DIR())
+		fmt.Fprintf(bb, "#cgo LDFLAGS: -Wl,-syslibroot,%v/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/%v -mios-simulator-version-min=11.0\n", utils.XCODE_DIR(), utils.IPHONESIMULATOR_SDK_DIR())
 	case "js", "wasm":
 		fmt.Fprint(bb, "#cgo CFLAGS: -s EXTRA_EXPORTED_RUNTIME_METHODS=['getValue','setValue']\n")
 	}
@@ -565,6 +565,8 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 				tmp = strings.Replace(tmp, "-lQt5"+lib, "-framework Qt"+lib, -1)
 			}
 			tmp = strings.Replace(tmp, "-Wl,-rpath,@executable_path/Frameworks", "", -1)
+			tmp = strings.Replace(tmp, "-Wl,-rpath,@executable_path/../Frameworks", "", -1)
+			tmp = strings.Replace(tmp, "-weak_framework XCTest", "", -1)
 		case "windows":
 			if utils.QT_MSYS2() {
 				tmp = strings.Replace(tmp, ",--relax,--gc-sections", "", -1)
@@ -627,7 +629,11 @@ func cgoFileNames(module, path, target string, mode int) []string {
 	case "windows":
 		if utils.QT_MXE_ARCH() == "amd64" || (utils.QT_MSYS2() && utils.QT_MSYS2_ARCH() == "amd64") ||
 			(!utils.QT_MXE() && !utils.QT_MSYS2() && utils.QT_VERSION_NUM() >= 5120) {
-			sFixes = []string{"windows_amd64"}
+			if utils.QT_VERSION_NUM() >= 5122 {
+				sFixes = []string{"windows_" + utils.GOARCH()}
+			} else {
+				sFixes = []string{"windows_amd64"}
+			}
 		} else {
 			sFixes = []string{"windows_386"}
 		}

@@ -23,7 +23,7 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 	copy := func(src, dst string) {
 		copy := "cp"
 
-		if runtime.GOOS == "windows" {
+		if runtime.GOOS == "windows" && utils.MSYSTEM() == "" {
 			copy = "xcopy"
 
 			//TODO: -->
@@ -37,14 +37,14 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 
 		var args []string
 		if _, err := ioutil.ReadDir(src); err == nil {
-			if runtime.GOOS != "windows" {
+			if runtime.GOOS != "windows" || utils.MSYSTEM() != "" {
 				args = append(args, "-R")
 			}
 		}
 
 		var suffix string
 		if _, err := ioutil.ReadDir(dst); err != nil {
-			if runtime.GOOS == "windows" {
+			if runtime.GOOS == "windows" && utils.MSYSTEM() == "" {
 				suffix = "*"
 			}
 		}
@@ -253,6 +253,14 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 
 	case "windows":
 
+		//copy default assets
+		//TODO: windres icon
+
+		//copy custom assets
+		assets := filepath.Join(path, target)
+		utils.MkdirAll(assets)
+		copy(assets+string(filepath.Separator)+".", depPath)
+
 		//TODO: -->
 		switch {
 		case runtime.GOOS != target:
@@ -371,13 +379,6 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 			filepath.Walk(depPath, walkFn)
 
 		default:
-			//copy default assets
-			//TODO: windres icon
-
-			//copy custom assets
-			assets := filepath.Join(path, target)
-			utils.MkdirAll(assets)
-			copy(assets, depPath)
 
 			if utils.QT_WEBKIT() {
 				libraryPath := filepath.Dir(utils.ToolPath("qmake", target))
@@ -515,11 +516,13 @@ func bundle(mode, target, path, name, depPath string, tagsCustom string, fast bo
 		//copy default assets
 		buildPath := filepath.Join(depPath, "build")
 		utils.MkdirAll(filepath.Join(buildPath, "project.xcodeproj"))
+		utils.MkdirAll(filepath.Join(buildPath, "project.xcodeproj", "project.xcworkspace", "xcshareddata"))
 		utils.MkdirAll(filepath.Join(buildPath, "Images.xcassets", "AppIcon.appiconset"))
 		utils.Save(filepath.Join(buildPath, "Info.plist"), ios_plist(name))
 		utils.Save(filepath.Join(buildPath, "Images.xcassets", "AppIcon.appiconset", "Contents.json"), ios_appicon())
 		utils.Save(filepath.Join(buildPath, "LaunchScreen.xib"), ios_launchscreen(name))
 		utils.Save(filepath.Join(buildPath, "project.xcodeproj", "project.pbxproj"), ios_xcodeproject())
+		utils.Save(filepath.Join(buildPath, "project.xcodeproj", "project.xcworkspace", "xcshareddata", "WorkspaceSettings.xcsettings"), ios_xcsettings())
 		copy(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "ios", "mkspecs", "macx-ios-clang", "Default-568h@2x.png"), buildPath)
 
 		//copy custom assets

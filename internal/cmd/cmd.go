@@ -306,25 +306,25 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 	gpath := strings.Join(paths, pathseperator)
 	if writeCacheToHost {
 		gpath += pathseperator + gpfs
-		args = append(args, []string{"-e", "QT_STUB=true"}...)
+		args = append(args, []string{"-e", "QT_STUB=true"}...) //TODO: won't work with wine images atm
 	} else {
 		gpath = gpfs + pathseperator + gpath
 	}
 
 	if utils.QT_DEBUG() {
-		args = append(args, []string{"-e", "QT_DEBUG=true"}...)
+		args = append(args, []string{"-e", "QT_DEBUG=true"}...) //TODO: won't work with wine images atm
 	}
 
 	if utils.QT_DEBUG_QML() {
-		args = append(args, []string{"-e", "QT_DEBUG_QML=true"}...)
+		args = append(args, []string{"-e", "QT_DEBUG_QML=true"}...) //TODO: won't work with wine images atm
 	}
 
 	if utils.QT_DEBUG_CONSOLE() {
-		args = append(args, []string{"-e", "QT_DEBUG_CONSOLE=true"}...)
+		args = append(args, []string{"-e", "QT_DEBUG_CONSOLE=true"}...) //TODO: won't work with wine images atm
 	}
 
 	if api := utils.QT_API(""); api != "" {
-		args = append(args, []string{"-e", "QT_API=" + api}...)
+		args = append(args, []string{"-e", "QT_API=" + api}...) //TODO: won't work with wine images atm
 	}
 
 	if utils.CI() {
@@ -332,7 +332,7 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 	}
 
 	if utils.QT_WEBKIT() {
-		args = append(args, []string{"-e", "QT_WEBKIT=true"}...)
+		args = append(args, []string{"-e", "QT_WEBKIT=true"}...) //TODO: won't work with wine images atm
 	}
 
 	//TODO: flag for shared GOCACHE
@@ -340,7 +340,7 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 	if docker {
 		args = append(args, []string{"-e", "GOPATH=" + gpath}...)
 	} else {
-		args = append(args, []string{"-e", "QT_VAGRANT=true"}...)
+		args = append(args, []string{"-e", "QT_VAGRANT=true"}...) //TODO: won't work with wine images atm
 		args = append(args, []string{"-e", "GOPATH='" + gpath + "'"}...)
 	}
 
@@ -533,8 +533,8 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			"CGO_ENABLED": "1",
 
 			//TODO: move flags into template_cgo_qmake ?
-			"CGO_CPPFLAGS": fmt.Sprintf("-isysroot %v/Contents/Developer/Platforms/%v.platform/Developer/SDKs/%v -m%v-version-min=10.0 -arch %v", utils.XCODE_DIR(), CLANGDIR, CLANGPLAT, CLANGFLAG, CLANGARCH),
-			"CGO_LDFLAGS":  fmt.Sprintf("-isysroot %v/Contents/Developer/Platforms/%v.platform/Developer/SDKs/%v -m%v-version-min=10.0 -arch %v", utils.XCODE_DIR(), CLANGDIR, CLANGPLAT, CLANGFLAG, CLANGARCH),
+			"CGO_CPPFLAGS": fmt.Sprintf("-isysroot %v/Contents/Developer/Platforms/%v.platform/Developer/SDKs/%v -m%v-version-min=11.0 -arch %v", utils.XCODE_DIR(), CLANGDIR, CLANGPLAT, CLANGFLAG, CLANGARCH),
+			"CGO_LDFLAGS":  fmt.Sprintf("-isysroot %v/Contents/Developer/Platforms/%v.platform/Developer/SDKs/%v -m%v-version-min=11.0 -arch %v", utils.XCODE_DIR(), CLANGDIR, CLANGPLAT, CLANGFLAG, CLANGARCH),
 		}
 
 	case "darwin":
@@ -576,6 +576,12 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 
 		if utils.QT_VERSION_NUM() >= 5120 {
 			env["GOARCH"] = "amd64"
+
+			if utils.QT_VERSION_NUM() >= 5122 {
+				env["GOARCH"] = utils.GOARCH()
+			}
+
+			//TODO: support 32 and 64 bit support; fix InitEnv as well
 			if strings.Contains(utils.QT_DIR(), "env_windows_amd64") {
 				env["CGO_LDFLAGS"] = filepath.Join("C:\\", "Users", "Public", "env_windows_amd64", "Tools", "mingw730_64", "x86_64-w64-mingw32", "lib", "libmsvcrt.a")
 			}
@@ -588,9 +594,9 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 				env["PATH"] = filepath.Join(utils.QT_MSYS2_DIR(), "bin") + ";" + env["PATH"]
 			} else {
 				// use gcc shipped with qt installation
-				path := filepath.Join(utils.QT_DIR(), "Tools", "mingw730_64", "bin")
+				path := filepath.Join(utils.QT_DIR(), "Tools", utils.MINGWTOOLSDIR(), "bin")
 				if !utils.ExistsDir(path) {
-					path = strings.Replace(path, "mingw730_64", "mingw530_32", -1)
+					path = strings.Replace(path, utils.MINGWTOOLSDIR(), "mingw530_32", -1)
 				}
 				if !utils.ExistsDir(path) {
 					path = strings.Replace(path, "mingw530_32", "mingw492_32", -1)
