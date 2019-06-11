@@ -21,35 +21,37 @@ import (
 
 func Minimal(path, target, tags string) {
 	if utils.UseGOMOD(path) {
-		if !utils.ExistsDir(filepath.Join(path, "vendor")) {
+		if !utils.ExistsDir(filepath.Join(filepath.Dir(utils.GOMOD(path)), "vendor")) {
 			cmd := exec.Command("go", "mod", "vendor")
 			cmd.Dir = path
 			utils.RunCmd(cmd, "go mod vendor")
 		}
 	}
 
-	env, tagsEnv, _, _ := cmd.BuildEnv(target, "", "")
-	scmd := utils.GoList("'{{.Stale}}':'{{.StaleReason}}'")
-	scmd.Dir = path
+	if !(target == "js" || target == "wasm" || utils.QT_NOT_CACHED()) { //TODO: remove for module support + resolve dependencies
+		env, tagsEnv, _, _ := cmd.BuildEnv(target, "", "")
+		scmd := utils.GoList("{{.Stale}}|{{.StaleReason}}")
+		scmd.Dir = path
 
-	tagsEnv = append(tagsEnv, "minimal")
+		tagsEnv = append(tagsEnv, "minimal")
 
-	if tags != "" {
-		tagsEnv = append(tagsEnv, strings.Split(tags, " ")...)
-	}
-	scmd.Args = append(scmd.Args, fmt.Sprintf("-tags=\"%v\"", strings.Join(tagsEnv, "\" \"")))
+		if tags != "" {
+			tagsEnv = append(tagsEnv, strings.Split(tags, " ")...)
+		}
+		scmd.Args = append(scmd.Args, fmt.Sprintf("-tags=\"%v\"", strings.Join(tagsEnv, "\" \"")))
 
-	if target != runtime.GOOS {
-		scmd.Args = append(scmd.Args, []string{"-pkgdir", filepath.Join(utils.MustGoPath(), "pkg", fmt.Sprintf("%v_%v_%v", strings.Replace(target, "-", "_", -1), env["GOOS"], env["GOARCH"]))}...)
-	}
+		if target != runtime.GOOS {
+			scmd.Args = append(scmd.Args, []string{"-pkgdir", filepath.Join(utils.MustGoPath(), "pkg", fmt.Sprintf("%v_%v_%v", strings.Replace(target, "-", "_", -1), env["GOOS"], env["GOARCH"]))}...)
+		}
 
-	for key, value := range env {
-		scmd.Env = append(scmd.Env, fmt.Sprintf("%v=%v", key, value))
-	}
+		for key, value := range env {
+			scmd.Env = append(scmd.Env, fmt.Sprintf("%v=%v", key, value))
+		}
 
-	if out := utils.RunCmdOptional(scmd, fmt.Sprintf("go check stale for %v on %v", target, runtime.GOOS)); strings.Contains(out, "but available in build cache") || strings.Contains(out, "false") {
-		utils.Log.WithField("path", path).Debug("skipping already cached minimal")
-		return
+		if out := utils.RunCmdOptional(scmd, fmt.Sprintf("go check stale for %v on %v", target, runtime.GOOS)); strings.Contains(out, "but available in build cache") || strings.Contains(out, "false|") {
+			utils.Log.WithField("path", path).Debug("skipping already cached minimal")
+			return
+		}
 	}
 
 	utils.Log.WithField("path", path).WithField("target", target).Debug("start Minimal")
@@ -71,12 +73,12 @@ func Minimal(path, target, tags string) {
 	//<--
 
 	wg := new(sync.WaitGroup)
-	wc := make(chan bool, 50)
+	wc := make(chan bool, runtime.NumCPU()*2)
 
 	var files []string
 	fileMutex := new(sync.Mutex)
 
-	allImports := append([]string{path}, cmd.GetImports(path, target, tags, 0, false, false)...)
+	allImports := append([]string{path}, cmd.GetImports(path, target, tags, 0, false)...)
 	wg.Add(len(allImports))
 	for _, path := range allImports {
 		wc <- true
@@ -119,7 +121,7 @@ func Minimal(path, target, tags string) {
 	}
 
 	if _, ok := parser.State.ClassMap["QObject"]; !ok {
-		parser.LoadModules()
+		parser.LoadModulesM(target)
 	} else {
 		utils.Log.Debug("modules already cached")
 	}
@@ -193,6 +195,7 @@ func Minimal(path, target, tags string) {
 				delete(parser.State.ClassMap, bl)
 			}
 		}
+		exportClass(parser.State.ClassMap["QSvgWidget"], files)
 
 	case "rpi1", "rpi2", "rpi3":
 		if !utils.QT_RPI() {
@@ -227,7 +230,10 @@ func Minimal(path, target, tags string) {
 			}
 		}
 	case "js", "wasm":
-		parser.State.ClassMap["QSvgWidget"].Export = true
+		exportClass(parser.State.ClassMap["QSvgWidget"], files)
+	}
+	if utils.QT_STATIC() {
+		exportClass(parser.State.ClassMap["QSvgWidget"], files)
 	}
 
 	wg.Add(len(files))
@@ -235,7 +241,7 @@ func Minimal(path, target, tags string) {
 		go func(f string) {
 			for _, c := range parser.State.ClassMap {
 				if strings.Contains(f, c.Name) &&
-					strings.Contains(f, fmt.Sprintf("github.com/therecipe/qt/%v", strings.ToLower(strings.TrimPrefix(c.Module, "Qt")))) {
+					strings.Contains(f, fmt.Sprintf("%v/%v", utils.PackageName, strings.ToLower(strings.TrimPrefix(c.Module, "Qt")))) {
 					exportClass(c, files)
 				}
 			}
@@ -244,12 +250,27 @@ func Minimal(path, target, tags string) {
 	}
 	wg.Wait()
 
-	parser.State.ClassMap["QVariant"].Export = true
+	if _, ok := parser.State.ClassMap["QVariant"]; ok {
+		exportClass(parser.State.ClassMap["QVariant"], files)
+		exportFunction(parser.State.ClassMap["QVariant"].GetFunction("type"), files)
+
+		for _, v := range parser.State.ClassMap["QVariant"].Enums[0].Values {
+			if f := parser.State.ClassMap["QVariant"].GetFunction("to" + v.Name); f != nil {
+				if _, ok := parser.IsClass("Q" + v.Name); !ok ||
+					(v.Name == "Map" ||
+						v.Name == "String" ||
+						v.Name == "StringList" ||
+						v.Name == "Hash") {
+					exportFunction(f, files)
+				}
+			}
+		}
+	}
 
 	//TODO: cleanup state
 	parser.State.Minimal = true
 	for _, m := range parser.GetLibs() {
-		if !parser.ShouldBuildForTarget(m, target) ||
+		if !parser.ShouldBuildForTargetM(m, target) ||
 			m == "AndroidExtras" || m == "Sailfish" {
 			continue
 		}
@@ -261,7 +282,7 @@ func Minimal(path, target, tags string) {
 	}
 
 	for _, m := range parser.GetLibs() {
-		if !parser.ShouldBuildForTarget(m, target) ||
+		if !parser.ShouldBuildForTargetM(m, target) ||
 			m == "AndroidExtras" || m == "Sailfish" {
 			continue
 		}
@@ -328,6 +349,9 @@ func exportClass(c *parser.Class, files []string) {
 				exportFunction(f, files)
 			}
 
+			if f.Name == "toVariant" {
+				exportFunction(f, files)
+			}
 		}
 	}
 
@@ -387,6 +411,12 @@ func exportFunction(f *parser.Function, files []string) {
 			if f.Meta == parser.CONSTRUCTOR && len(f.Parameters) == 0 {
 				exportFunction(f, files)
 			}
+		}
+	}
+
+	for _, ff := range parser.State.ClassMap[f.ClassName()].Functions {
+		if f.Name == ff.Name && f.OverloadNumber != ff.OverloadNumber {
+			exportFunction(ff, files)
 		}
 	}
 }

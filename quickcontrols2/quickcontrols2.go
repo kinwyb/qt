@@ -21,9 +21,16 @@ func cGoUnpackString(s C.struct_QtQuickControls2_PackedString) string {
 }
 func cGoUnpackBytes(s C.struct_QtQuickControls2_PackedString) []byte {
 	if int(s.len) == -1 {
-		return []byte(C.GoString(s.data))
+		gs := C.GoString(s.data)
+		return *(*[]byte)(unsafe.Pointer(&gs))
 	}
 	return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len))
+}
+func unpackStringList(s string) []string {
+	if len(s) == 0 {
+		return make([]string, 0)
+	}
+	return strings.Split(s, "¡¦!")
 }
 
 type QQuickStyle struct {
@@ -89,19 +96,19 @@ func (ptr *QQuickStyle) Path() string {
 }
 
 func QQuickStyle_AvailableStyles() []string {
-	return strings.Split(cGoUnpackString(C.QQuickStyle_QQuickStyle_AvailableStyles()), "|")
+	return unpackStringList(cGoUnpackString(C.QQuickStyle_QQuickStyle_AvailableStyles()))
 }
 
 func (ptr *QQuickStyle) AvailableStyles() []string {
-	return strings.Split(cGoUnpackString(C.QQuickStyle_QQuickStyle_AvailableStyles()), "|")
+	return unpackStringList(cGoUnpackString(C.QQuickStyle_QQuickStyle_AvailableStyles()))
 }
 
 func QQuickStyle_StylePathList() []string {
-	return strings.Split(cGoUnpackString(C.QQuickStyle_QQuickStyle_StylePathList()), "|")
+	return unpackStringList(cGoUnpackString(C.QQuickStyle_QQuickStyle_StylePathList()))
 }
 
 func (ptr *QQuickStyle) StylePathList() []string {
-	return strings.Split(cGoUnpackString(C.QQuickStyle_QQuickStyle_StylePathList()), "|")
+	return unpackStringList(cGoUnpackString(C.QQuickStyle_QQuickStyle_StylePathList()))
 }
 
 func QQuickStyle_AddStylePath(path string) {

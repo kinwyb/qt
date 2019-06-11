@@ -8,6 +8,7 @@ import (
 
 	"github.com/therecipe/qt/internal/binding/converter"
 	"github.com/therecipe/qt/internal/binding/parser"
+	"github.com/therecipe/qt/internal/cmd"
 	"github.com/therecipe/qt/internal/utils"
 )
 
@@ -24,12 +25,15 @@ func GoTemplate(module string, stub bool, mode int, pkg, target, tags string) []
 
 	if !(UseStub(stub, module, mode) || UseJs()) {
 		fmt.Fprintf(bb, "func cGoUnpackString(s C.struct_%v_PackedString) string { if int(s.len) == -1 {\n return C.GoString(s.data)\n }\n return C.GoStringN(s.data, C.int(s.len)) }\n", strings.Title(module))
-		fmt.Fprintf(bb, "func cGoUnpackBytes(s C.struct_%v_PackedString) []byte { if int(s.len) == -1 {\n return []byte(C.GoString(s.data))\n }\n return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len)) }\n", strings.Title(module))
+		fmt.Fprintf(bb, "func cGoUnpackBytes(s C.struct_%v_PackedString) []byte { if int(s.len) == -1 {\n gs := C.GoString(s.data)\n return *(*[]byte)(unsafe.Pointer(&gs))\n }\n return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len)) }\n", strings.Title(module))
 	}
 
 	if UseJs() {
 		fmt.Fprint(bb, "func jsGoUnpackString(s string) string { dec, _ := hex.DecodeString(s)\n return string(dec)\n }\n") //TODO: calling it cGoUnpackString won't work, bug in go wasm ?
+		fmt.Fprint(bb, "func jsGoUnpackBytes(s string) []byte { dec, _ := hex.DecodeString(s)\n return dec\n }\n")
 	}
+
+	fmt.Fprint(bb, "func unpackStringList(s string) []string {\nif len(s) == 0 {\nreturn make([]string, 0)\n}\nreturn strings.Split(s, \"¡¦!\")\n}\n")
 
 	if module == "QtAndroidExtras" && utils.QT_VERSION_NUM() >= 5060 {
 		fmt.Fprint(bb, "func QAndroidJniEnvironment_ExceptionCatch() error {\n")
@@ -228,6 +232,13 @@ func (ptr *%[1]v) Destroy%[1]v() {
 			}
 
 			if mode == MOC {
+
+				if len(class.Constructors) > 0 {
+					if strings.ToLower(class.Constructors[0])[0] == class.Constructors[0][0] {
+						fmt.Fprintf(bb, "func (this *%v) %v() { this.%v() }\n", class.Name, strings.Title(class.Constructors[0]), class.Constructors[0])
+					}
+				}
+
 				if UseJs() {
 					if parser.UseWasm() {
 						fmt.Fprintf(bb, "//export callback%[1]v_Constructor\nfunc callback%[1]v_Constructor(_ js.Value, args []js.Value) interface{} {", class.Name)
@@ -245,9 +256,7 @@ func (ptr *%[1]v) Destroy%[1]v() {
 				for _, bcn := range class.GetAllBases() {
 					if bc := parser.State.ClassMap[bcn]; bc.Module != class.Module {
 						if len(bc.Constructors) > 0 && lastModule != bc.Module {
-							if strings.ToLower(bc.Constructors[0])[0] != bc.Constructors[0][0] {
-								fmt.Fprintf(bb, "this.%v.%v()\n", strings.Title(bc.Name), bc.Constructors[0])
-							}
+							fmt.Fprintf(bb, "this.%v.%v()\n", strings.Title(bc.Name), strings.Title(bc.Constructors[0]))
 						}
 						lastModule = bc.Module
 					}
@@ -291,12 +300,6 @@ func (ptr *%[1]v) Destroy%[1]v() {
 									if f.Target == "" {
 										fmt.Fprintf(bb, "this.Connect%v(this.%v)\n", strings.Title(name), name)
 									} else {
-										t := f.Target
-										if strings.Count(t, ".") != 2 {
-											if !(len(strings.Split(f.Target, ".")) == 2 && strings.Split(f.Target, ".")[0] != "this" && strings.Split(f.Target, ".")[1][:1] == strings.ToLower(strings.Split(f.Target, ".")[1][:1])) {
-												t = f.Target + "." + name
-											}
-										}
 										tUpper := strings.Split(f.Target, ".")
 										tUpper[len(tUpper)-1] = strings.Title(tUpper[len(tUpper)-1])
 
@@ -308,12 +311,6 @@ func (ptr *%[1]v) Destroy%[1]v() {
 									}
 								} else {
 									if f.Target != "" {
-										t := f.Target
-										if strings.Count(t, ".") != 2 {
-											if !(len(strings.Split(f.Target, ".")) == 2 && strings.Split(f.Target, ".")[0] != "this" && strings.Split(f.Target, ".")[1][:1] == strings.ToLower(strings.Split(f.Target, ".")[1][:1])) {
-												t = f.Target + "." + name
-											}
-										}
 										tCon := strings.Split(f.Target, ".")
 										tCon[len(tCon)-1] = "Connect" + strings.Title(tCon[len(tCon)-1])
 
@@ -342,6 +339,7 @@ func (ptr *%[1]v) Destroy%[1]v() {
 								if p.Inbound {
 									name = strings.Title(name)
 								}
+								name = strings.TrimSuffix(name, "z__")
 
 								if p.Connect == 1 {
 									if p.Target == "" {
@@ -470,8 +468,71 @@ func (ptr *%[1]v) Destroy%[1]v() {
 
 				fmt.Fprint(bb, "}\n\n")
 			}
-		}
 
+			if class.Name == "QVariant" {
+				fmt.Fprint(bb, "type qVariant_ITF interface { ToVariant() *QVariant }\n")
+				fmt.Fprint(bb, "func NewQVariant1(i interface{}) *QVariant {\n")
+				fmt.Fprint(bb, "switch d:= i.(type) {\n")
+
+				has := make(map[string]struct{})
+				fmt.Fprint(bb, "case *QVariant:\nreturn d\n")
+				has["QVariant"] = struct{}{}
+
+				for _, f := range class.Functions {
+					if f.Meta == parser.CONSTRUCTOR && len(f.Parameters) == 1 && f.IsSupported() {
+						v := f.Parameters[0].Value
+						gt := converter.GoType(f, v, f.Parameters[0].PureGoType)
+						if _, ok := has[gt]; ok {
+							continue
+						}
+						if gt == "string" && !strings.Contains(f.Parameters[0].Value, "const char") {
+							continue
+						}
+						if gt == "map[string]*QVariant" && !strings.Contains(f.Parameters[0].Value, "const QMap<") {
+							continue
+						}
+						has[gt] = struct{}{}
+
+						if c, ok := parser.IsClass(parser.CleanValue(v)); ok && parser.State.ClassMap[c].IsSupported() {
+							fmt.Fprintf(bb, "case *%v:\n", gt)
+						} else {
+							fmt.Fprintf(bb, "case %v:\n", gt)
+						}
+						fmt.Fprintf(bb, "return NewQVariant%v(d)\n", f.OverloadNumber)
+					}
+				}
+				fmt.Fprint(bb, "case qVariant_ITF:\nreturn d.ToVariant()\n")
+				fmt.Fprint(bb, "default:\nreturn NewQVariant()\n")
+				fmt.Fprint(bb, "\n}\n}\n")
+
+				//
+
+				fmt.Fprint(bb, "func (v *QVariant) ToInterface() interface{} {\n")
+				fmt.Fprint(bb, "switch v.Type() {\n")
+
+				for _, v := range class.Enums[0].Values {
+					if c, ok := parser.IsClass("Q" + v.Name); ok {
+						if !parser.State.ClassMap[c].IsSupported() &&
+							!(v.Name == "Map" ||
+								v.Name == "String" ||
+								v.Name == "StringList" ||
+								v.Name == "Hash") {
+							continue
+						}
+					}
+
+					if f := class.GetFunction("to" + v.Name); f != nil && f.IsSupported() {
+						fmt.Fprintf(bb, "case QVariant__%v:\n", v.Name)
+						if len(f.Parameters) == 0 {
+							fmt.Fprintf(bb, "return v.To%v()\n", v.Name)
+						} else {
+							fmt.Fprintf(bb, "return v.To%v(nil)\n", v.Name)
+						}
+					}
+				}
+				fmt.Fprint(bb, "\n}\nreturn v\n}\n")
+			}
+		}
 		cTemplate(bb, class, goEnum, goFunction, "\n\n", true)
 	}
 
@@ -480,7 +541,7 @@ func (ptr *%[1]v) Destroy%[1]v() {
 		for _, l := range strings.Split(bb.String(), "\n") {
 			if strings.HasPrefix(l, "//export") {
 				if parser.UseWasm() {
-					fmt.Fprintf(bb, "qt.WASM.Set(\"_%[1]v\", js.NewCallback(%[1]v))\n", strings.TrimPrefix(l, "//export "))
+					fmt.Fprintf(bb, "qt.WASM.Set(\"_%[1]v\", js.FuncOf(%[1]v))\n", strings.TrimPrefix(l, "//export "))
 				} else {
 					fmt.Fprintf(bb, "qt.WASM.Set(\"_%[1]v\", %[1]v)\n", strings.TrimPrefix(l, "//export "))
 				}
@@ -725,7 +786,11 @@ import "C"
 	}
 
 	if mode == MOC {
-		for custom, m := range parser.GetCustomLibs(target, tags) {
+		env, tagsEnv, _, _ := cmd.BuildEnv(target, "", "")
+		if tags != "" {
+			tagsEnv = append(tagsEnv, strings.Split(tags, " ")...)
+		}
+		for custom, m := range parser.GetCustomLibs(target, env, tagsEnv) {
 			switch {
 			case strings.Contains(m, "/vendor/"):
 				fmt.Fprintf(bb, "\"%v\"\n", custom)
@@ -757,7 +822,7 @@ import "C"
 	//TODO: regexp
 	if mode == MOC {
 		pre := string(out)
-		libsm := make(map[string]struct{}, 0)
+		libsm := make(map[string]struct{})
 		for _, c := range parser.State.ClassMap {
 			if c.Pkg != "" && c.IsSubClassOfQObject() {
 				libsm[c.Module] = struct{}{}

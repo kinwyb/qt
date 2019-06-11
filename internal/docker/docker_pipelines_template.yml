@@ -6,18 +6,36 @@ jobs:
       tag: android
       dep: linux
   -
-    template: docker_job_template.yml
+    template: docker_darwin_job_template.yml
     parameters:
-      file: js/Dockerfile
-      tag: js
-      dep:
-#        - js_base
-        - linux
+      file: darwin/Dockerfile
+      tag: darwin
 #  -
 #    template: docker_job_template.yml
 #    parameters:
 #      file: js/Dockerfile.base
 #      tag: js_base
+#  -
+#    template: docker_job_template.yml
+#    parameters:
+#      file: js/Dockerfile.base_thread
+#      tag: js_base_thread
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: js/Dockerfile.js
+      tag: js
+      dep:
+#        - js_base
+        - linux
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: js/Dockerfile.js_thread
+      tag: js_thread
+      dep:
+#        - js_base_thread
+        - linux
   -
     template: docker_job_template.yml
     parameters:
@@ -25,6 +43,14 @@ jobs:
       tag: wasm
       dep:
 #        - js_base
+        - linux
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: js/Dockerfile.wasm_thread
+      tag: wasm_thread
+      dep:
+#        - js_base_thread
         - linux
   -
     template: docker_job_template.yml
@@ -46,6 +72,29 @@ jobs:
     parameters:
       file: linux/Dockerfile.arch
       tag: linux_arch
+#  -
+#    template: docker_job_template.yml
+#    parameters:
+#      file: linux/Dockerfile.static_base
+#      tag: linux_static_base
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: linux/Dockerfile.static
+      tag: linux_static
+      dep:
+#        - linux_static_base
+        - linux
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: linux/Dockerfile.suse_leap
+      tag: linux_suse_leap
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: linux/Dockerfile.suse_tumbleweed
+      tag: linux_suse_tumbleweed
   -
     template: docker_job_template.yml
     parameters:
@@ -56,6 +105,30 @@ jobs:
     parameters:
       file: linux/Dockerfile.ubuntu_18_04
       tag: linux_ubuntu_18_04
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: rpi/Dockerfile.base
+      tag: rpi_base
+      dep: linux
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: rpi/Dockerfile.rpi1
+      tag: rpi1
+      dep: rpi_base
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: rpi/Dockerfile.rpi2
+      tag: rpi2
+      dep: rpi_base
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: rpi/Dockerfile.rpi3
+      tag: rpi3
+      dep: rpi_base
   -
     template: docker_job_template.yml
     parameters:

@@ -99,9 +99,7 @@ func (c *Class) GetAllBasesRecursiveCheckFailed(i int) ([]string, bool) {
 		if isRecursive {
 			return input, true
 		}
-		for _, sbc := range bs {
-			input = append(input, sbc)
-		}
+		input = append(input, bs...)
 	}
 
 	return input, false
@@ -137,10 +135,7 @@ func (c *Class) GetAllDerivations() []string {
 			continue
 		}
 
-		input = append(input, b)
-		for _, sbc := range bc.GetAllDerivations() {
-			input = append(input, sbc)
-		}
+		input = append(append(input, b), bc.GetAllDerivations()...)
 	}
 
 	return input
@@ -223,6 +218,21 @@ func (c *Class) HasCallbackFunctions() bool {
 		}
 		for _, f := range bc.Functions {
 			if f.Virtual == IMPURE || f.Virtual == PURE || f.Meta == SIGNAL || f.Meta == SLOT {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Class) HasCallbackFunctionsBesideTheDestructor() bool {
+	for _, bcn := range append([]string{c.Name}, c.GetAllBases()...) {
+		var bc, ok = State.ClassMap[bcn]
+		if !ok {
+			continue
+		}
+		for _, f := range bc.Functions {
+			if (f.Virtual == IMPURE || f.Virtual == PURE || f.Meta == SIGNAL || f.Meta == SLOT) && f.Meta != DESTRUCTOR {
 				return true
 			}
 		}

@@ -68,7 +68,7 @@ func main() {
 	if target == "desktop" {
 		target = runtime.GOOS
 	}
-	utils.CheckBuildTarget(target)
+	utils.CheckBuildTarget(target, docker)
 	cmd.InitEnv(target)
 
 	if !filepath.IsAbs(path) {
@@ -77,7 +77,7 @@ func main() {
 		if err != nil || !utils.ExistsDir(path) {
 			utils.Log.WithError(err).WithField("path", path).Debug("can't resolve absolute path")
 			dirFunc := func() (string, error) {
-				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath), "get pkg dir")
+				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath, "-find"), "get pkg dir")
 				return strings.TrimSpace(out), err
 			}
 			if dir, err := dirFunc(); err != nil || len(dir) == 0 {
@@ -87,10 +87,6 @@ func main() {
 				path = dir
 			}
 		}
-	}
-
-	if target == "js" || target == "wasm" { //TODO: remove for module support + resolve dependencies
-		os.Setenv("GOCACHE", "off")
 	}
 
 	switch {

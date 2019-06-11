@@ -41,6 +41,12 @@ func main() {
 	var tags string
 	flag.StringVar(&tags, "tags", "", "a list of build tags to consider satisfied during the build")
 
+	var quickcompiler bool
+	flag.BoolVar(&quickcompiler, "quickcompiler", false, "use the quickcompiler")
+
+	var uic bool
+	flag.BoolVar(&uic, "uic", true, "use the uic")
+
 	if cmd.ParseFlags() {
 		flag.Usage()
 	}
@@ -71,7 +77,7 @@ func main() {
 	if target == "desktop" {
 		target = runtime.GOOS
 	}
-	utils.CheckBuildTarget(target)
+	utils.CheckBuildTarget(target, docker)
 	cmd.InitEnv(target)
 
 	if !filepath.IsAbs(path) {
@@ -80,7 +86,7 @@ func main() {
 		if err != nil || !utils.ExistsDir(path) {
 			utils.Log.WithError(err).WithField("path", path).Debug("can't resolve absolute path")
 			dirFunc := func() (string, error) {
-				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath), "get pkg dir")
+				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath, "-find"), "get pkg dir")
 				return strings.TrimSpace(out), err
 			}
 			if dir, err := dirFunc(); err != nil || len(dir) == 0 {
@@ -98,16 +104,20 @@ func main() {
 		}
 	}
 
-	if target == "js" || target == "wasm" { //TODO: remove for module support + resolve dependencies
-		os.Setenv("GOCACHE", "off")
+	dockerArgs := []string{"qtrcc", "-debug"}
+	if !uic {
+		dockerArgs = append(dockerArgs, "-uic=false")
+	}
+	if quickcompiler {
+		dockerArgs = append(dockerArgs, "-quickcompiler")
 	}
 
 	switch {
 	case docker:
-		cmd.Docker([]string{"qtrcc", "-debug"}, target, path, false)
+		cmd.Docker(dockerArgs, target, path, false)
 	case vagrant:
-		cmd.Vagrant([]string{"qtrcc", "-debug"}, target, path, false, vagrant_system)
+		cmd.Vagrant(dockerArgs, target, path, false, vagrant_system)
 	default:
-		rcc.Rcc(path, target, tags, output)
+		rcc.Rcc(path, target, tags, output, uic, quickcompiler, false)
 	}
 }

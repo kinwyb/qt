@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/therecipe/qt/internal/cmd"
 	"github.com/therecipe/qt/internal/utils"
 )
 
@@ -84,7 +85,18 @@ func UnpackedGoMapDirty(v string) []string {
 	if !strings.Contains(v, "]") { //TODO: multidimensional array and nested maps
 		return make([]string, 2)
 	}
-	return strings.Split(v, "]")
+
+	var ms []string
+	if strings.Contains(v, "][") {
+		ms = strings.Split(v, "][")
+		ms[1] = "[" + ms[1]
+	} else if strings.Contains(v, "]map[") {
+		ms = strings.Split(v, "]map[")
+		ms[1] = "map[" + ms[1]
+	} else {
+		ms = strings.Split(v, "]")
+	}
+	return ms
 }
 
 func CleanValue(v string) string {
@@ -209,6 +221,7 @@ var LibDeps = map[string][]string{
 	"DataVisualization": {"Gui", "Core"},
 	"Charts":            {"Widgets", "Gui", "Core"},
 	//"Quick2DRenderer":   {}, //TODO: uncomment
+	"VirtualKeyboard": {"Quick", "Gui", "Qml", "Network", "Core"},
 
 	"Speech":         {"Core"},
 	"QuickControls2": {"Quick", "QuickWidgets", "Widgets", "Network", "Qml", "Gui", "Core"}, //Quick, QuickWidgets, Widgets, Network, Qml, Gui (needed for static linking ios)
@@ -226,6 +239,25 @@ var LibDeps = map[string][]string{
 }
 
 func ShouldBuildForTarget(module, target string) bool {
+	return shouldBuildForTarget(module, target, false)
+}
+func ShouldBuildForTargetM(module, target string) bool {
+	return shouldBuildForTarget(module, target, true)
+}
+func shouldBuildForTarget(module, target string, min bool) bool {
+	if State.Minimal == true || min {
+		for _, m := range cmd.GetQtStdImports() {
+			if strings.ToLower(module) == strings.ToLower(m) ||
+				(strings.ToLower(module) == "svg" && (target == "js" || target == "wasm" || strings.HasPrefix(target, "ios") || utils.QT_STATIC())) {
+				if State.Minimal {
+					return true
+				} else {
+					return shouldBuildForTarget(module, target, false)
+				}
+			}
+		}
+		return false
+	}
 
 	switch target {
 	case "windows":
@@ -242,7 +274,7 @@ func ShouldBuildForTarget(module, target string) bool {
 
 	case "android", "android-emulator":
 		switch module {
-		case "DBus", "WebEngine", "Designer", "SerialPort", "SerialBus", "PrintSupport": //TODO: PrintSupport
+		case "DBus", "WebEngine", "Designer", "SerialPort", "SerialBus", "PrintSupport", "VirtualKeyboard": //TODO: PrintSupport
 			return false
 		}
 		if strings.HasSuffix(module, "Extras") && module != "AndroidExtras" {
@@ -251,7 +283,7 @@ func ShouldBuildForTarget(module, target string) bool {
 
 	case "ios", "ios-simulator":
 		switch module {
-		case "DBus", "WebEngine", "SerialPort", "SerialBus", "Designer", "PrintSupport": //TODO: PrintSupport
+		case "DBus", "WebEngine", "SerialPort", "SerialBus", "Designer", "PrintSupport", "VirtualKeyboard": //TODO: PrintSupport
 			return false
 		}
 		if strings.HasSuffix(module, "Extras") {
@@ -292,6 +324,11 @@ func ShouldBuildForTarget(module, target string) bool {
 				return false
 			}
 		}
+
+	case "linux", "freebsd":
+		if utils.QT_STATIC() && module == "WebEngine" {
+			return false
+		}
 	}
 
 	return true
@@ -310,7 +347,7 @@ func IsWhiteListedSailfishLib(name string) bool {
 //TODO: whitelist everything once dependency issue is resolved
 func IsWhiteListedJsLib(name string) bool {
 	switch name {
-	case "Core", "Gui", "Widgets", "PrintSupport", "Qml", "Quick", "QuickControls2", "Xml", "XmlPatterns", "WebSockets", "Svg", "Charts", "Multimedia":
+	case "Core", "Gui", "Widgets", "PrintSupport", "Qml", "Quick", "QuickControls2", "Xml", "XmlPatterns", "WebSockets", "Svg", "Charts", "Multimedia", "VirtualKeyboard":
 		return true
 
 	default:
@@ -320,7 +357,7 @@ func IsWhiteListedJsLib(name string) bool {
 
 func IsWhiteListedRaspberryLib(name string) bool {
 	switch name {
-	case "Core", "Gui", "Widgets", "PrintSupport", "Sql", "Qml", "Quick", "QuickControls2", "Svg", "SerialPort":
+	case "Core", "Gui", "Widgets", "PrintSupport", "Sql", "Qml", "Quick", "QuickControls2", "Svg", "SerialPort", "Multimedia", "VirtualKeyboard":
 		return true
 
 	default:
@@ -371,7 +408,7 @@ func GetLibs() []string {
 		"DataVisualization", //GPLv3
 		"Charts",            //GPLv3
 		//"Quick2DRenderer", //GPLv3
-		//"VirtualKeyboard", //GPLv3
+		"VirtualKeyboard", //GPLv3
 
 		"Speech",
 		"QuickControls2",
@@ -387,10 +424,10 @@ func GetLibs() []string {
 
 	for i := len(libs) - 1; i >= 0; i-- {
 		switch {
-		case !(runtime.GOOS == "darwin" || runtime.GOOS == "linux") && (libs[i] == "WebEngine" || libs[i] == "WebView"),
+		case !(runtime.GOOS == "darwin" || runtime.GOOS == "linux" || runtime.GOOS == "freebsd") && (libs[i] == "WebEngine" || libs[i] == "WebView"),
 			runtime.GOOS != "windows" && libs[i] == "WinExtras",
 			runtime.GOOS != "darwin" && libs[i] == "MacExtras",
-			runtime.GOOS != "linux" && libs[i] == "X11Extras":
+			!(runtime.GOOS == "linux" || runtime.GOOS == "freebsd") && libs[i] == "X11Extras":
 			libs = append(libs[:i], libs[i+1:]...)
 
 		case utils.QT_VERSION_NUM() < 5080 && libs[i] == "Speech":
@@ -404,6 +441,9 @@ func GetLibs() []string {
 
 		case (utils.QT_MSYS2() || utils.QT_PKG_CONFIG()) && libs[i] == "Purchasing":
 			libs = append(libs[:i], libs[i+1:]...)
+
+		case utils.QT_FELGO() && strings.HasPrefix(libs[i], "Script"):
+			libs = append(libs[:i], libs[i+1:]...)
 		}
 	}
 	return libs
@@ -414,63 +454,43 @@ var (
 	getCustomLibsCacheMutex = new(sync.Mutex)
 )
 
-func GetCustomLibs(target, tags string) map[string]string {
+func GetCustomLibs(target string, env map[string]string, tags []string) map[string]string {
+	getCustomLibsCacheMutex.Lock()
+	defer getCustomLibsCacheMutex.Unlock()
 
-	/*TODO: cycle dep of cmd.BuildEnv
-	env, tags, _, _ := cmd.BuildEnv(target, "", "")
-	if tagsCustom != "" {
-		tags = append(tags, strings.Split(tagsCustom, " ")...)
-	}
-	*/
-
-	wg := new(sync.WaitGroup)
-	wc := make(chan bool, 50)
 	out := make(map[string]string)
-	outMutex := new(sync.Mutex)
-
-	lookup := func(lm map[string]*Class) {
+	var modules []string
+	var pkgs []string
+	for _, lm := range []map[string]*Class{State.ClassMap, State.GoClassMap} {
 		for _, c := range lm {
 			if c.Pkg == "" {
 				continue
 			}
-
-			wg.Add(1)
-			wc <- true
-			go func(c *Class) {
-				getCustomLibsCacheMutex.Lock()
-				path, ok := getCustomLibsCache[c.Pkg]
-				getCustomLibsCacheMutex.Unlock()
-
-				if !ok {
-					cmd := utils.GoList("{{.ImportPath}}", fmt.Sprintf("-tags=\"%v\"", tags))
-					cmd.Dir = c.Pkg
-
-					/*TODO: cycle dep of cmd.BuildEnv
-					for k, v := range env {
-						cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", k, v))
-					}
-					*/
-
-					path = strings.TrimSpace(utils.RunCmd(cmd, "get import path"))
-					getCustomLibsCacheMutex.Lock()
-					getCustomLibsCache[c.Pkg] = path
-					getCustomLibsCacheMutex.Unlock()
+			if path, ok := getCustomLibsCache[c.Pkg]; !ok {
+				if _, ok = out[c.Module]; !ok {
+					out[c.Module] = c.Pkg
+					modules = append(modules, c.Module)
+					pkgs = append(pkgs, c.Pkg)
 				}
-
-				outMutex.Lock()
+			} else {
 				out[c.Module] = path
-				outMutex.Unlock()
-
-				<-wc
-				wg.Done()
-			}(c)
+			}
 		}
 	}
 
-	lookup(State.ClassMap)
-	lookup(State.GoClassMap)
+	if len(modules) > 0 {
+		cmd := utils.GoList(append([]string{"{{.ImportPath}}", "-find", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \""))}, pkgs...)...)
+		for k, v := range env {
+			cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", k, v))
+		}
 
-	wg.Wait()
+		for i, path := range strings.Split(strings.TrimSpace(utils.RunCmd(cmd, "get import path")), "\n") {
+			path = strings.TrimSpace(path)
+
+			getCustomLibsCache[pkgs[i]] = path
+			out[modules[i]] = path
+		}
+	}
 
 	return out
 }

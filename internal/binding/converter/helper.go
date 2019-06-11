@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/therecipe/qt/internal/binding/parser"
 	"github.com/therecipe/qt/internal/utils"
@@ -209,96 +209,109 @@ func cppEnumExact(value, outE, outT string) string {
 	return outE
 }
 
+var (
+	pkgConfigIncludeDirCache      string
+	pkgConfigIncludeDirCacheMutex = new(sync.Mutex)
+)
+
 func IsPrivateSignal(f *parser.Function) bool {
-	var fc, ok = f.Class()
-	if !ok {
+	fc, ok := f.Class()
+	if !ok || fc.Module != "QtCore" {
 		return false
 	}
 
-	if fc.Module == "QtCore" {
+	var (
+		fData string
+		fPath = strings.Replace(strings.Replace(strings.Replace(filepath.Base(f.Filepath), ".cpp", ".h", -1), ".mm", ".h", -1), "_win.h", ".h", -1)
+	)
 
-		var (
-			fData string
-			fPath = strings.Replace(filepath.Base(f.Filepath), ".cpp", ".h", -1)
-		)
-		fPath = strings.Replace(fPath, ".mm", ".h", -1)
-
-		if strings.HasSuffix(fPath, "_win.h") {
-			fPath = strings.Replace(fPath, "_win.h", ".h", -1)
-		}
-
-		switch runtime.GOOS {
-		case "darwin":
-			{
-				if utils.QT_HOMEBREW() || utils.QT_MACPORTS() {
-					fData = utils.LoadOptional(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
-				} else if utils.QT_NIX() {
-					for _, qmakepath := range strings.Split(os.Getenv("QMAKEPATH"), string(filepath.ListSeparator)) {
-						if strings.Contains(qmakepath, "qtbase") {
-							fData = utils.Load(filepath.Join(qmakepath, "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
-							break
-						}
-					}
-				} else {
-					fData = utils.LoadOptional(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
-					if len(fData) == 0 {
-						fData = utils.LoadOptional(filepath.Join(utils.QT_DARWIN_DIR(), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Headers", fPath))
-					}
+	switch target := parser.State.Target; target {
+	case "darwin":
+		if utils.QT_NIX() {
+			for _, qmakepath := range strings.Split(os.Getenv("QMAKEPATH"), string(filepath.ListSeparator)) {
+				if strings.Contains(qmakepath, "qtbase") {
+					fData = utils.Load(filepath.Join(qmakepath, "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+					break
 				}
 			}
-
-		case "windows":
-			{
-				if utils.QT_MSYS2() {
-					if utils.QT_MSYS2_STATIC() {
-						fData = utils.LoadOptional(filepath.Join(utils.QT_MSYS2_DIR(), "qt5-static", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
-					} else {
-						fData = utils.LoadOptional(filepath.Join(utils.QT_MSYS2_DIR(), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
-					}
-				} else {
-					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), utils.MINGWDIR(), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
-					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
-						path = filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), utils.MINGWDIR(), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
-					}
-					if !utils.ExistsFile(path) {
-						path = strings.Replace(path, utils.MINGWDIR(), "mingw53_32", -1)
-					}
-					if !utils.ExistsFile(path) {
-						path = strings.Replace(path, "mingw53_32", "mingw49_32", -1)
-					}
-					fData = utils.Load(path)
-				}
+		} else if utils.QT_PKG_CONFIG() {
+			pkgConfigIncludeDirCacheMutex.Lock()
+			if pkgConfigIncludeDirCache == "" {
+				pkgConfigIncludeDirCache = strings.TrimSpace(utils.RunCmd(exec.Command("pkg-config", "--variable=libdir", "Qt5Core"), "convert.IsPrivateSignal_includeDir"))
 			}
-
-		case "linux":
-			{
-				switch {
-				case utils.QT_PKG_CONFIG():
-					fData = utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.RunCmd(exec.Command("pkg-config", "--variable=includedir", "Qt5Core"), "convert.IsPrivateSignal_includeDir")), strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
-				case utils.QT_SAILFISH():
-					fData = utils.LoadOptional(filepath.Join("/srv/mer/targets/SailfishOS-"+utils.QT_SAILFISH_VERSION()+"-i486/usr/include/qt5", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
-				default:
-					path := filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "gcc_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
-					if !utils.ExistsDir(filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR())) {
-						path = filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "gcc_64", "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath)
-					}
-					fData = utils.Load(path)
-				}
+			fData = utils.LoadOptional(filepath.Join(pkgConfigIncludeDirCache, fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
+			pkgConfigIncludeDirCacheMutex.Unlock()
+		} else {
+			fData = utils.LoadOptional(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
+			if fData == "" {
+				fData = utils.LoadOptional(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Headers", fPath))
 			}
 		}
-
-		if fData != "" {
-			if strings.Contains(fData, fmt.Sprintf("%v(", f.Name)) {
-				return strings.Contains(strings.Split(strings.Split(fData, fmt.Sprintf("%v(", f.Name))[1], ");")[0], "QPrivateSignal")
+	default:
+		if utils.QT_SAILFISH() {
+			fData = utils.LoadOptional(filepath.Join("/srv/mer/targets/SailfishOS-"+utils.QT_SAILFISH_VERSION()+"-i486/usr/include/qt5", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+		} else if utils.QT_PKG_CONFIG() {
+			pkgConfigIncludeDirCacheMutex.Lock()
+			if pkgConfigIncludeDirCache == "" {
+				pkgConfigIncludeDirCache = strings.TrimSpace(utils.RunCmd(exec.Command("pkg-config", "--variable=includedir", "Qt5Core"), "convert.IsPrivateSignal_includeDir"))
 			}
-
-			if strings.Contains(fData, fmt.Sprintf("%v (", f.Name)) {
-				return strings.Contains(strings.Split(strings.Split(fData, fmt.Sprintf("%v (", f.Name))[1], ");")[0], "QPrivateSignal")
-			}
+			fData = utils.LoadOptional(filepath.Join(pkgConfigIncludeDirCache, strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
+			pkgConfigIncludeDirCacheMutex.Unlock()
+		} else {
+			fData = utils.Load(filepath.Join(utils.QT_INSTALL_PREFIX(target), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
 		}
-
-		utils.Log.Debugln("converter.IsPrivateSignal", f.ClassName())
 	}
 
+	if fData != "" {
+		if strings.Contains(fData, fmt.Sprintf("%v(", f.Name)) {
+			return strings.Contains(strings.Split(strings.Split(fData, fmt.Sprintf("%v(", f.Name))[1], ");")[0], "QPrivateSignal")
+		}
+
+		if strings.Contains(fData, fmt.Sprintf("%v (", f.Name)) {
+			return strings.Contains(strings.Split(strings.Split(fData, fmt.Sprintf("%v (", f.Name))[1], ");")[0], "QPrivateSignal")
+		}
+	}
+
+	utils.Log.Debugln("converter.IsPrivateSignal", f.ClassName())
+
 	return false
+}
+
+func variantWrapper(f *parser.Function, value string, p string) (string, string, string) {
+	if !((value == "QList<QVariant>" || value == "QMap<QString, QVariant>") && p != "") {
+		return goType(f, value, p), "", ""
+	}
+
+	vs := parser.UnpackedGoMapDirty(p)
+	v := parser.CleanValue(vs[1])
+
+	if strings.Contains(vs[1], ".") {
+		v = strings.Split(vs[1], ".")[1]
+	}
+	if strings.HasPrefix(vs[1], "[]") {
+		v = "[]" + v
+	}
+	if strings.HasPrefix(vs[1], "map[string]") {
+		v = "map[string]" + v
+	}
+
+	if v == "QVariant" {
+		return p, "", ""
+	}
+
+	if v == "QObject" {
+		return p, "", fmt.Sprintf(".ToObject()")
+	}
+
+	if isClass(v) && parser.State.ClassMap[v].IsSubClassOfQObject() {
+		var pp string
+		if m := module(parser.State.ClassMap[v].Module); m != module(f) {
+			pp = fmt.Sprintf("%v.New%vFromPointer(", m, v)
+		} else {
+			pp = fmt.Sprintf("New%vFromPointer(", v)
+		}
+		return p, pp, fmt.Sprintf(".ToObject().Pointer())")
+	}
+
+	return p, "", fmt.Sprintf(".ToInterface().(%v)", strings.TrimSpace(vs[1]))
 }

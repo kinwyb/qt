@@ -332,18 +332,24 @@ func CppTemplate(module string, mode int, target, tags string) []byte {
 						fmt.Fprintf(bb, "int %[1]v_%[1]v_QRegisterMetaType(){qRegisterMetaType<%[1]v*>(); return qRegisterMetaType<My%[1]v*>();}\n\n", class.Name)
 					}
 				} else {
-					var typeMap = make(map[string]string)
+					typeMap := make(map[string]string)
 					for _, f := range class.Functions {
 						if parser.IsPackedMap(f.Output) {
 							var tHash = sha1.New()
 							tHash.Write([]byte(f.Output))
 							typeMap[f.Output] = hex.EncodeToString(tHash.Sum(nil)[:3])
 						}
+						if parser.IsPackedList(f.Output) {
+							typeMap[f.Output] = "QList<QObject*>"
+						}
 						for _, p := range f.Parameters {
 							if parser.IsPackedMap(p.Value) {
 								var tHash = sha1.New()
 								tHash.Write([]byte(p.Value))
 								typeMap[p.Value] = hex.EncodeToString(tHash.Sum(nil)[:3])
+							}
+							if parser.IsPackedList(p.Value) {
+								typeMap[p.Value] = "QList<QObject*>"
 							}
 						}
 					}
@@ -354,6 +360,9 @@ func CppTemplate(module string, mode int, target, tags string) []byte {
 							var tHash = sha1.New()
 							tHash.Write([]byte(p.Output))
 							typeMap[p.Output] = hex.EncodeToString(tHash.Sum(nil)[:3])
+						}
+						if parser.IsPackedList(p.Output) {
+							typeMap[p.Output] = "QList<QObject*>"
 						}
 						if o := converter.CppRegisterMetaTypeProp(p); o != "" {
 							propTypes[o] = struct{}{}
@@ -366,15 +375,23 @@ func CppTemplate(module string, mode int, target, tags string) []byte {
 							hash == "d01680" || //QHash<qint32, QByteArray>
 							hash == "d15f9e" || //QMap<quintptr, quintptr>
 							hash == "cc064b" || //QMap<qint32, quintptr>
-							hash == "378cdd" { //QMap<qint32, QByteArray>
+							hash == "378cdd" || //QMap<qint32, QByteArray>
+							hash == "424d06" || //QMap<QString, QVariant>
+							hash == "QList<QObject*>" {
 							continue
 						}
 						fmt.Fprintf(bb, "Q_DECLARE_METATYPE(type%v)\n", hash)
 					}
 
 					fmt.Fprintf(bb, "\nvoid %[1]v_%[1]v_QRegisterMetaTypes() {\n", class.Name)
-					for _, hash := range typeMap {
-						fmt.Fprintf(bb, "\tqRegisterMetaType<type%v>(\"type%v\");\n", hash, hash)
+					for out, hash := range typeMap {
+						if parser.IsPackedList(out) {
+							if up := parser.UnpackedList(out); parser.State.ClassMap[up].IsSubClassOfQObject() && up != "QObject" {
+								fmt.Fprintf(bb, "\tqRegisterMetaType<%v>(\"%v\");\n", hash, out)
+							}
+						} else {
+							fmt.Fprintf(bb, "\tqRegisterMetaType<type%[1]v>(\"type%[1]v\");\n", hash)
+						}
 					}
 					for t := range propTypes {
 						fmt.Fprintf(bb, "\tqRegisterMetaType<%v>();\n", t)
@@ -439,7 +456,7 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 	defer bb.Reset()
 
 	if mode == MOC {
-		libsm := make(map[string]struct{}, 0)
+		libsm := make(map[string]struct{})
 		for _, c := range parser.State.ClassMap {
 			if c.Pkg != "" && c.IsSubClassOfQObject() {
 				libsm[c.Module] = struct{}{}
@@ -506,7 +523,7 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 #define private public
 
 #include "%v.h"
-%v
+%v%v
 
 `,
 		buildTags(module, false, mode, tags),
@@ -552,19 +569,26 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 				return "#include \"_cgo_export.h\""
 			}
 		}(),
+
+		func() string {
+			if utils.QT_DEBUG_CPP() {
+				return "\n#include <QDebug>\n"
+			}
+			return ""
+		}(),
 	)
 
 	var classes = make([]string, 0)
 	for _, class := range parser.State.ClassMap {
-		if (strings.Contains(string(input), class.Name+";") ||
-			strings.Contains(string(input), class.Name+":") ||
-			strings.Contains(string(input), class.Name+"*") ||
-			strings.Contains(string(input), class.Name+" ") ||
-			strings.Contains(string(input), class.Name+"<") ||
-			strings.Contains(string(input), class.Name+">") ||
-			strings.Contains(string(input), class.Name+"(") ||
-			strings.Contains(string(input), class.Name+")") ||
-			strings.Contains(string(input), class.Name+"_")) && class.Module != parser.MOC {
+		if (bytes.Contains(input, []byte(class.Name+";")) ||
+			bytes.Contains(input, []byte(class.Name+":")) ||
+			bytes.Contains(input, []byte(class.Name+"*")) ||
+			bytes.Contains(input, []byte(class.Name+" ")) ||
+			bytes.Contains(input, []byte(class.Name+"<")) ||
+			bytes.Contains(input, []byte(class.Name+">")) ||
+			bytes.Contains(input, []byte(class.Name+"(")) ||
+			bytes.Contains(input, []byte(class.Name+")")) ||
+			bytes.Contains(input, []byte(class.Name+"_"))) && class.Module != parser.MOC {
 			classes = append(classes, class.Name)
 		}
 	}
@@ -575,7 +599,9 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 			fmt.Fprint(bb, "#include <sailfishapp.h>\n")
 		} else {
 			var c, _ = parser.State.ClassMap[class]
-			if strings.HasPrefix(c.Module, "custom_") {
+			if strings.HasPrefix(c.Module, "custom_") ||
+				strings.ToLower(c.Module) == c.Module ||
+				!strings.HasPrefix(class, "Q") {
 				continue
 			}
 			switch c.Name {
@@ -591,18 +617,13 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 				"QSql",
 				"QTest",
 				"QWebSocketProtocol",
-				"OSXBluetooth",
 				"QBluetooth",
-				"PaintContext",
 				"QPlatformGraphicsBuffer",
 				"QDBusPendingReplyTypes",
 				"QRemoteObjectPackets",
 				"QRemoteObjectStringLiterals",
-				"ui",
 				"QStringList",
 				"QtDwmApiDll",
-				"content",
-				"net",
 				"QStringView":
 				{
 					continue
@@ -758,6 +779,10 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 		}
 	}
 
+	if mode == MOC {
+		fmt.Fprint(bb, "\n#ifdef QT_QML_LIB\n\t#include <QQmlEngine>\n#endif\n")
+	}
+
 	fmt.Fprint(bb, "\n")
 
 	for _, class := range parser.State.ClassMap {
@@ -772,7 +797,7 @@ func preambleCpp(module string, input []byte, mode int, target, tags string) []b
 	if mode == MOC {
 		pre := bb.String()
 		bb.Reset()
-		libsm := make(map[string]struct{}, 0)
+		libsm := make(map[string]struct{})
 		for _, c := range parser.State.ClassMap {
 			if c.Pkg != "" && c.IsSubClassOfQObject() {
 				libsm[c.Module] = struct{}{}

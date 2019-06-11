@@ -9,10 +9,17 @@ import (
 
 	"github.com/therecipe/qt/internal/binding/converter"
 	"github.com/therecipe/qt/internal/binding/parser"
+	"github.com/therecipe/qt/internal/utils"
 )
 
 func cppFunctionCallback(function *parser.Function) string {
-	var output = fmt.Sprintf("%v { %v };", cppFunctionCallbackHeader(function), cppFunctionCallbackBody(function))
+	var output = fmt.Sprintf("%v { %v%v };", cppFunctionCallbackHeader(function),
+		func() string {
+			if utils.QT_DEBUG_CPP() {
+				return fmt.Sprintf("qDebug() << \"callback\" << \"%v\";\n", function.Fullname)
+			}
+			return ""
+		}(), cppFunctionCallbackBody(function))
 	if function.IsSupported() {
 		return cppFunctionCallbackWithGuards(function, output)
 	}
@@ -113,7 +120,13 @@ func cppFunctionCallbackBody(function *parser.Function) string {
 }
 
 func cppFunction(function *parser.Function) string {
-	var output = fmt.Sprintf("%v\n{\n%v\n}", cppFunctionHeader(function), cppFunctionUnused(function, cppFunctionBodyWithGuards(function)))
+	var output = fmt.Sprintf("%v\n{\n%v%v\n}", cppFunctionHeader(function),
+		func() string {
+			if utils.QT_DEBUG_CPP() {
+				return fmt.Sprintf("qDebug() << \"function\" << \"%v\";\n", function.Fullname)
+			}
+			return ""
+		}(), cppFunctionUnused(function, cppFunctionBodyWithGuards(function)))
 	if UseJs() {
 		if !strings.Contains(output, "_Packed") && !strings.Contains(output, "emscripten::val") {
 			output = strings.Replace(output, converter.CppHeaderName(function), "_KEEPALIVE_"+converter.CppHeaderName(function), -1)
@@ -331,10 +344,12 @@ func cppFunctionBody(function *parser.Function) string {
 						ibody = strings.Replace(body, "static_cast<"+input[len(input)-1]+"*>("+polyName+")->"+input[len(input)-1]+"::", "static_cast<My"+polyType+"*>("+polyName+")->My"+polyType+"::", -1)
 
 						//TODO: only temporary until invoke works ->
-						for _, s := range append(parser.State.ClassMap["QAbstractItemView"].GetAllDerivations(), "QAbstractItemView") {
-							if strings.Contains(ibody, "static_cast<My"+s+"*>(ptr)->My"+s+"::update()") {
-								ibody = ""
-								break
+						if c, ok := parser.State.ClassMap["QAbstractItemView"]; ok {
+							for _, s := range append(c.GetAllDerivations(), "QAbstractItemView") {
+								if strings.Contains(ibody, "static_cast<My"+s+"*>(ptr)->My"+s+"::update()") {
+									ibody = ""
+									break
+								}
 							}
 						}
 						//<-
@@ -540,6 +555,15 @@ func cppFunctionBodyInternal(function *parser.Function) string {
 				)
 			}
 
+			if function.Fullname == "QObject::invokeMethod" {
+				return `	QVariant returnArg;
+	if (arg)
+		QMetaObject::invokeMethod(static_cast<QObject*>(ptr), const_cast<const char*>(name), Q_RETURN_ARG(QVariant, returnArg), Q_ARG(QVariant, *static_cast<QVariant*>(arg)));
+	else
+		QMetaObject::invokeMethod(static_cast<QObject*>(ptr), const_cast<const char*>(name), Q_RETURN_ARG(QVariant, returnArg));
+	return new QVariant(returnArg);`
+			}
+
 			return fmt.Sprintf("\t%v%v;",
 
 				func() string {
@@ -580,12 +604,14 @@ func cppFunctionBodyInternal(function *parser.Function) string {
 									}
 									return fmt.Sprintf("%v<%v>", parser.CleanValue(function.Container), strings.TrimPrefix(function.Parameters[0].Value, "const "))
 								}
-								if strings.HasSuffix(function.Name, "_newList") {
-									//will be overriden
-								}
-								if strings.HasSuffix(function.Name, "_keyList") {
-									//will be overriden
-								}
+								/*
+									if strings.HasSuffix(function.Name, "_newList") {
+										//will be overriden
+									}
+									if strings.HasSuffix(function.Name, "_keyList") {
+										//will be overriden
+									}
+								*/
 								return function.ClassName()
 							}(),
 						)

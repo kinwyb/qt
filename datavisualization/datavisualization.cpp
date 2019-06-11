@@ -147,11 +147,6 @@ struct QtDataVisualization_PackedString Q3DBars_Q3DBars_Tr(char* s, char* c, int
 	return ({ QByteArray t506497 = Q3DBars::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t506497.prepend("WHITESPACE").constData()+10), t506497.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString Q3DBars_Q3DBars_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray te2ebf0 = Q3DBars::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(te2ebf0.prepend("WHITESPACE").constData()+10), te2ebf0.size()-10 }; });
-}
-
 void Q3DBars_AddAxis(void* ptr, void* axis)
 {
 	static_cast<Q3DBars*>(ptr)->addAxis(static_cast<QAbstract3DAxis*>(axis));
@@ -547,11 +542,6 @@ struct QtDataVisualization_PackedString Q3DCamera_Q3DCamera_Tr(char* s, char* c,
 	return ({ QByteArray t1c418d = Q3DCamera::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t1c418d.prepend("WHITESPACE").constData()+10), t1c418d.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString Q3DCamera_Q3DCamera_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t0e9669 = Q3DCamera::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0e9669.prepend("WHITESPACE").constData()+10), t0e9669.size()-10 }; });
-}
-
 void Q3DCamera_ConnectCameraPresetChanged(void* ptr)
 {
 	QObject::connect(static_cast<Q3DCamera*>(ptr), static_cast<void (Q3DCamera::*)(Q3DCamera::CameraPreset)>(&Q3DCamera::cameraPresetChanged), static_cast<MyQ3DCamera*>(ptr), static_cast<void (MyQ3DCamera::*)(Q3DCamera::CameraPreset)>(&MyQ3DCamera::Signal_CameraPresetChanged));
@@ -873,11 +863,6 @@ struct QtDataVisualization_PackedString Q3DInputHandler_Q3DInputHandler_Tr(char*
 	return ({ QByteArray ta6f28a = Q3DInputHandler::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta6f28a.prepend("WHITESPACE").constData()+10), ta6f28a.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString Q3DInputHandler_Q3DInputHandler_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t9d366a = Q3DInputHandler::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t9d366a.prepend("WHITESPACE").constData()+10), t9d366a.size()-10 }; });
-}
-
 void Q3DInputHandler_MouseMoveEvent(void* ptr, void* event, void* mousePos)
 {
 	static_cast<Q3DInputHandler*>(ptr)->mouseMoveEvent(static_cast<QMouseEvent*>(event), *static_cast<QPoint*>(mousePos));
@@ -1092,11 +1077,6 @@ struct QtDataVisualization_PackedString Q3DLight_Q3DLight_Tr(char* s, char* c, i
 	return ({ QByteArray t8f2fb9 = Q3DLight::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t8f2fb9.prepend("WHITESPACE").constData()+10), t8f2fb9.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString Q3DLight_Q3DLight_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tf499e2 = Q3DLight::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tf499e2.prepend("WHITESPACE").constData()+10), tf499e2.size()-10 }; });
-}
-
 char Q3DLight_IsAutoPosition(void* ptr)
 {
 	return static_cast<Q3DLight*>(ptr)->isAutoPosition();
@@ -1202,11 +1182,6 @@ struct QtDataVisualization_PackedString Q3DObject_Q3DObject_Tr(char* s, char* c,
 	return ({ QByteArray tff43e3 = Q3DObject::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tff43e3.prepend("WHITESPACE").constData()+10), tff43e3.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString Q3DObject_Q3DObject_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t4057bc = Q3DObject::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t4057bc.prepend("WHITESPACE").constData()+10), t4057bc.size()-10 }; });
-}
-
 void Q3DObject_CopyValuesFrom(void* ptr, void* source)
 {
 	static_cast<Q3DObject*>(ptr)->copyValuesFrom(*static_cast<Q3DObject*>(source));
@@ -1297,11 +1272,6 @@ void* Q3DScatter_NewQ3DScatter(void* format, void* parent)
 struct QtDataVisualization_PackedString Q3DScatter_Q3DScatter_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t809444 = Q3DScatter::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t809444.prepend("WHITESPACE").constData()+10), t809444.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString Q3DScatter_Q3DScatter_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t0b01ae = Q3DScatter::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0b01ae.prepend("WHITESPACE").constData()+10), t0b01ae.size()-10 }; });
 }
 
 void Q3DScatter_AddAxis(void* ptr, void* axis)
@@ -1547,11 +1517,6 @@ void* Q3DScene_Q3DScene_InvalidSelectionPoint()
 struct QtDataVisualization_PackedString Q3DScene_Q3DScene_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray td6d065 = Q3DScene::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(td6d065.prepend("WHITESPACE").constData()+10), td6d065.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString Q3DScene_Q3DScene_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t0bd6db = Q3DScene::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0bd6db.prepend("WHITESPACE").constData()+10), t0bd6db.size()-10 }; });
 }
 
 char Q3DScene_IsPointInPrimarySubView(void* ptr, void* point)
@@ -1857,11 +1822,6 @@ struct QtDataVisualization_PackedString Q3DSurface_Q3DSurface_Tr(char* s, char* 
 	return ({ QByteArray tee8689 = Q3DSurface::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tee8689.prepend("WHITESPACE").constData()+10), tee8689.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString Q3DSurface_Q3DSurface_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t68768d = Q3DSurface::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t68768d.prepend("WHITESPACE").constData()+10), t68768d.size()-10 }; });
-}
-
 void Q3DSurface_AddAxis(void* ptr, void* axis)
 {
 	static_cast<Q3DSurface*>(ptr)->addAxis(static_cast<QValue3DAxis*>(axis));
@@ -2073,8 +2033,8 @@ public:
 	void Signal_AmbientLightStrengthChanged(float strength) { callbackQ3DTheme_AmbientLightStrengthChanged(this, strength); };
 	void Signal_BackgroundColorChanged(const QColor & color) { callbackQ3DTheme_BackgroundColorChanged(this, const_cast<QColor*>(&color)); };
 	void Signal_BackgroundEnabledChanged(bool enabled) { callbackQ3DTheme_BackgroundEnabledChanged(this, enabled); };
-	void Signal_BaseColorsChanged(const QList<QColor> & colors) { callbackQ3DTheme_BaseColorsChanged(this, ({ QList<QColor>* tmpValue = const_cast<QList<QColor>*>(&colors); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; })); };
-	void Signal_BaseGradientsChanged(const QList<QLinearGradient> & gradients) { callbackQ3DTheme_BaseGradientsChanged(this, ({ QList<QLinearGradient>* tmpValue = const_cast<QList<QLinearGradient>*>(&gradients); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_BaseColorsChanged(const QList<QColor> & colors) { callbackQ3DTheme_BaseColorsChanged(this, ({ QList<QColor>* tmpValue = new QList<QColor>(colors); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_BaseGradientsChanged(const QList<QLinearGradient> & gradients) { callbackQ3DTheme_BaseGradientsChanged(this, ({ QList<QLinearGradient>* tmpValue = new QList<QLinearGradient>(gradients); QtDataVisualization_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_ColorStyleChanged(Q3DTheme::ColorStyle style) { callbackQ3DTheme_ColorStyleChanged(this, style); };
 	void Signal_FontChanged(const QFont & font) { callbackQ3DTheme_FontChanged(this, const_cast<QFont*>(&font)); };
 	void Signal_GridEnabledChanged(bool enabled) { callbackQ3DTheme_GridEnabledChanged(this, enabled); };
@@ -2177,11 +2137,6 @@ void* Q3DTheme_NewQ3DTheme(void* parent)
 struct QtDataVisualization_PackedString Q3DTheme_Q3DTheme_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t958dfd = Q3DTheme::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t958dfd.prepend("WHITESPACE").constData()+10), t958dfd.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString Q3DTheme_Q3DTheme_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray teff3ca = Q3DTheme::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(teff3ca.prepend("WHITESPACE").constData()+10), teff3ca.size()-10 }; });
 }
 
 void Q3DTheme_ConnectAmbientLightStrengthChanged(void* ptr)
@@ -2873,11 +2828,6 @@ struct QtDataVisualization_PackedString QAbstract3DAxis_QAbstract3DAxis_Tr(char*
 	return ({ QByteArray tdc4319 = QAbstract3DAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tdc4319.prepend("WHITESPACE").constData()+10), tdc4319.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QAbstract3DAxis_QAbstract3DAxis_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t80f82d = QAbstract3DAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t80f82d.prepend("WHITESPACE").constData()+10), t80f82d.size()-10 }; });
-}
-
 void QAbstract3DAxis_ConnectAutoAdjustRangeChanged(void* ptr)
 {
 	QObject::connect(static_cast<QAbstract3DAxis*>(ptr), static_cast<void (QAbstract3DAxis::*)(bool)>(&QAbstract3DAxis::autoAdjustRangeChanged), static_cast<MyQAbstract3DAxis*>(ptr), static_cast<void (MyQAbstract3DAxis::*)(bool)>(&MyQAbstract3DAxis::Signal_AutoAdjustRangeChanged));
@@ -2995,7 +2945,7 @@ void QAbstract3DAxis_SetLabelAutoRotation(void* ptr, float angle)
 
 void QAbstract3DAxis_SetLabels(void* ptr, struct QtDataVisualization_PackedString labels)
 {
-	static_cast<QAbstract3DAxis*>(ptr)->setLabels(QString::fromUtf8(labels.data, labels.len).split("|", QString::SkipEmptyParts));
+	static_cast<QAbstract3DAxis*>(ptr)->setLabels(QString::fromUtf8(labels.data, labels.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QAbstract3DAxis_SetMax(void* ptr, float max)
@@ -3101,7 +3051,7 @@ struct QtDataVisualization_PackedString QAbstract3DAxis_Title(void* ptr)
 
 struct QtDataVisualization_PackedString QAbstract3DAxis_Labels(void* ptr)
 {
-	return ({ QByteArray t7dab2f = static_cast<QAbstract3DAxis*>(ptr)->labels().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t7dab2f.prepend("WHITESPACE").constData()+10), t7dab2f.size()-10 }; });
+	return ({ QByteArray t7dab2f = static_cast<QAbstract3DAxis*>(ptr)->labels().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t7dab2f.prepend("WHITESPACE").constData()+10), t7dab2f.size()-10 }; });
 }
 
 char QAbstract3DAxis_IsAutoAdjustRange(void* ptr)
@@ -3203,11 +3153,6 @@ void* QAbstract3DInputHandler_NewQAbstract3DInputHandler(void* parent)
 struct QtDataVisualization_PackedString QAbstract3DInputHandler_QAbstract3DInputHandler_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tb37210 = QAbstract3DInputHandler::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb37210.prepend("WHITESPACE").constData()+10), tb37210.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QAbstract3DInputHandler_QAbstract3DInputHandler_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t9d32e5 = QAbstract3DInputHandler::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t9d32e5.prepend("WHITESPACE").constData()+10), t9d32e5.size()-10 }; });
 }
 
 void QAbstract3DInputHandler_ConnectInputViewChanged(void* ptr)
@@ -3412,11 +3357,6 @@ public:
 struct QtDataVisualization_PackedString QAbstract3DSeries_QAbstract3DSeries_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tb63f72 = QAbstract3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb63f72.prepend("WHITESPACE").constData()+10), tb63f72.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QAbstract3DSeries_QAbstract3DSeries_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t099b98 = QAbstract3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t099b98.prepend("WHITESPACE").constData()+10), t099b98.size()-10 }; });
 }
 
 void QAbstract3DSeries_ConnectBaseColorChanged(void* ptr)
@@ -3857,11 +3797,6 @@ struct QtDataVisualization_PackedString QAbstractDataProxy_QAbstractDataProxy_Tr
 	return ({ QByteArray t247869 = QAbstractDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t247869.prepend("WHITESPACE").constData()+10), t247869.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QAbstractDataProxy_QAbstractDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t1f7d4a = QAbstractDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t1f7d4a.prepend("WHITESPACE").constData()+10), t1f7d4a.size()-10 }; });
-}
-
 void QAbstractDataProxy_DestroyQAbstractDataProxy(void* ptr)
 {
 	static_cast<QAbstractDataProxy*>(ptr)->~QAbstractDataProxy();
@@ -3986,11 +3921,6 @@ void* QBar3DSeries_QBar3DSeries_InvalidSelectionPosition()
 struct QtDataVisualization_PackedString QBar3DSeries_QBar3DSeries_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t3dd1be = QBar3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t3dd1be.prepend("WHITESPACE").constData()+10), t3dd1be.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QBar3DSeries_QBar3DSeries_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t9b16bd = QBar3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t9b16bd.prepend("WHITESPACE").constData()+10), t9b16bd.size()-10 }; });
 }
 
 void QBar3DSeries_ConnectDataProxyChanged(void* ptr)
@@ -4196,11 +4126,6 @@ struct QtDataVisualization_PackedString QBarDataProxy_QBarDataProxy_Tr(char* s, 
 	return ({ QByteArray ta842ef = QBarDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta842ef.prepend("WHITESPACE").constData()+10), ta842ef.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QBarDataProxy_QBarDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tb36487 = QBarDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb36487.prepend("WHITESPACE").constData()+10), tb36487.size()-10 }; });
-}
-
 void QBarDataProxy_ConnectArrayReset(void* ptr)
 {
 	QObject::connect(static_cast<QBarDataProxy*>(ptr), static_cast<void (QBarDataProxy::*)()>(&QBarDataProxy::arrayReset), static_cast<MyQBarDataProxy*>(ptr), static_cast<void (MyQBarDataProxy::*)()>(&MyQBarDataProxy::Signal_ArrayReset));
@@ -4363,7 +4288,7 @@ void QBarDataProxy_SeriesChanged(void* ptr, void* series)
 
 void QBarDataProxy_SetColumnLabels(void* ptr, struct QtDataVisualization_PackedString labels)
 {
-	static_cast<QBarDataProxy*>(ptr)->setColumnLabels(QString::fromUtf8(labels.data, labels.len).split("|", QString::SkipEmptyParts));
+	static_cast<QBarDataProxy*>(ptr)->setColumnLabels(QString::fromUtf8(labels.data, labels.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QBarDataProxy_SetItem2(void* ptr, void* position, void* item)
@@ -4378,7 +4303,7 @@ void QBarDataProxy_SetItem(void* ptr, int rowIndex, int columnIndex, void* item)
 
 void QBarDataProxy_SetRowLabels(void* ptr, struct QtDataVisualization_PackedString labels)
 {
-	static_cast<QBarDataProxy*>(ptr)->setRowLabels(QString::fromUtf8(labels.data, labels.len).split("|", QString::SkipEmptyParts));
+	static_cast<QBarDataProxy*>(ptr)->setRowLabels(QString::fromUtf8(labels.data, labels.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QBarDataProxy_DestroyQBarDataProxy(void* ptr)
@@ -4399,12 +4324,12 @@ void* QBarDataProxy_Series(void* ptr)
 
 struct QtDataVisualization_PackedString QBarDataProxy_ColumnLabels(void* ptr)
 {
-	return ({ QByteArray t7f1685 = static_cast<QBarDataProxy*>(ptr)->columnLabels().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t7f1685.prepend("WHITESPACE").constData()+10), t7f1685.size()-10 }; });
+	return ({ QByteArray t7f1685 = static_cast<QBarDataProxy*>(ptr)->columnLabels().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t7f1685.prepend("WHITESPACE").constData()+10), t7f1685.size()-10 }; });
 }
 
 struct QtDataVisualization_PackedString QBarDataProxy_RowLabels(void* ptr)
 {
-	return ({ QByteArray t0565e1 = static_cast<QBarDataProxy*>(ptr)->rowLabels().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0565e1.prepend("WHITESPACE").constData()+10), t0565e1.size()-10 }; });
+	return ({ QByteArray t0565e1 = static_cast<QBarDataProxy*>(ptr)->rowLabels().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t0565e1.prepend("WHITESPACE").constData()+10), t0565e1.size()-10 }; });
 }
 
 void* QBarDataProxy_ItemAt2(void* ptr, void* position)
@@ -4485,11 +4410,6 @@ struct QtDataVisualization_PackedString QCategory3DAxis_QCategory3DAxis_Tr(char*
 	return ({ QByteArray ta78c4d = QCategory3DAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta78c4d.prepend("WHITESPACE").constData()+10), ta78c4d.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QCategory3DAxis_QCategory3DAxis_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tf37b7d = QCategory3DAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tf37b7d.prepend("WHITESPACE").constData()+10), tf37b7d.size()-10 }; });
-}
-
 void QCategory3DAxis_ConnectLabelsChanged(void* ptr)
 {
 	QObject::connect(static_cast<QCategory3DAxis*>(ptr), static_cast<void (QCategory3DAxis::*)()>(&QCategory3DAxis::labelsChanged), static_cast<MyQCategory3DAxis*>(ptr), static_cast<void (MyQCategory3DAxis::*)()>(&MyQCategory3DAxis::Signal_LabelsChanged));
@@ -4507,7 +4427,7 @@ void QCategory3DAxis_LabelsChanged(void* ptr)
 
 void QCategory3DAxis_SetLabels(void* ptr, struct QtDataVisualization_PackedString labels)
 {
-	static_cast<QCategory3DAxis*>(ptr)->setLabels(QString::fromUtf8(labels.data, labels.len).split("|", QString::SkipEmptyParts));
+	static_cast<QCategory3DAxis*>(ptr)->setLabels(QString::fromUtf8(labels.data, labels.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QCategory3DAxis_DestroyQCategory3DAxis(void* ptr)
@@ -4523,7 +4443,7 @@ void QCategory3DAxis_DestroyQCategory3DAxisDefault(void* ptr)
 
 struct QtDataVisualization_PackedString QCategory3DAxis_Labels(void* ptr)
 {
-	return ({ QByteArray t2a027f = static_cast<QCategory3DAxis*>(ptr)->labels().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t2a027f.prepend("WHITESPACE").constData()+10), t2a027f.size()-10 }; });
+	return ({ QByteArray t2a027f = static_cast<QCategory3DAxis*>(ptr)->labels().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t2a027f.prepend("WHITESPACE").constData()+10), t2a027f.size()-10 }; });
 }
 
 void* QCategory3DAxis_MetaObject(void* ptr)
@@ -4640,11 +4560,6 @@ void* QCustom3DItem_Rotation(void* ptr)
 struct QtDataVisualization_PackedString QCustom3DItem_QCustom3DItem_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t01b7b2 = QCustom3DItem::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t01b7b2.prepend("WHITESPACE").constData()+10), t01b7b2.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QCustom3DItem_QCustom3DItem_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t10dbbf = QCustom3DItem::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t10dbbf.prepend("WHITESPACE").constData()+10), t10dbbf.size()-10 }; });
 }
 
 void QCustom3DItem_ConnectMeshFileChanged(void* ptr)
@@ -4997,11 +4912,6 @@ struct QtDataVisualization_PackedString QCustom3DLabel_QCustom3DLabel_Tr(char* s
 	return ({ QByteArray t23ba81 = QCustom3DLabel::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t23ba81.prepend("WHITESPACE").constData()+10), t23ba81.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QCustom3DLabel_QCustom3DLabel_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t799c6c = QCustom3DLabel::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t799c6c.prepend("WHITESPACE").constData()+10), t799c6c.size()-10 }; });
-}
-
 void QCustom3DLabel_ConnectBackgroundColorChanged(void* ptr)
 {
 	QObject::connect(static_cast<QCustom3DLabel*>(ptr), static_cast<void (QCustom3DLabel::*)(const QColor &)>(&QCustom3DLabel::backgroundColorChanged), static_cast<MyQCustom3DLabel*>(ptr), static_cast<void (MyQCustom3DLabel::*)(const QColor &)>(&MyQCustom3DLabel::Signal_BackgroundColorChanged));
@@ -5270,11 +5180,6 @@ void* QCustom3DVolume_RenderSlice(void* ptr, long long axis, int index)
 struct QtDataVisualization_PackedString QCustom3DVolume_QCustom3DVolume_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t757ae1 = QCustom3DVolume::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t757ae1.prepend("WHITESPACE").constData()+10), t757ae1.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QCustom3DVolume_QCustom3DVolume_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tf47ef1 = QCustom3DVolume::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tf47ef1.prepend("WHITESPACE").constData()+10), tf47ef1.size()-10 }; });
 }
 
 void QCustom3DVolume_ConnectAlphaMultiplierChanged(void* ptr)
@@ -5929,11 +5834,6 @@ struct QtDataVisualization_PackedString QHeightMapSurfaceDataProxy_QHeightMapSur
 	return ({ QByteArray t2cbfbb = QHeightMapSurfaceDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t2cbfbb.prepend("WHITESPACE").constData()+10), t2cbfbb.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QHeightMapSurfaceDataProxy_QHeightMapSurfaceDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t15a74b = QHeightMapSurfaceDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t15a74b.prepend("WHITESPACE").constData()+10), t15a74b.size()-10 }; });
-}
-
 void QHeightMapSurfaceDataProxy_ConnectHeightMapChanged(void* ptr)
 {
 	QObject::connect(static_cast<QHeightMapSurfaceDataProxy*>(ptr), static_cast<void (QHeightMapSurfaceDataProxy::*)(const QImage &)>(&QHeightMapSurfaceDataProxy::heightMapChanged), static_cast<MyQHeightMapSurfaceDataProxy*>(ptr), static_cast<void (MyQHeightMapSurfaceDataProxy::*)(const QImage &)>(&MyQHeightMapSurfaceDataProxy::Signal_HeightMapChanged));
@@ -6263,78 +6163,78 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy5(void* itemModel, struct 
 void* QItemModelBarDataProxy_NewQItemModelBarDataProxy7(void* itemModel, struct QtDataVisualization_PackedString rowRole, struct QtDataVisualization_PackedString columnRole, struct QtDataVisualization_PackedString valueRole, struct QtDataVisualization_PackedString rotationRole, struct QtDataVisualization_PackedString rowCategories, struct QtDataVisualization_PackedString columnCategories, void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
 	} else if (dynamic_cast<QExtensionFactory*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
 	} else if (dynamic_cast<QExtensionManager*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
 	} else if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
 	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
 	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
 	} else if (dynamic_cast<QMediaPlaylist*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
 	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
 	} else if (dynamic_cast<QQuickItem*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
 	} else {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QObject*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QObject*>(parent));
 	}
 }
 
 void* QItemModelBarDataProxy_NewQItemModelBarDataProxy6(void* itemModel, struct QtDataVisualization_PackedString rowRole, struct QtDataVisualization_PackedString columnRole, struct QtDataVisualization_PackedString valueRole, struct QtDataVisualization_PackedString rowCategories, struct QtDataVisualization_PackedString columnCategories, void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
 	} else if (dynamic_cast<QExtensionFactory*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
 	} else if (dynamic_cast<QExtensionManager*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
 	} else if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
 	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
 	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
 	} else if (dynamic_cast<QMediaPlaylist*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
 	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
 	} else if (dynamic_cast<QQuickItem*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
 	} else {
-		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QObject*>(parent));
+		return new MyQItemModelBarDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QObject*>(parent));
 	}
 }
 
@@ -6419,11 +6319,6 @@ void* QItemModelBarDataProxy_NewQItemModelBarDataProxy(void* parent)
 struct QtDataVisualization_PackedString QItemModelBarDataProxy_QItemModelBarDataProxy_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t6ac795 = QItemModelBarDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t6ac795.prepend("WHITESPACE").constData()+10), t6ac795.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QItemModelBarDataProxy_QItemModelBarDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t92eab3 = QItemModelBarDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t92eab3.prepend("WHITESPACE").constData()+10), t92eab3.size()-10 }; });
 }
 
 int QItemModelBarDataProxy_ColumnCategoryIndex(void* ptr, struct QtDataVisualization_PackedString category)
@@ -6558,7 +6453,7 @@ void QItemModelBarDataProxy_MultiMatchBehaviorChanged(void* ptr, long long behav
 
 void QItemModelBarDataProxy_Remap(void* ptr, struct QtDataVisualization_PackedString rowRole, struct QtDataVisualization_PackedString columnRole, struct QtDataVisualization_PackedString valueRole, struct QtDataVisualization_PackedString rotationRole, struct QtDataVisualization_PackedString rowCategories, struct QtDataVisualization_PackedString columnCategories)
 {
-	static_cast<QItemModelBarDataProxy*>(ptr)->remap(QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QItemModelBarDataProxy*>(ptr)->remap(QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(valueRole.data, valueRole.len), QString::fromUtf8(rotationRole.data, rotationRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QItemModelBarDataProxy_ConnectRotationRoleChanged(void* ptr)
@@ -6678,7 +6573,7 @@ void QItemModelBarDataProxy_SetAutoRowCategories(void* ptr, char enable)
 
 void QItemModelBarDataProxy_SetColumnCategories(void* ptr, struct QtDataVisualization_PackedString categories)
 {
-	static_cast<QItemModelBarDataProxy*>(ptr)->setColumnCategories(QString::fromUtf8(categories.data, categories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QItemModelBarDataProxy*>(ptr)->setColumnCategories(QString::fromUtf8(categories.data, categories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QItemModelBarDataProxy_SetColumnRole(void* ptr, struct QtDataVisualization_PackedString role)
@@ -6723,7 +6618,7 @@ void QItemModelBarDataProxy_SetRotationRoleReplace(void* ptr, struct QtDataVisua
 
 void QItemModelBarDataProxy_SetRowCategories(void* ptr, struct QtDataVisualization_PackedString categories)
 {
-	static_cast<QItemModelBarDataProxy*>(ptr)->setRowCategories(QString::fromUtf8(categories.data, categories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QItemModelBarDataProxy*>(ptr)->setRowCategories(QString::fromUtf8(categories.data, categories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QItemModelBarDataProxy_SetRowRole(void* ptr, struct QtDataVisualization_PackedString role)
@@ -6904,12 +6799,12 @@ struct QtDataVisualization_PackedString QItemModelBarDataProxy_ValueRoleReplace(
 
 struct QtDataVisualization_PackedString QItemModelBarDataProxy_ColumnCategories(void* ptr)
 {
-	return ({ QByteArray t86b84b = static_cast<QItemModelBarDataProxy*>(ptr)->columnCategories().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t86b84b.prepend("WHITESPACE").constData()+10), t86b84b.size()-10 }; });
+	return ({ QByteArray t86b84b = static_cast<QItemModelBarDataProxy*>(ptr)->columnCategories().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t86b84b.prepend("WHITESPACE").constData()+10), t86b84b.size()-10 }; });
 }
 
 struct QtDataVisualization_PackedString QItemModelBarDataProxy_RowCategories(void* ptr)
 {
-	return ({ QByteArray t50f4e1 = static_cast<QItemModelBarDataProxy*>(ptr)->rowCategories().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t50f4e1.prepend("WHITESPACE").constData()+10), t50f4e1.size()-10 }; });
+	return ({ QByteArray t50f4e1 = static_cast<QItemModelBarDataProxy*>(ptr)->rowCategories().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t50f4e1.prepend("WHITESPACE").constData()+10), t50f4e1.size()-10 }; });
 }
 
 char QItemModelBarDataProxy_AutoColumnCategories(void* ptr)
@@ -7120,11 +7015,6 @@ void* QItemModelScatterDataProxy_NewQItemModelScatterDataProxy(void* parent)
 struct QtDataVisualization_PackedString QItemModelScatterDataProxy_QItemModelScatterDataProxy_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t15d7cf = QItemModelScatterDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t15d7cf.prepend("WHITESPACE").constData()+10), t15d7cf.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QItemModelScatterDataProxy_QItemModelScatterDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t5f214d = QItemModelScatterDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t5f214d.prepend("WHITESPACE").constData()+10), t5f214d.size()-10 }; });
 }
 
 void QItemModelScatterDataProxy_ConnectItemModelChanged(void* ptr)
@@ -7595,39 +7485,39 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy5(void* itemModel,
 void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy7(void* itemModel, struct QtDataVisualization_PackedString rowRole, struct QtDataVisualization_PackedString columnRole, struct QtDataVisualization_PackedString xPosRole, struct QtDataVisualization_PackedString yPosRole, struct QtDataVisualization_PackedString zPosRole, struct QtDataVisualization_PackedString rowCategories, struct QtDataVisualization_PackedString columnCategories, void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
 	} else if (dynamic_cast<QExtensionFactory*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
 	} else if (dynamic_cast<QExtensionManager*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
 	} else if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
 	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
 	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
 	} else if (dynamic_cast<QMediaPlaylist*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
 	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
 	} else if (dynamic_cast<QQuickItem*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
 	} else {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QObject*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QObject*>(parent));
 	}
 }
 
@@ -7673,39 +7563,39 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy4(void* itemModel,
 void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy6(void* itemModel, struct QtDataVisualization_PackedString rowRole, struct QtDataVisualization_PackedString columnRole, struct QtDataVisualization_PackedString yPosRole, struct QtDataVisualization_PackedString rowCategories, struct QtDataVisualization_PackedString columnCategories, void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QDBusPendingCallWatcher*>(parent));
 	} else if (dynamic_cast<QExtensionFactory*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionFactory*>(parent));
 	} else if (dynamic_cast<QExtensionManager*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QExtensionManager*>(parent));
 	} else if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsObject*>(parent));
 	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QGraphicsWidget*>(parent));
 	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QLayout*>(parent));
 	} else if (dynamic_cast<QMediaPlaylist*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QMediaRecorder*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPaintDeviceWindow*>(parent));
 	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QPdfWriter*>(parent));
 	} else if (dynamic_cast<QQuickItem*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QQuickItem*>(parent));
 	} else if (dynamic_cast<QRadioData*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QWindow*>(parent));
 	} else {
-		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts), static_cast<QObject*>(parent));
+		return new MyQItemModelSurfaceDataProxy(static_cast<QAbstractItemModel*>(itemModel), QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts), static_cast<QObject*>(parent));
 	}
 }
 
@@ -7790,11 +7680,6 @@ void* QItemModelSurfaceDataProxy_NewQItemModelSurfaceDataProxy(void* parent)
 struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_QItemModelSurfaceDataProxy_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tb3c53a = QItemModelSurfaceDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb3c53a.prepend("WHITESPACE").constData()+10), tb3c53a.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_QItemModelSurfaceDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t4696dd = QItemModelSurfaceDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t4696dd.prepend("WHITESPACE").constData()+10), t4696dd.size()-10 }; });
 }
 
 int QItemModelSurfaceDataProxy_ColumnCategoryIndex(void* ptr, struct QtDataVisualization_PackedString category)
@@ -7929,7 +7814,7 @@ void QItemModelSurfaceDataProxy_MultiMatchBehaviorChanged(void* ptr, long long b
 
 void QItemModelSurfaceDataProxy_Remap(void* ptr, struct QtDataVisualization_PackedString rowRole, struct QtDataVisualization_PackedString columnRole, struct QtDataVisualization_PackedString xPosRole, struct QtDataVisualization_PackedString yPosRole, struct QtDataVisualization_PackedString zPosRole, struct QtDataVisualization_PackedString rowCategories, struct QtDataVisualization_PackedString columnCategories)
 {
-	static_cast<QItemModelSurfaceDataProxy*>(ptr)->remap(QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("|", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QItemModelSurfaceDataProxy*>(ptr)->remap(QString::fromUtf8(rowRole.data, rowRole.len), QString::fromUtf8(columnRole.data, columnRole.len), QString::fromUtf8(xPosRole.data, xPosRole.len), QString::fromUtf8(yPosRole.data, yPosRole.len), QString::fromUtf8(zPosRole.data, zPosRole.len), QString::fromUtf8(rowCategories.data, rowCategories.len).split("¡¦!", QString::SkipEmptyParts), QString::fromUtf8(columnCategories.data, columnCategories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QItemModelSurfaceDataProxy_ConnectRowCategoriesChanged(void* ptr)
@@ -8004,7 +7889,7 @@ void QItemModelSurfaceDataProxy_SetAutoRowCategories(void* ptr, char enable)
 
 void QItemModelSurfaceDataProxy_SetColumnCategories(void* ptr, struct QtDataVisualization_PackedString categories)
 {
-	static_cast<QItemModelSurfaceDataProxy*>(ptr)->setColumnCategories(QString::fromUtf8(categories.data, categories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QItemModelSurfaceDataProxy*>(ptr)->setColumnCategories(QString::fromUtf8(categories.data, categories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QItemModelSurfaceDataProxy_SetColumnRole(void* ptr, struct QtDataVisualization_PackedString role)
@@ -8034,7 +7919,7 @@ void QItemModelSurfaceDataProxy_SetMultiMatchBehavior(void* ptr, long long behav
 
 void QItemModelSurfaceDataProxy_SetRowCategories(void* ptr, struct QtDataVisualization_PackedString categories)
 {
-	static_cast<QItemModelSurfaceDataProxy*>(ptr)->setRowCategories(QString::fromUtf8(categories.data, categories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QItemModelSurfaceDataProxy*>(ptr)->setRowCategories(QString::fromUtf8(categories.data, categories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QItemModelSurfaceDataProxy_SetRowRole(void* ptr, struct QtDataVisualization_PackedString role)
@@ -8350,12 +8235,12 @@ struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_ZPosRoleRepla
 
 struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_ColumnCategories(void* ptr)
 {
-	return ({ QByteArray tb94ba4 = static_cast<QItemModelSurfaceDataProxy*>(ptr)->columnCategories().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb94ba4.prepend("WHITESPACE").constData()+10), tb94ba4.size()-10 }; });
+	return ({ QByteArray tb94ba4 = static_cast<QItemModelSurfaceDataProxy*>(ptr)->columnCategories().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb94ba4.prepend("WHITESPACE").constData()+10), tb94ba4.size()-10 }; });
 }
 
 struct QtDataVisualization_PackedString QItemModelSurfaceDataProxy_RowCategories(void* ptr)
 {
-	return ({ QByteArray t02a480 = static_cast<QItemModelSurfaceDataProxy*>(ptr)->rowCategories().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t02a480.prepend("WHITESPACE").constData()+10), t02a480.size()-10 }; });
+	return ({ QByteArray t02a480 = static_cast<QItemModelSurfaceDataProxy*>(ptr)->rowCategories().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t02a480.prepend("WHITESPACE").constData()+10), t02a480.size()-10 }; });
 }
 
 char QItemModelSurfaceDataProxy_AutoColumnCategories(void* ptr)
@@ -8436,11 +8321,6 @@ void* QLogValue3DAxisFormatter_NewQLogValue3DAxisFormatter(void* parent)
 struct QtDataVisualization_PackedString QLogValue3DAxisFormatter_QLogValue3DAxisFormatter_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tb5b6fe = QLogValue3DAxisFormatter::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tb5b6fe.prepend("WHITESPACE").constData()+10), tb5b6fe.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QLogValue3DAxisFormatter_QLogValue3DAxisFormatter_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t10d8a6 = QLogValue3DAxisFormatter::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t10d8a6.prepend("WHITESPACE").constData()+10), t10d8a6.size()-10 }; });
 }
 
 void QLogValue3DAxisFormatter_ConnectAutoSubGridChanged(void* ptr)
@@ -8632,11 +8512,6 @@ void* QScatter3DSeries_NewQScatter3DSeries2(void* dataProxy, void* parent)
 struct QtDataVisualization_PackedString QScatter3DSeries_QScatter3DSeries_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tab9ed4 = QScatter3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tab9ed4.prepend("WHITESPACE").constData()+10), tab9ed4.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QScatter3DSeries_QScatter3DSeries_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tda61c2 = QScatter3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tda61c2.prepend("WHITESPACE").constData()+10), tda61c2.size()-10 }; });
 }
 
 int QScatter3DSeries_QScatter3DSeries_InvalidSelectionIndex()
@@ -8874,11 +8749,6 @@ struct QtDataVisualization_PackedString QScatterDataProxy_QScatterDataProxy_Tr(c
 	return ({ QByteArray t6e4323 = QScatterDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t6e4323.prepend("WHITESPACE").constData()+10), t6e4323.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QScatterDataProxy_QScatterDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tdbd6ea = QScatterDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tdbd6ea.prepend("WHITESPACE").constData()+10), tdbd6ea.size()-10 }; });
-}
-
 int QScatterDataProxy_AddItem(void* ptr, void* item)
 {
 	return static_cast<QScatterDataProxy*>(ptr)->addItem(*static_cast<QScatterDataItem*>(item));
@@ -9064,11 +8934,6 @@ void* QSurface3DSeries_QSurface3DSeries_InvalidSelectionPosition()
 struct QtDataVisualization_PackedString QSurface3DSeries_QSurface3DSeries_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t06518b = QSurface3DSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t06518b.prepend("WHITESPACE").constData()+10), t06518b.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QSurface3DSeries_QSurface3DSeries_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t259647 = QSurface3DSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t259647.prepend("WHITESPACE").constData()+10), t259647.size()-10 }; });
 }
 
 void* QSurface3DSeries_NewQSurface3DSeries(void* parent)
@@ -9422,11 +9287,6 @@ struct QtDataVisualization_PackedString QSurfaceDataProxy_QSurfaceDataProxy_Tr(c
 	return ({ QByteArray t950cf2 = QSurfaceDataProxy::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t950cf2.prepend("WHITESPACE").constData()+10), t950cf2.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QSurfaceDataProxy_QSurfaceDataProxy_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t45f866 = QSurfaceDataProxy::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t45f866.prepend("WHITESPACE").constData()+10), t45f866.size()-10 }; });
-}
-
 void* QSurfaceDataProxy_NewQSurfaceDataProxy(void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
@@ -9676,11 +9536,6 @@ struct QtDataVisualization_PackedString QTouch3DInputHandler_QTouch3DInputHandle
 	return ({ QByteArray t3bc4ff = QTouch3DInputHandler::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t3bc4ff.prepend("WHITESPACE").constData()+10), t3bc4ff.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QTouch3DInputHandler_QTouch3DInputHandler_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t381358 = QTouch3DInputHandler::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t381358.prepend("WHITESPACE").constData()+10), t381358.size()-10 }; });
-}
-
 void* QTouch3DInputHandler_NewQTouch3DInputHandler(void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
@@ -9767,11 +9622,6 @@ public:
 struct QtDataVisualization_PackedString QValue3DAxis_QValue3DAxis_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tfffefe = QValue3DAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(tfffefe.prepend("WHITESPACE").constData()+10), tfffefe.size()-10 }; });
-}
-
-struct QtDataVisualization_PackedString QValue3DAxis_QValue3DAxis_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t81c14c = QValue3DAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t81c14c.prepend("WHITESPACE").constData()+10), t81c14c.size()-10 }; });
 }
 
 void* QValue3DAxis_NewQValue3DAxis(void* parent)
@@ -9978,11 +9828,6 @@ struct QtDataVisualization_PackedString QValue3DAxisFormatter_QValue3DAxisFormat
 	return ({ QByteArray t10c965 = QValue3DAxisFormatter::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(t10c965.prepend("WHITESPACE").constData()+10), t10c965.size()-10 }; });
 }
 
-struct QtDataVisualization_PackedString QValue3DAxisFormatter_QValue3DAxisFormatter_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray ta2671a = QValue3DAxisFormatter::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(ta2671a.prepend("WHITESPACE").constData()+10), ta2671a.size()-10 }; });
-}
-
 void* QValue3DAxisFormatter_NewQValue3DAxisFormatter(void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
@@ -10080,7 +9925,7 @@ struct QtDataVisualization_PackedString QValue3DAxisFormatter_StringForValueDefa
 
 struct QtDataVisualization_PackedString QValue3DAxisFormatter_LabelStrings(void* ptr)
 {
-	return ({ QByteArray td5e8ca = static_cast<QValue3DAxisFormatter*>(ptr)->labelStrings().join("|").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(td5e8ca.prepend("WHITESPACE").constData()+10), td5e8ca.size()-10 }; });
+	return ({ QByteArray td5e8ca = static_cast<QValue3DAxisFormatter*>(ptr)->labelStrings().join("¡¦!").toUtf8(); QtDataVisualization_PackedString { const_cast<char*>(td5e8ca.prepend("WHITESPACE").constData()+10), td5e8ca.size()-10 }; });
 }
 
 void* QValue3DAxisFormatter_Axis(void* ptr)

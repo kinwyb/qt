@@ -115,11 +115,6 @@ struct QtRemoteObjects_PackedString QRemoteObjectAbstractPersistedStore_QRemoteO
 	return ({ QByteArray t24e536 = QRemoteObjectAbstractPersistedStore::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(t24e536.prepend("WHITESPACE").constData()+10), t24e536.size()-10 }; });
 }
 
-struct QtRemoteObjects_PackedString QRemoteObjectAbstractPersistedStore_QRemoteObjectAbstractPersistedStore_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray td9959e = QRemoteObjectAbstractPersistedStore::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(td9959e.prepend("WHITESPACE").constData()+10), td9959e.size()-10 }; });
-}
-
 struct QtRemoteObjects_PackedList QRemoteObjectAbstractPersistedStore_RestoreProperties(void* ptr, struct QtRemoteObjects_PackedString repName, void* repSig)
 {
 	return ({ QList<QVariant>* tmpValue = new QList<QVariant>(static_cast<QRemoteObjectAbstractPersistedStore*>(ptr)->restoreProperties(QString::fromUtf8(repName.data, repName.len), *static_cast<QByteArray*>(repSig))); QtRemoteObjects_PackedList { tmpValue, tmpValue->size() }; });
@@ -698,11 +693,6 @@ struct QtRemoteObjects_PackedString QRemoteObjectNode_QRemoteObjectNode_Tr(char*
 	return ({ QByteArray t98279f = QRemoteObjectNode::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(t98279f.prepend("WHITESPACE").constData()+10), t98279f.size()-10 }; });
 }
 
-struct QtRemoteObjects_PackedString QRemoteObjectNode_QRemoteObjectNode_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tc45307 = QRemoteObjectNode::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(tc45307.prepend("WHITESPACE").constData()+10), tc45307.size()-10 }; });
-}
-
 char QRemoteObjectNode_ConnectToNode(void* ptr, void* address)
 {
 	return static_cast<QRemoteObjectNode*>(ptr)->connectToNode(*static_cast<QUrl*>(address));
@@ -831,7 +821,7 @@ long long QRemoteObjectNode_LastError(void* ptr)
 
 struct QtRemoteObjects_PackedString QRemoteObjectNode_Instances2(void* ptr, struct QtRemoteObjects_PackedString typeName)
 {
-	return ({ QByteArray t1bf5b2 = static_cast<QRemoteObjectNode*>(ptr)->instances(QString::fromUtf8(typeName.data, typeName.len)).join("|").toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(t1bf5b2.prepend("WHITESPACE").constData()+10), t1bf5b2.size()-10 }; });
+	return ({ QByteArray t1bf5b2 = static_cast<QRemoteObjectNode*>(ptr)->instances(QString::fromUtf8(typeName.data, typeName.len)).join("¡¦!").toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(t1bf5b2.prepend("WHITESPACE").constData()+10), t1bf5b2.size()-10 }; });
 }
 
 void* QRemoteObjectNode_RegistryUrl(void* ptr)
@@ -1223,11 +1213,6 @@ int QRemoteObjectReplica_QRemoteObjectReplica_QRegisterMetaType(){qRegisterMetaT
 struct QtRemoteObjects_PackedString QRemoteObjectReplica_QRemoteObjectReplica_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t05bf05 = QRemoteObjectReplica::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(t05bf05.prepend("WHITESPACE").constData()+10), t05bf05.size()-10 }; });
-}
-
-struct QtRemoteObjects_PackedString QRemoteObjectReplica_QRemoteObjectReplica_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t0d1ad1 = QRemoteObjectReplica::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtRemoteObjects_PackedString { const_cast<char*>(t0d1ad1.prepend("WHITESPACE").constData()+10), t0d1ad1.size()-10 }; });
 }
 
 char QRemoteObjectReplica_WaitForSource(void* ptr, int timeout)

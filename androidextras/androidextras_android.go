@@ -24,9 +24,16 @@ func cGoUnpackString(s C.struct_QtAndroidExtras_PackedString) string {
 }
 func cGoUnpackBytes(s C.struct_QtAndroidExtras_PackedString) []byte {
 	if int(s.len) == -1 {
-		return []byte(C.GoString(s.data))
+		gs := C.GoString(s.data)
+		return *(*[]byte)(unsafe.Pointer(&gs))
 	}
 	return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len))
+}
+func unpackStringList(s string) []string {
+	if len(s) == 0 {
+		return make([]string, 0)
+	}
+	return strings.Split(s, "¡¦!")
 }
 func QAndroidJniEnvironment_ExceptionCatch() error {
 	var err error
@@ -94,7 +101,7 @@ func (ptr *QAndroidActivityResultReceiver) DestroyQAndroidActivityResultReceiver
 //export callbackQAndroidActivityResultReceiver_HandleActivityResult
 func callbackQAndroidActivityResultReceiver_HandleActivityResult(ptr unsafe.Pointer, receiverRequestCode C.int, resultCode C.int, data unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "handleActivityResult"); signal != nil {
-		signal.(func(int, int, *QAndroidJniObject))(int(int32(receiverRequestCode)), int(int32(resultCode)), NewQAndroidJniObjectFromPointer(data))
+		(*(*func(int, int, *QAndroidJniObject))(signal))(int(int32(receiverRequestCode)), int(int32(resultCode)), NewQAndroidJniObjectFromPointer(data))
 	}
 
 }
@@ -103,12 +110,13 @@ func (ptr *QAndroidActivityResultReceiver) ConnectHandleActivityResult(f func(re
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "handleActivityResult"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "handleActivityResult", func(receiverRequestCode int, resultCode int, data *QAndroidJniObject) {
-				signal.(func(int, int, *QAndroidJniObject))(receiverRequestCode, resultCode, data)
+			f := func(receiverRequestCode int, resultCode int, data *QAndroidJniObject) {
+				(*(*func(int, int, *QAndroidJniObject))(signal))(receiverRequestCode, resultCode, data)
 				f(receiverRequestCode, resultCode, data)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "handleActivityResult", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "handleActivityResult", f)
+			qt.ConnectSignal(ptr.Pointer(), "handleActivityResult", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -184,7 +192,7 @@ func NewQAndroidBinder2(binder QAndroidJniObject_ITF) *QAndroidBinder {
 //export callbackQAndroidBinder_DestroyQAndroidBinder
 func callbackQAndroidBinder_DestroyQAndroidBinder(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QAndroidBinder"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQAndroidBinderFromPointer(ptr).DestroyQAndroidBinderDefault()
 	}
@@ -194,12 +202,13 @@ func (ptr *QAndroidBinder) ConnectDestroyQAndroidBinder(f func()) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QAndroidBinder"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidBinder", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidBinder", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidBinder", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidBinder", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -281,11 +290,15 @@ func NewQAndroidIntentFromPointer(ptr unsafe.Pointer) (n *QAndroidIntent) {
 	return
 }
 func NewQAndroidIntent() *QAndroidIntent {
-	return NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent())
+	tmpValue := NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent())
+	runtime.SetFinalizer(tmpValue, (*QAndroidIntent).DestroyQAndroidIntent)
+	return tmpValue
 }
 
 func NewQAndroidIntent2(intent QAndroidJniObject_ITF) *QAndroidIntent {
-	return NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent2(PointerFromQAndroidJniObject(intent)))
+	tmpValue := NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent2(PointerFromQAndroidJniObject(intent)))
+	runtime.SetFinalizer(tmpValue, (*QAndroidIntent).DestroyQAndroidIntent)
+	return tmpValue
 }
 
 func NewQAndroidIntent4(packageContext QAndroidJniObject_ITF, className string) *QAndroidIntent {
@@ -294,7 +307,9 @@ func NewQAndroidIntent4(packageContext QAndroidJniObject_ITF, className string) 
 		classNameC = C.CString(className)
 		defer C.free(unsafe.Pointer(classNameC))
 	}
-	return NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent4(PointerFromQAndroidJniObject(packageContext), classNameC))
+	tmpValue := NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent4(PointerFromQAndroidJniObject(packageContext), classNameC))
+	runtime.SetFinalizer(tmpValue, (*QAndroidIntent).DestroyQAndroidIntent)
+	return tmpValue
 }
 
 func NewQAndroidIntent3(action string) *QAndroidIntent {
@@ -303,7 +318,9 @@ func NewQAndroidIntent3(action string) *QAndroidIntent {
 		actionC = C.CString(action)
 		defer C.free(unsafe.Pointer(actionC))
 	}
-	return NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent3(C.struct_QtAndroidExtras_PackedString{data: actionC, len: C.longlong(len(action))}))
+	tmpValue := NewQAndroidIntentFromPointer(C.QAndroidIntent_NewQAndroidIntent3(C.struct_QtAndroidExtras_PackedString{data: actionC, len: C.longlong(len(action))}))
+	runtime.SetFinalizer(tmpValue, (*QAndroidIntent).DestroyQAndroidIntent)
+	return tmpValue
 }
 
 func (ptr *QAndroidIntent) ExtraBytes(key string) *core.QByteArray {
@@ -359,7 +376,7 @@ func (ptr *QAndroidIntent) PutExtra2(key string, value core.QVariant_ITF) {
 //export callbackQAndroidIntent_DestroyQAndroidIntent
 func callbackQAndroidIntent_DestroyQAndroidIntent(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QAndroidIntent"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQAndroidIntentFromPointer(ptr).DestroyQAndroidIntentDefault()
 	}
@@ -369,12 +386,13 @@ func (ptr *QAndroidIntent) ConnectDestroyQAndroidIntent(f func()) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QAndroidIntent"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidIntent", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidIntent", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidIntent", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidIntent", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -3741,17 +3759,21 @@ func NewQAndroidParcelFromPointer(ptr unsafe.Pointer) (n *QAndroidParcel) {
 	return
 }
 func NewQAndroidParcel() *QAndroidParcel {
-	return NewQAndroidParcelFromPointer(C.QAndroidParcel_NewQAndroidParcel())
+	tmpValue := NewQAndroidParcelFromPointer(C.QAndroidParcel_NewQAndroidParcel())
+	runtime.SetFinalizer(tmpValue, (*QAndroidParcel).DestroyQAndroidParcel)
+	return tmpValue
 }
 
 func NewQAndroidParcel2(parcel QAndroidJniObject_ITF) *QAndroidParcel {
-	return NewQAndroidParcelFromPointer(C.QAndroidParcel_NewQAndroidParcel2(PointerFromQAndroidJniObject(parcel)))
+	tmpValue := NewQAndroidParcelFromPointer(C.QAndroidParcel_NewQAndroidParcel2(PointerFromQAndroidJniObject(parcel)))
+	runtime.SetFinalizer(tmpValue, (*QAndroidParcel).DestroyQAndroidParcel)
+	return tmpValue
 }
 
 //export callbackQAndroidParcel_DestroyQAndroidParcel
 func callbackQAndroidParcel_DestroyQAndroidParcel(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QAndroidParcel"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQAndroidParcelFromPointer(ptr).DestroyQAndroidParcelDefault()
 	}
@@ -3761,12 +3783,13 @@ func (ptr *QAndroidParcel) ConnectDestroyQAndroidParcel(f func()) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QAndroidParcel"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidParcel", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidParcel", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidParcel", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidParcel", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -3902,7 +3925,7 @@ func NewQAndroidServiceFromPointer(ptr unsafe.Pointer) (n *QAndroidService) {
 //export callbackQAndroidService_OnBind
 func callbackQAndroidService_OnBind(ptr unsafe.Pointer, intent unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "onBind"); signal != nil {
-		return PointerFromQAndroidBinder(signal.(func(*QAndroidIntent) *QAndroidBinder)(NewQAndroidIntentFromPointer(intent)))
+		return PointerFromQAndroidBinder((*(*func(*QAndroidIntent) *QAndroidBinder)(signal))(NewQAndroidIntentFromPointer(intent)))
 	}
 
 	return PointerFromQAndroidBinder(NewQAndroidServiceFromPointer(ptr).OnBindDefault(NewQAndroidIntentFromPointer(intent)))
@@ -3912,12 +3935,13 @@ func (ptr *QAndroidService) ConnectOnBind(f func(intent *QAndroidIntent) *QAndro
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "onBind"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "onBind", func(intent *QAndroidIntent) *QAndroidBinder {
-				signal.(func(*QAndroidIntent) *QAndroidBinder)(intent)
+			f := func(intent *QAndroidIntent) *QAndroidBinder {
+				(*(*func(*QAndroidIntent) *QAndroidBinder)(signal))(intent)
 				return f(intent)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "onBind", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "onBind", f)
+			qt.ConnectSignal(ptr.Pointer(), "onBind", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -3952,7 +3976,7 @@ func NewQAndroidService(argc int, argv []string) *QAndroidService {
 //export callbackQAndroidService_DestroyQAndroidService
 func callbackQAndroidService_DestroyQAndroidService(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QAndroidService"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQAndroidServiceFromPointer(ptr).DestroyQAndroidServiceDefault()
 	}
@@ -3962,12 +3986,13 @@ func (ptr *QAndroidService) ConnectDestroyQAndroidService(f func()) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QAndroidService"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidService", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidService", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidService", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidService", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -4041,7 +4066,7 @@ func NewQAndroidServiceConnection2(serviceConnection QAndroidJniObject_ITF) *QAn
 //export callbackQAndroidServiceConnection_OnServiceConnected
 func callbackQAndroidServiceConnection_OnServiceConnected(ptr unsafe.Pointer, name C.struct_QtAndroidExtras_PackedString, serviceBinder unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "onServiceConnected"); signal != nil {
-		signal.(func(string, *QAndroidBinder))(cGoUnpackString(name), NewQAndroidBinderFromPointer(serviceBinder))
+		(*(*func(string, *QAndroidBinder))(signal))(cGoUnpackString(name), NewQAndroidBinderFromPointer(serviceBinder))
 	}
 
 }
@@ -4050,12 +4075,13 @@ func (ptr *QAndroidServiceConnection) ConnectOnServiceConnected(f func(name stri
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "onServiceConnected"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "onServiceConnected", func(name string, serviceBinder *QAndroidBinder) {
-				signal.(func(string, *QAndroidBinder))(name, serviceBinder)
+			f := func(name string, serviceBinder *QAndroidBinder) {
+				(*(*func(string, *QAndroidBinder))(signal))(name, serviceBinder)
 				f(name, serviceBinder)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "onServiceConnected", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "onServiceConnected", f)
+			qt.ConnectSignal(ptr.Pointer(), "onServiceConnected", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -4081,7 +4107,7 @@ func (ptr *QAndroidServiceConnection) OnServiceConnected(name string, serviceBin
 //export callbackQAndroidServiceConnection_OnServiceDisconnected
 func callbackQAndroidServiceConnection_OnServiceDisconnected(ptr unsafe.Pointer, name C.struct_QtAndroidExtras_PackedString) {
 	if signal := qt.GetSignal(ptr, "onServiceDisconnected"); signal != nil {
-		signal.(func(string))(cGoUnpackString(name))
+		(*(*func(string))(signal))(cGoUnpackString(name))
 	}
 
 }
@@ -4090,12 +4116,13 @@ func (ptr *QAndroidServiceConnection) ConnectOnServiceDisconnected(f func(name s
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "onServiceDisconnected"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "onServiceDisconnected", func(name string) {
-				signal.(func(string))(name)
+			f := func(name string) {
+				(*(*func(string))(signal))(name)
 				f(name)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "onServiceDisconnected", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "onServiceDisconnected", f)
+			qt.ConnectSignal(ptr.Pointer(), "onServiceDisconnected", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -4121,7 +4148,7 @@ func (ptr *QAndroidServiceConnection) OnServiceDisconnected(name string) {
 //export callbackQAndroidServiceConnection_DestroyQAndroidServiceConnection
 func callbackQAndroidServiceConnection_DestroyQAndroidServiceConnection(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QAndroidServiceConnection"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQAndroidServiceConnectionFromPointer(ptr).DestroyQAndroidServiceConnectionDefault()
 	}
@@ -4131,12 +4158,13 @@ func (ptr *QAndroidServiceConnection) ConnectDestroyQAndroidServiceConnection(f 
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QAndroidServiceConnection"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidServiceConnection", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidServiceConnection", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QAndroidServiceConnection", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QAndroidServiceConnection", unsafe.Pointer(&f))
 		}
 	}
 }

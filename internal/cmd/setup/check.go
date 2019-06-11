@@ -36,14 +36,15 @@ func Check(target string, docker, vagrant bool) {
 	vars := [][]string{
 		{"GOOS", runtime.GOOS},
 		{"GOARCH", utils.GOARCH()},
-		{"GOVERSION", strings.Split(utils.RunCmd(exec.Command("go", "version"), "get go version"), " ")[2]},
+		{"GOVERSION", utils.GOVERSION()},
 		{"GOROOT", runtime.GOROOT()},
 		{"GOPATH", utils.MustGoPath()},
 		{"GOBIN", utils.GOBIN()},
+		{"GOMOD", utils.GOMOD("")},
 		{"QT_HASH", hash},
 		{"QT_API", utils.QT_API("")},
 		{"QT_VERSION", utils.QT_VERSION()},
-		{"QT_VERSION_MAJOR", utils.QT_VERSION_MAJOR()},
+		//{"QT_VERSION_MAJOR", utils.QT_VERSION_MAJOR()},
 		{"QT_DIR", utils.QT_DIR()},
 		{"QT_STUB", fmt.Sprint(utils.QT_STUB())},
 		{"QT_DEBUG", fmt.Sprint(utils.QT_DEBUG())},
@@ -63,16 +64,25 @@ func Check(target string, docker, vagrant bool) {
 			{"QT_HOMEBREW", fmt.Sprint(utils.QT_HOMEBREW())},
 			{"QT_MACPORTS", fmt.Sprint(utils.QT_MACPORTS())},
 			{"QT_NIX", fmt.Sprint(utils.QT_NIX())},
+			{"QT_FELGO", fmt.Sprint(utils.QT_FELGO())},
 			{"XCODE_DIR", utils.XCODE_DIR()},
+			{"QT_PKG_CONFIG", fmt.Sprint(utils.QT_PKG_CONFIG())},
 			//{"IPHONEOS_SDK_DIR", utils.IPHONEOS_SDK_DIR()},               //TODO: re-add with absolute path
 			//{"IPHONESIMULATOR_SDK_DIR", utils.IPHONESIMULATOR_SDK_DIR()}, //TODO: re-add with absolute path
 		}...)
+
+		if utils.QT_PKG_CONFIG() {
+			vars = append(vars, [][]string{
+				{"QT_DOC_DIR", utils.QT_DOC_DIR()},
+				{"QT_MISC_DIR", utils.QT_MISC_DIR()},
+			}...)
+		}
 
 		if _, err := exec.LookPath("clang++"); err != nil {
 			utils.Log.WithError(err).Panic("failed to find clang++, did you install Xcode?; please run: xcode-select --install")
 		}
 
-	case "linux", "ubports":
+	case "linux", "ubports", "freebsd":
 		vars = append(vars, [][]string{
 			{"QT_DISTRO", utils.QT_DISTRO()},
 			{"QT_PKG_CONFIG", fmt.Sprint(utils.QT_PKG_CONFIG())},
@@ -85,13 +95,15 @@ func Check(target string, docker, vagrant bool) {
 			}...)
 		}
 
-		if _, err := exec.LookPath("g++"); err != nil {
-			utils.Log.WithError(err).Panic("failed to find g++, did you install g++?")
+		compiler := strings.TrimSpace(utils.RunCmd(exec.Command("go", "env", "CXX"), "get compiler name"))
+		if _, err := exec.LookPath(compiler); err != nil {
+			utils.Log.WithError(err).Panicf("failed to find %v, did you install %v?", compiler, compiler)
 		}
 
 	case "windows":
 		if runtime.GOOS == target {
 			vars = append(vars, [][]string{
+				{"QT_DEBUG_CONSOLE", fmt.Sprint(utils.QT_DEBUG_CONSOLE())},
 				{"QT_MSYS2", fmt.Sprint(utils.QT_MSYS2())},
 			}...)
 
@@ -143,7 +155,13 @@ func Check(target string, docker, vagrant bool) {
 		if !strings.HasSuffix(v[0], "_DIR") {
 			continue
 		}
-		if v[0] == "QT_DIR" && (utils.QT_HOMEBREW() || utils.QT_MACPORTS() || utils.QT_NIX() || utils.QT_MSYS2() || utils.QT_PKG_CONFIG() || utils.MSYS_DOCKER()) {
+		if v[0] == "QT_DIR" && (utils.QT_HOMEBREW() || utils.QT_MACPORTS() || utils.QT_NIX() || utils.QT_FELGO() || utils.QT_MSYS2() || utils.QT_PKG_CONFIG() || utils.MSYS_DOCKER() || utils.QT_DOCKER()) {
+			continue
+		}
+		if v[0] == "XCODE_DIR" && runtime.GOOS != "darwin" {
+			continue
+		}
+		if _, ok := os.LookupEnv("QT_API"); v[0] == "QT_DOC_DIR" && ok {
 			continue
 		}
 		if _, err := ioutil.ReadDir(v[1]); err != nil && v[1] != "" {

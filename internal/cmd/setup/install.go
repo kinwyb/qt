@@ -17,7 +17,7 @@ import (
 	"github.com/therecipe/qt/internal/utils"
 )
 
-func Install(target string, docker, vagrant bool) {
+func Install(target string, docker, vagrant, failfast bool) {
 	utils.Log.Infof("running: 'qtsetup install %v' [docker=%v] [vagrant=%v]", target, docker, vagrant)
 
 	if strings.HasPrefix(target, "sailfish") && !utils.QT_SAILFISH() {
@@ -66,10 +66,10 @@ func Install(target string, docker, vagrant bool) {
 
 		var license string
 		switch module {
-		case "Charts", "DataVisualization":
-			license = strings.Repeat(" ", 20-len(module)) + "[GPLv3]"
+		case "Charts", "DataVisualization", "VirtualKeyboard":
+			license = strings.Repeat(" ", 21-len(module)) + "[GPLv3]"
 		}
-		utils.Log.Infof("installing %v qt/%v %v", mode, strings.ToLower(module), license)
+		utils.Log.Infof("installing %v qt/%v%v", mode, strings.ToLower(module), license)
 
 		if utils.QT_DYNAMIC_SETUP() && mode == "full" {
 			cc, com := templater.ParseCgo(strings.ToLower(module), target)
@@ -86,18 +86,19 @@ func Install(target string, docker, vagrant bool) {
 				}
 				utils.RunCmdOptional(cmd, fmt.Sprintf("failed to create dynamic lib for %v (%v) on %v", target, strings.ToLower(module), runtime.GOOS))
 
-				if target == "js" || target == "wasm" {
-					continue
+				if !(target == "js" || target == "wasm") {
+					utils.RemoveAll(utils.GoQtPkgPath(strings.ToLower(module), strings.ToLower(module)+".cpp"))
+					utils.RemoveAll(utils.GoQtPkgPath(strings.ToLower(module), "_obj"))
+					templater.ReplaceCgo(strings.ToLower(module), target)
 				}
-
-				utils.RemoveAll(utils.GoQtPkgPath(strings.ToLower(module), strings.ToLower(module)+".cpp"))
-				utils.RemoveAll(utils.GoQtPkgPath(strings.ToLower(module), "_obj"))
-
-				templater.ReplaceCgo(strings.ToLower(module), target)
 			}
 		}
 
-		cmd := exec.Command("go", "install", "-i", "-p", strconv.Itoa(runtime.GOMAXPROCS(0)), "-v")
+		if target == "js" || target == "wasm" {
+			env["CGO_ENABLED"] = "0"
+		}
+
+		cmd := exec.Command("go", "install", "-p", strconv.Itoa(runtime.GOMAXPROCS(0)), "-v")
 		if len(tags) > 0 {
 			cmd.Args = append(cmd.Args, fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
 		}
@@ -115,7 +116,7 @@ func Install(target string, docker, vagrant bool) {
 			cmd.Args = append(cmd.Args, "-v")
 		} else {
 			if target == "linux" {
-				delete(env, "CGO_LDFLAGS")
+				env["CGO_LDFLAGS"] = strings.Replace(env["CGO_LDFLAGS"], "-Wl,-rpath,$ORIGIN/lib -Wl,--disable-new-dtags", "", -1)
 			}
 			for key, value := range env {
 				cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", key, value))
@@ -125,6 +126,10 @@ func Install(target string, docker, vagrant bool) {
 		if msg, err := utils.RunCmdOptionalError(cmd, fmt.Sprintf("install %v", strings.ToLower(module))); err != nil {
 			println(msg)
 			failed = append(failed, strings.ToLower(module))
+			if strings.ToLower(module) == "core" || failfast {
+				utils.Log.Errorf("failed to install '%v'; aborting setup", strings.ToLower(module))
+				os.Exit(1)
+			}
 		}
 	}
 

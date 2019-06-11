@@ -74,7 +74,7 @@ func main() {
 	if target == "desktop" {
 		target = runtime.GOOS
 	}
-	utils.CheckBuildTarget(target)
+	utils.CheckBuildTarget(target, docker)
 	cmd.InitEnv(target)
 
 	if !filepath.IsAbs(path) {
@@ -83,7 +83,7 @@ func main() {
 		if err != nil || !utils.ExistsDir(path) {
 			utils.Log.WithError(err).WithField("path", path).Debug("can't resolve absolute path")
 			dirFunc := func() (string, error) {
-				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath), "get pkg dir")
+				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath, "-find"), "get pkg dir")
 				return strings.TrimSpace(out), err
 			}
 			if dir, err := dirFunc(); err != nil || len(dir) == 0 {
@@ -95,16 +95,12 @@ func main() {
 		}
 	}
 
-	if target == "js" || target == "wasm" { //TODO: remove for module support + resolve dependencies
-		os.Setenv("GOCACHE", "off")
-	}
-
 	switch {
 	case docker:
 		cmd.Docker([]string{"qtmoc", "-debug", "-tags=" + tags}, target, path, false)
 	case vagrant:
 		cmd.Vagrant([]string{"qtmoc", "-debug", "-tags=" + tags}, target, path, false, vagrant_system)
 	default:
-		moc.Moc(path, target, tags, fast, slow)
+		moc.Moc(path, target, tags, fast, slow, false)
 	}
 }

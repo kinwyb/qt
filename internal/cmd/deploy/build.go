@@ -41,18 +41,20 @@ func build(mode, target, path, ldFlagsCustom, tagsCustom, name, depPath string, 
 			return
 		}
 	case "js":
+		env["CGO_ENABLED"] = "0"
 		build_js(target, path, env, tags, out)
 		return
 	case "wasm":
+		env["CGO_ENABLED"] = "0"
 		ending = ".wasm"
 	case "linux":
-		if fast || utils.QT_PKG_CONFIG() {
-			delete(env, "CGO_LDFLAGS")
+		if fast || utils.QT_PKG_CONFIG() || utils.QT_STATIC() {
+			env["CGO_LDFLAGS"] = strings.Replace(env["CGO_LDFLAGS"], "-Wl,-rpath,$ORIGIN/lib -Wl,--disable-new-dtags", "", -1)
 		}
 	}
 
 	var pattern string
-	if strings.Contains(runtime.Version(), "1.1") || strings.Contains(runtime.Version(), "devel") {
+	if v := utils.GOVERSION(); strings.Contains(v, "1.1") || strings.Contains(v, "devel") {
 		pattern = "all="
 	}
 
@@ -100,7 +102,12 @@ func build(mode, target, path, ldFlagsCustom, tagsCustom, name, depPath string, 
 	utils.RunCmd(cmd, fmt.Sprintf("build for %v on %v", target, runtime.GOOS))
 
 	if target == "darwin" && !fast {
-		strip := exec.Command("strip", "-x", out) //TODO: -u -r
+		var strip *exec.Cmd
+		if runtime.GOOS == target {
+			strip = exec.Command("strip", "-x", out) //TODO: -u -r
+		} else {
+			strip = exec.Command(strings.TrimSuffix(env["CC"], "clang")+"strip", "-x", out) //TODO: -u -r
+		}
 		strip.Dir = path
 		utils.RunCmd(strip, fmt.Sprintf("strip binary for %v on %v", target, runtime.GOOS))
 	}
@@ -179,7 +186,7 @@ func build_sailfish(target, path, ldFlagsCustom, name string) {
 	sailfish_ssh("2222", "root", "ln", "-s", fmt.Sprintf("/srv/mer/toolings/SailfishOS-"+utils.QT_SAILFISH_VERSION()+"/opt/cross/bin/%v-meego-linux-%v-ld", arch, gcc), fmt.Sprintf("/srv/mer/toolings/SailfishOS-"+utils.QT_SAILFISH_VERSION()+"/opt/cross/libexec/gcc/%v-meego-linux-%v/4.8.3/ld", arch, gcc))
 
 	var pattern string
-	if strings.Contains(runtime.Version(), "1.1") || strings.Contains(runtime.Version(), "devel") {
+	if v := utils.GOVERSION(); strings.Contains(v, "1.1") || strings.Contains(v, "devel") {
 		pattern = "all="
 	}
 

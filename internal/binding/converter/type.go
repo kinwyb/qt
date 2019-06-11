@@ -30,17 +30,15 @@ func goType(f *parser.Function, value string, p string) string {
 				return "*string"
 			}
 
-			if !parser.UseJs() { //TODO: support []byte in js as well
-				switch value {
-				case "char", "qint8", "uchar", "quint8", "GLubyte":
-					if len(f.Parameters) <= 4 &&
-						(strings.Contains(strings.ToLower(f.Name), "read") ||
-							strings.Contains(strings.ToLower(f.Name), "write") ||
-							strings.Contains(strings.ToLower(f.Name), "data")) {
-						for _, p := range f.Parameters {
-							if strings.Contains(p.Value, "int") && f.Parameters[0].Value == vOld {
-								return "[]byte"
-							}
+			switch value {
+			case "char", "qint8", "uchar", "quint8", "GLubyte":
+				if len(f.Parameters) <= 4 &&
+					(strings.Contains(strings.ToLower(f.Name), "read") ||
+						strings.Contains(strings.ToLower(f.Name), "write") ||
+						strings.Contains(strings.ToLower(f.Name), "data")) {
+					for _, p := range f.Parameters {
+						if strings.Contains(p.Value, "int") && f.Parameters[0].Value == vOld {
+							return "[]byte"
 						}
 					}
 				}
@@ -88,6 +86,9 @@ func goType(f *parser.Function, value string, p string) string {
 
 	case "long":
 		{
+			if strings.Contains(vOld, "*") {
+				return "*int"
+			}
 			return "int"
 		}
 
@@ -295,6 +296,9 @@ func cgoType(f *parser.Function, value string) string {
 
 	case "long":
 		{
+			if strings.Contains(vOld, "*") {
+				return "*C.long"
+			}
 			return "C.long"
 		}
 
@@ -454,6 +458,24 @@ func cppType(f *parser.Function, value string) string {
 
 	case "long":
 		{
+			if strings.Contains(vOld, "*") {
+				if parser.UseJs() {
+					if f.SignalMode == parser.CALLBACK {
+						return "uintptr_t"
+					}
+					for _, p := range append(f.Parameters, &parser.Parameter{Value: f.Output}) {
+						if parser.IsPackedList(p.Value) || parser.IsPackedMap(p.Value) {
+							return "uintptr_t"
+						}
+						switch parser.CleanValue(p.Value) {
+						case "char", "qint8", "uchar", "quint8", "GLubyte", "QString", "QStringList":
+							return "uintptr_t"
+						}
+					}
+					return "void*"
+				}
+				return "long*"
+			}
 			return "long"
 		}
 

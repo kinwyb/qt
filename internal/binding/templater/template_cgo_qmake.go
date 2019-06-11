@@ -76,6 +76,10 @@ func cgoTemplate(module, path, target string, mode int, ipkg, tags string, libs 
 
 //TODO: use qmake props ?
 func isAlreadyCached(module, path, target string, mode int, libs []string) bool {
+	if utils.QT_NOT_CACHED() {
+		return false
+	}
+
 	for _, file := range cgoFileNames(module, path, target, mode) {
 		file = filepath.Join(path, file)
 		if utils.ExistsFile(file) {
@@ -170,24 +174,23 @@ func isAlreadyCached(module, path, target string, mode int, libs []string) bool 
 			}
 
 			switch target {
-			case "darwin", "linux", "windows", "ubports":
+			case "darwin", "linux", "windows", "ubports", "freebsd":
 				//TODO: msys pkg-config mxe brew
 				switch {
-				case utils.QT_HOMEBREW(), utils.QT_MACPORTS(), utils.QT_NIX():
-					return containsPath(file, utils.QT_DARWIN_DIR())
-				case utils.QT_MSYS2():
-					return containsPath(file, utils.QT_MSYS2_DIR())
+				case utils.QT_HOMEBREW(), utils.QT_MACPORTS(), utils.QT_NIX(), utils.QT_FELGO(), utils.QT_MSYS2():
+					return containsPath(file, utils.QT_INSTALL_PREFIX(target))
 				default:
-					return containsPath(file, utils.QT_DIR()) || strings.Contains(file, utils.QT_MXE_TRIPLET())
+					return containsPath(file, utils.QT_INSTALL_PREFIX(target)) || strings.Contains(file, utils.QT_MXE_TRIPLET())
 				}
 			case "android", "android-emulator":
-				return containsPath(file, utils.QT_DIR()) && strings.Contains(file, utils.ANDROID_NDK_DIR())
+				return containsPath(file, utils.QT_INSTALL_PREFIX(target)) && strings.Contains(file, utils.ANDROID_NDK_DIR())
 			case "ios", "ios-simulator":
-				return containsPath(file, utils.QT_DIR()) || strings.Contains(file, utils.QT_DARWIN_DIR())
+				return containsPath(file, utils.QT_INSTALL_PREFIX(target))
 			case "sailfish", "sailfish-emulator", "asteroid":
 			case "rpi1", "rpi2", "rpi3":
-				return containsPath(file, strings.TrimSpace(utils.RunCmd(exec.Command(utils.ToolPath("qmake", target), "-query", "QT_INSTALL_LIBS"), fmt.Sprintf("query lib path for %v on %v", target, runtime.GOOS))))
+				return containsPath(file, utils.QT_INSTALL_PREFIX(target))
 			case "js", "wasm":
+				return containsPath(file, utils.QT_INSTALL_PREFIX(target))
 			}
 		}
 	}
@@ -198,15 +201,18 @@ func createProject(module, path, target string, mode int, libs []string) {
 	var out []string
 
 	switch {
-	case mode == RCC:
-		out = []string{"Core"}
-	case mode == MOC, module == "build_static":
+	case mode == RCC, mode == MOC, module == "build_static":
 		out = libs
 	case mode == MINIMAL, mode == NONE:
 		out = append([]string{module}, libs...)
 	}
 
+	var hasVirtualKeyboard bool
 	for i, v := range out {
+		if v == "VirtualKeyboard" {
+			hasVirtualKeyboard = true
+		}
+
 		if v == "Speech" {
 			out[i] = "TextToSpeech"
 		}
@@ -224,7 +230,22 @@ func createProject(module, path, target string, mode int, libs []string) {
 		proPath = filepath.Join("/home", "user", proPath)
 	}
 
-	utils.Save(proPath, fmt.Sprintf("QT += %v", strings.Join(out, " ")))
+	if utils.UseGOMOD(path) && (mode == NONE || mode == MINIMAL) {
+		proPath = filepath.Join(filepath.Dir(utils.GOMOD(path)), fmt.Sprintf("%v.pro", filepath.Base(path)))
+	}
+
+	bb := new(bytes.Buffer)
+	defer bb.Reset()
+	for _, o := range out {
+		fmt.Fprintf(bb, "qtHaveModule(%[1]v) { QT+=%[1]v }\n", o)
+	}
+	if hasVirtualKeyboard && (utils.QT_STATIC() || target == "js" || target == "wasm") {
+		fmt.Fprintf(bb, "QTPLUGIN += qtvirtualkeyboardplugin\n")
+	}
+	if utils.QT_STATIC() && strings.ToLower(module) == "core" {
+		fmt.Fprintf(bb, "QTPLUGIN += ibusplatforminputcontextplugin\n")
+	}
+	utils.SaveBytes(proPath, bb.Bytes())
 }
 
 func createMakefile(module, path, target string, mode int) {
@@ -236,12 +257,13 @@ func createMakefile(module, path, target string, mode int) {
 		}
 	}
 
+	mPath := "Mfile"
 	proPath := filepath.Join(path, "..", fmt.Sprintf("%v.pro", filepath.Base(path)))
+
 	if module == "build_static" {
 		proPath = filepath.Join(path, "..", "..", fmt.Sprintf("%v.pro", filepath.Base(path)))
 	}
 
-	mPath := "Mfile"
 	if utils.QT_UBPORTS() {
 		proPath = strings.Replace(proPath, "/../", "/", -1)
 		proPath = strings.Replace(proPath, "/", "_", -1)
@@ -249,12 +271,16 @@ func createMakefile(module, path, target string, mode int) {
 		mPath = proPath + mPath
 	}
 
+	if utils.UseGOMOD(path) && (mode == NONE || mode == MINIMAL) {
+		proPath = filepath.Join(filepath.Dir(utils.GOMOD(path)), fmt.Sprintf("%v.pro", filepath.Base(path)))
+	}
+
 	relProPath, err := filepath.Rel(path, proPath)
 	if err != nil || utils.QT_UBPORTS() {
 		relProPath = proPath
 	}
 	env, _, _, _ := cmd.BuildEnv(target, "", "")
-	cmd := exec.Command(utils.ToolPath("qmake", target), "-o", mPath, relProPath)
+	cmd := exec.Command(utils.ToolPath("qmake", target), "-nocache", "-nodepend", "-nomoc", "-norecursive", "-o", mPath, relProPath)
 	cmd.Dir = path
 	switch target {
 	case "darwin":
@@ -267,6 +293,8 @@ func createMakefile(module, path, target string, mode int) {
 		cmd.Args = append(cmd.Args, []string{"-spec", "win32-g++", "CONFIG+=" + subsystem}...)
 	case "linux":
 		cmd.Args = append(cmd.Args, []string{"-spec", "linux-g++"}...)
+	case "freebsd":
+		cmd.Args = append(cmd.Args, []string{"-spec", "freebsd-clang"}...)
 	case "ios":
 		cmd.Args = append(cmd.Args, []string{"-spec", "macx-ios-clang", "CONFIG+=iphoneos", "CONFIG+=device"}...)
 	case "ios-simulator":
@@ -350,7 +378,7 @@ func createMakefile(module, path, target string, mode int) {
 					utils.Save(pPath, "// +build windows\r\n"+content)
 				}
 			}
-			if mode == MOC || mode == RCC || !(utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) || (!strings.HasPrefix(module, "Q") && strings.Contains(pPath, "_qml_")) {
+			if mode == MOC || mode == RCC || !(utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) || (module != "Qml" && strings.Contains(pPath, "_qml_")) {
 				utils.RemoveAll(pPath)
 			}
 		}
@@ -358,6 +386,21 @@ func createMakefile(module, path, target string, mode int) {
 			utils.RemoveAll(filepath.Join(path, n))
 		}
 	case "linux":
+		for _, suf := range []string{"_plugin_import", "_qml_plugin_import"} {
+			pPath := filepath.Join(path, fmt.Sprintf("%v%v.cpp", filepath.Base(path), suf))
+			if (utils.QT_STATIC()) && utils.ExistsFile(pPath) {
+				if content := utils.Load(pPath); !strings.Contains(content, "+build linux") {
+					if strings.ToLower(module) == "core" && suf == "_plugin_import" && utils.ExistsFile(filepath.Join(utils.QT_INSTALL_PREFIX(target), "plugins", "platforminputcontexts", "libfcitxplatforminputcontextplugin.a")) {
+						utils.Save(pPath, "// +build linux\r\n"+content+"Q_IMPORT_PLUGIN(QFcitxPlatformInputContextPlugin)\r\n")
+					} else {
+						utils.Save(pPath, "// +build linux\r\n"+content)
+					}
+				}
+			}
+			if mode == MOC || mode == RCC || !utils.QT_STATIC() || (module != "Qml" && strings.Contains(pPath, "_qml_")) {
+				utils.RemoveAll(pPath)
+			}
+		}
 	case "ios", "ios-simulator":
 		for _, suf := range []string{"_plugin_import", "_qml_plugin_import"} {
 			pPath := filepath.Join(path, fmt.Sprintf("%v%v.cpp", filepath.Base(path), suf))
@@ -368,7 +411,7 @@ func createMakefile(module, path, target string, mode int) {
 				}
 			}
 			*/
-			if module != "build_static" /*TODO when shared builds are available: utils.QT_VERSION_MAJOR() != "5.9"*/ || mode == MOC || mode == RCC {
+			if module != "build_static" || mode == MOC || mode == RCC /*TODO when shared builds are available: utils.QT_VERSION_MAJOR() != "5.9"*/ {
 				utils.RemoveAll(pPath)
 			}
 		}
@@ -382,6 +425,7 @@ func createMakefile(module, path, target string, mode int) {
 	case "asteroid":
 	case "rpi1", "rpi2", "rpi3":
 	case "ubports":
+	case "freebsd":
 	case "js", "wasm":
 		for _, suf := range []string{".js_plugin_import", ".js_qml_plugin_import"} {
 			pPath := filepath.Join(path, fmt.Sprintf("%v%v.cpp", filepath.Base(path), suf))
@@ -443,6 +487,13 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 
 	//
 
+	switch target {
+	case "linux":
+		if f := filepath.Join(utils.QT_INSTALL_PREFIX(target), "plugins", "platforminputcontexts", "libfcitxplatforminputcontextplugin.a"); utils.QT_STATIC() && strings.ToLower(module) == "core" && utils.ExistsFile(f) {
+			fmt.Fprintf(bb, "#cgo LDFLAGS: %v\n", f)
+		}
+	}
+
 	file := "Mfile"
 	if target == "windows" {
 		file += ".Release"
@@ -459,30 +510,18 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 				fmt.Fprintf(bb, "#cgo CXXFLAGS: %v\n", strings.Split(l, " = ")[1])
 			case strings.HasPrefix(l, "LFLAGS"), strings.HasPrefix(l, "LIBS"):
 				if target == "windows" && !(utils.QT_MXE_STATIC() || utils.QT_MSYS2_STATIC()) {
-					pFix := []string{
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw49_32"),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), "mingw53_32"),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION(), utils.MINGWDIR()),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw49_32"),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), "mingw53_32"),
-						filepath.Join(utils.QT_DIR(), utils.QT_VERSION_MAJOR(), utils.MINGWDIR()),
-						filepath.Join(utils.QT_MXE_DIR(), "usr", utils.QT_MXE_TRIPLET(), "qt5"),
-						utils.QT_MSYS2_DIR(),
-					}
-					for _, pFix := range pFix {
-						pFix = strings.Replace(filepath.Join(pFix, "lib", "lib"), "\\", "/", -1)
-						if strings.Contains(l, pFix) {
-							var cleaned []string
-							for _, s := range strings.Split(l, " ") {
-								if strings.HasPrefix(s, pFix) && (strings.HasSuffix(s, ".a") || strings.HasSuffix(s, ".dll")) {
-									s = strings.Replace(s, pFix, "-l", -1)
-									s = strings.TrimSuffix(s, ".a")
-									s = strings.TrimSuffix(s, ".dll")
-								}
-								cleaned = append(cleaned, s)
+					pFix := strings.Replace(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", "lib"), "\\", "/", -1)
+					if strings.Contains(l, pFix) {
+						var cleaned []string
+						for _, s := range strings.Split(l, " ") {
+							if strings.HasPrefix(s, pFix) && (strings.HasSuffix(s, ".a") || strings.HasSuffix(s, ".dll")) {
+								s = strings.Replace(s, pFix, "-l", -1)
+								s = strings.TrimSuffix(s, ".a")
+								s = strings.TrimSuffix(s, ".dll")
 							}
-							l = strings.Join(cleaned, " ")
+							cleaned = append(cleaned, s)
 						}
+						l = strings.Join(cleaned, " ")
 					}
 				}
 				fmt.Fprintf(bb, "#cgo LDFLAGS: %v\n", strings.Split(l, " = ")[1])
@@ -575,6 +614,8 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 					tmp = strings.Replace(tmp, "-fdata-sections", "", -1)
 					tmp = strings.Replace(tmp, "-Wl,--gc-sections", "", -1)
 				}
+				tmp = strings.Replace(tmp, " -lwinmm ", " ", -1)
+				tmp = strings.Replace(tmp, " -lkernel32 ", " -lwinmm -lkernel32 ", -1)
 			}
 			if utils.QT_MSYS2() && utils.QT_MSYS2_ARCH() == "amd64" {
 				tmp = strings.Replace(tmp, " -Wa,-mbig-obj ", " ", -1)
@@ -600,8 +641,11 @@ func createCgo(module, path, target string, mode int, ipkg, tags string) string 
 			if mode == RCC {
 				utils.Save(filepath.Join(path, strings.Replace(file, "_cgo_", "_stub_", -1)), "package "+pkg+"\n")
 			}
-		case "linux":
+		case "linux", "freebsd":
 			tmp = strings.Replace(tmp, "-Wl,-O1", "-O1", -1)
+			tmp = strings.Replace(tmp, "-ffunction-sections", "", -1)
+			tmp = strings.Replace(tmp, "-fdata-sections", "", -1)
+			tmp = strings.Replace(tmp, "-Wl,--gc-sections", "", -1)
 		}
 		utils.Save(filepath.Join(path, file), tmp)
 	}
@@ -613,9 +657,17 @@ func cgoFileNames(module, path, target string, mode int) []string {
 	var pFix string
 	switch mode {
 	case RCC:
-		pFix = "rcc_"
+		if utils.QT_STATIC() { //TODO: fix wrong order issue in LDFLAGS instead
+			pFix = "moc_"
+		} else {
+			pFix = "rcc_"
+		}
 	case MOC:
-		pFix = "moc_"
+		if utils.QT_STATIC() { //TODO: fix wrong order issue in LDFLAGS instead
+			pFix = "rcc_"
+		} else {
+			pFix = "moc_"
+		}
 	case MINIMAL:
 		pFix = "minimal_"
 	}
@@ -626,6 +678,8 @@ func cgoFileNames(module, path, target string, mode int) []string {
 		sFixes = []string{"darwin_amd64"}
 	case "linux":
 		sFixes = []string{"linux_" + utils.GOARCH()}
+	case "freebsd":
+		sFixes = []string{"freebsd_" + utils.GOARCH()}
 	case "windows":
 		if utils.QT_MXE_ARCH() == "amd64" || (utils.QT_MSYS2() && utils.QT_MSYS2_ARCH() == "amd64") ||
 			(!utils.QT_MXE() && !utils.QT_MSYS2() && utils.QT_VERSION_NUM() >= 5120) {
@@ -638,7 +692,11 @@ func cgoFileNames(module, path, target string, mode int) []string {
 			sFixes = []string{"windows_386"}
 		}
 	case "android":
-		sFixes = []string{"linux_arm"}
+		if utils.GOARCH() == "arm64" {
+			sFixes = []string{"linux_arm64"}
+		} else {
+			sFixes = []string{"linux_arm"}
+		}
 	case "android-emulator":
 		sFixes = []string{"linux_386"}
 	case "ios":
@@ -671,8 +729,6 @@ func cgoFileNames(module, path, target string, mode int) []string {
 func ParseCgo(module, target string) (string, string) {
 	utils.Log.WithField("module", module).WithField("target", target).Debug("parse cgo for shared lib")
 
-	//TODO: use "go list" instead
-
 	tmp := utils.LoadOptional(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
 	if tmp != "" {
 		tmp = strings.Split(tmp, "/*")[1]
@@ -697,12 +753,6 @@ func ParseCgo(module, target string) (string, string) {
 
 func ReplaceCgo(module, target string) {
 	utils.Log.WithField("module", module).WithField("target", target).Debug("replace cgo for shared lib")
-
-	if target == "js" || target == "wasm" {
-		//TODO: cleanup ?
-		//utils.RemoveAll(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
-		return
-	}
 
 	tmp := utils.LoadOptional(utils.GoQtPkgPath(module, cgoFileNames(module, "", target, NONE)[0]))
 	if tmp != "" {

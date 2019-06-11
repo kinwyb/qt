@@ -62,6 +62,12 @@ func main() {
 	var comply bool
 	flag.BoolVar(&comply, "comply", false, "dump object code to make it easier to comply with LGPL obligations for proprietary developments")
 
+	var quickcompiler bool
+	flag.BoolVar(&quickcompiler, "quickcompiler", false, "use the quickcompiler")
+
+	var uic bool
+	flag.BoolVar(&uic, "uic", true, "use the uic")
+
 	if cmd.ParseFlags() {
 		flag.Usage()
 	}
@@ -101,7 +107,7 @@ func main() {
 	if target == "desktop" {
 		target = runtime.GOOS
 	}
-	utils.CheckBuildTarget(target)
+	utils.CheckBuildTarget(target, docker)
 	cmd.InitEnv(target)
 
 	if !filepath.IsAbs(path) {
@@ -110,7 +116,7 @@ func main() {
 		if err != nil || !utils.ExistsDir(path) {
 			utils.Log.WithError(err).WithField("path", path).Debug("can't resolve absolute path")
 			dirFunc := func() (string, error) {
-				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath), "get pkg dir")
+				out, err := utils.RunCmdOptionalError(utils.GoList("{{.Dir}}", oPath, "-find"), "get pkg dir")
 				return strings.TrimSpace(out), err
 			}
 			if dir, err := dirFunc(); err != nil || len(dir) == 0 {
@@ -122,16 +128,12 @@ func main() {
 		}
 	}
 
-	if !(target == runtime.GOOS || target == "js" || target == "wasm") {
+	if !(target == runtime.GOOS || strings.HasPrefix(target, "js") || strings.HasPrefix(target, "wasm")) {
 		fast = false
 	}
-	if (docker || vagrant) && !(target == "js" || target == "wasm") {
+	if (docker || vagrant) && !(strings.HasPrefix(target, "js") || strings.HasPrefix(target, "wasm")) {
 		fast = false
 	}
 
-	if target == "js" || target == "wasm" { //TODO: remove for module support + resolve dependencies
-		os.Setenv("GOCACHE", "off")
-	}
-
-	deploy.Deploy(mode, target, path, docker, ldFlags, tags, fast, device, vagrant, vagrant_system, comply)
+	deploy.Deploy(mode, target, path, docker, ldFlags, tags, fast, device, vagrant, vagrant_system, comply, uic, quickcompiler)
 }

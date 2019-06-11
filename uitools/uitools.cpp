@@ -97,11 +97,6 @@ struct QtUiTools_PackedString QUiLoader_QUiLoader_Tr(char* s, char* c, int n)
 	return ({ QByteArray t4760af = QUiLoader::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtUiTools_PackedString { const_cast<char*>(t4760af.prepend("WHITESPACE").constData()+10), t4760af.size()-10 }; });
 }
 
-struct QtUiTools_PackedString QUiLoader_QUiLoader_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t19a35d = QUiLoader::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtUiTools_PackedString { const_cast<char*>(t19a35d.prepend("WHITESPACE").constData()+10), t19a35d.size()-10 }; });
-}
-
 void* QUiLoader_NewQUiLoader(void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
@@ -199,17 +194,17 @@ struct QtUiTools_PackedString QUiLoader_ErrorString(void* ptr)
 
 struct QtUiTools_PackedString QUiLoader_AvailableLayouts(void* ptr)
 {
-	return ({ QByteArray te9f98b = static_cast<QUiLoader*>(ptr)->availableLayouts().join("|").toUtf8(); QtUiTools_PackedString { const_cast<char*>(te9f98b.prepend("WHITESPACE").constData()+10), te9f98b.size()-10 }; });
+	return ({ QByteArray te9f98b = static_cast<QUiLoader*>(ptr)->availableLayouts().join("¡¦!").toUtf8(); QtUiTools_PackedString { const_cast<char*>(te9f98b.prepend("WHITESPACE").constData()+10), te9f98b.size()-10 }; });
 }
 
 struct QtUiTools_PackedString QUiLoader_AvailableWidgets(void* ptr)
 {
-	return ({ QByteArray tf979e0 = static_cast<QUiLoader*>(ptr)->availableWidgets().join("|").toUtf8(); QtUiTools_PackedString { const_cast<char*>(tf979e0.prepend("WHITESPACE").constData()+10), tf979e0.size()-10 }; });
+	return ({ QByteArray tf979e0 = static_cast<QUiLoader*>(ptr)->availableWidgets().join("¡¦!").toUtf8(); QtUiTools_PackedString { const_cast<char*>(tf979e0.prepend("WHITESPACE").constData()+10), tf979e0.size()-10 }; });
 }
 
 struct QtUiTools_PackedString QUiLoader_PluginPaths(void* ptr)
 {
-	return ({ QByteArray t84d911 = static_cast<QUiLoader*>(ptr)->pluginPaths().join("|").toUtf8(); QtUiTools_PackedString { const_cast<char*>(t84d911.prepend("WHITESPACE").constData()+10), t84d911.size()-10 }; });
+	return ({ QByteArray t84d911 = static_cast<QUiLoader*>(ptr)->pluginPaths().join("¡¦!").toUtf8(); QtUiTools_PackedString { const_cast<char*>(t84d911.prepend("WHITESPACE").constData()+10), t84d911.size()-10 }; });
 }
 
 char QUiLoader_IsLanguageChangeEnabled(void* ptr)

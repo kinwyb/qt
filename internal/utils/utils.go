@@ -13,12 +13,12 @@ import (
 )
 
 func ExistsFile(name string) bool {
-	_, err := ioutil.ReadFile(name)
+	_, err := os.Stat(name)
 	return err == nil
 }
 
 func ExistsDir(name string) bool {
-	_, err := ioutil.ReadDir(name)
+	_, err := os.Stat(name)
 	return err == nil
 }
 
@@ -92,7 +92,7 @@ var (
 func GoQtPkgPath(s ...string) (r string) {
 	goQtPkgPathMutex.Lock()
 	if len(goQtPkgPath) == 0 {
-		goQtPkgPath = strings.TrimSpace(RunCmd(GoList("{{.Dir}}", packageName), "utils.GoQtPkgPath"))
+		goQtPkgPath = strings.TrimSpace(RunCmd(GoList("{{.Dir}}", PackageName, "-find"), "utils.GoQtPkgPath"))
 	}
 	r = goQtPkgPath
 	goQtPkgPathMutex.Unlock()

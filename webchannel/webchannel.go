@@ -11,6 +11,7 @@ import (
 	"github.com/therecipe/qt"
 	"github.com/therecipe/qt/core"
 	"runtime"
+	"strings"
 	"unsafe"
 )
 
@@ -22,9 +23,16 @@ func cGoUnpackString(s C.struct_QtWebChannel_PackedString) string {
 }
 func cGoUnpackBytes(s C.struct_QtWebChannel_PackedString) []byte {
 	if int(s.len) == -1 {
-		return []byte(C.GoString(s.data))
+		gs := C.GoString(s.data)
+		return *(*[]byte)(unsafe.Pointer(&gs))
 	}
 	return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len))
+}
+func unpackStringList(s string) []string {
+	if len(s) == 0 {
+		return make([]string, 0)
+	}
+	return strings.Split(s, "¡¦!")
 }
 
 type QWebChannel struct {
@@ -93,34 +101,6 @@ func (ptr *QWebChannel) Tr(s string, c string, n int) string {
 	return cGoUnpackString(C.QWebChannel_QWebChannel_Tr(sC, cC, C.int(int32(n))))
 }
 
-func QWebChannel_TrUtf8(s string, c string, n int) string {
-	var sC *C.char
-	if s != "" {
-		sC = C.CString(s)
-		defer C.free(unsafe.Pointer(sC))
-	}
-	var cC *C.char
-	if c != "" {
-		cC = C.CString(c)
-		defer C.free(unsafe.Pointer(cC))
-	}
-	return cGoUnpackString(C.QWebChannel_QWebChannel_TrUtf8(sC, cC, C.int(int32(n))))
-}
-
-func (ptr *QWebChannel) TrUtf8(s string, c string, n int) string {
-	var sC *C.char
-	if s != "" {
-		sC = C.CString(s)
-		defer C.free(unsafe.Pointer(sC))
-	}
-	var cC *C.char
-	if c != "" {
-		cC = C.CString(c)
-		defer C.free(unsafe.Pointer(cC))
-	}
-	return cGoUnpackString(C.QWebChannel_QWebChannel_TrUtf8(sC, cC, C.int(int32(n))))
-}
-
 func NewQWebChannel(parent core.QObject_ITF) *QWebChannel {
 	tmpValue := NewQWebChannelFromPointer(C.QWebChannel_NewQWebChannel(core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
@@ -132,7 +112,7 @@ func NewQWebChannel(parent core.QObject_ITF) *QWebChannel {
 //export callbackQWebChannel_BlockUpdatesChanged
 func callbackQWebChannel_BlockUpdatesChanged(ptr unsafe.Pointer, block C.char) {
 	if signal := qt.GetSignal(ptr, "blockUpdatesChanged"); signal != nil {
-		signal.(func(bool))(int8(block) != 0)
+		(*(*func(bool))(signal))(int8(block) != 0)
 	}
 
 }
@@ -145,12 +125,13 @@ func (ptr *QWebChannel) ConnectBlockUpdatesChanged(f func(block bool)) {
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "blockUpdatesChanged"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "blockUpdatesChanged", func(block bool) {
-				signal.(func(bool))(block)
+			f := func(block bool) {
+				(*(*func(bool))(signal))(block)
 				f(block)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "blockUpdatesChanged", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "blockUpdatesChanged", f)
+			qt.ConnectSignal(ptr.Pointer(), "blockUpdatesChanged", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -171,7 +152,7 @@ func (ptr *QWebChannel) BlockUpdatesChanged(block bool) {
 //export callbackQWebChannel_ConnectTo
 func callbackQWebChannel_ConnectTo(ptr unsafe.Pointer, transport unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectTo"); signal != nil {
-		signal.(func(*QWebChannelAbstractTransport))(NewQWebChannelAbstractTransportFromPointer(transport))
+		(*(*func(*QWebChannelAbstractTransport))(signal))(NewQWebChannelAbstractTransportFromPointer(transport))
 	} else {
 		NewQWebChannelFromPointer(ptr).ConnectToDefault(NewQWebChannelAbstractTransportFromPointer(transport))
 	}
@@ -181,12 +162,13 @@ func (ptr *QWebChannel) ConnectConnectTo(f func(transport *QWebChannelAbstractTr
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "connectTo"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "connectTo", func(transport *QWebChannelAbstractTransport) {
-				signal.(func(*QWebChannelAbstractTransport))(transport)
+			f := func(transport *QWebChannelAbstractTransport) {
+				(*(*func(*QWebChannelAbstractTransport))(signal))(transport)
 				f(transport)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "connectTo", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "connectTo", f)
+			qt.ConnectSignal(ptr.Pointer(), "connectTo", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -219,7 +201,7 @@ func (ptr *QWebChannel) DeregisterObject(object core.QObject_ITF) {
 //export callbackQWebChannel_DisconnectFrom
 func callbackQWebChannel_DisconnectFrom(ptr unsafe.Pointer, transport unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectFrom"); signal != nil {
-		signal.(func(*QWebChannelAbstractTransport))(NewQWebChannelAbstractTransportFromPointer(transport))
+		(*(*func(*QWebChannelAbstractTransport))(signal))(NewQWebChannelAbstractTransportFromPointer(transport))
 	} else {
 		NewQWebChannelFromPointer(ptr).DisconnectFromDefault(NewQWebChannelAbstractTransportFromPointer(transport))
 	}
@@ -229,12 +211,13 @@ func (ptr *QWebChannel) ConnectDisconnectFrom(f func(transport *QWebChannelAbstr
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "disconnectFrom"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "disconnectFrom", func(transport *QWebChannelAbstractTransport) {
-				signal.(func(*QWebChannelAbstractTransport))(transport)
+			f := func(transport *QWebChannelAbstractTransport) {
+				(*(*func(*QWebChannelAbstractTransport))(signal))(transport)
 				f(transport)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "disconnectFrom", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "disconnectFrom", f)
+			qt.ConnectSignal(ptr.Pointer(), "disconnectFrom", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -290,7 +273,7 @@ func (ptr *QWebChannel) SetBlockUpdates(block bool) {
 //export callbackQWebChannel_DestroyQWebChannel
 func callbackQWebChannel_DestroyQWebChannel(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QWebChannel"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQWebChannelFromPointer(ptr).DestroyQWebChannelDefault()
 	}
@@ -300,12 +283,13 @@ func (ptr *QWebChannel) ConnectDestroyQWebChannel(f func()) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QWebChannel"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QWebChannel", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QWebChannel", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QWebChannel", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QWebChannel", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -357,7 +341,7 @@ func (ptr *QWebChannel) BlockUpdates() bool {
 //export callbackQWebChannel_MetaObject
 func callbackQWebChannel_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
-		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
+		return core.PointerFromQMetaObject((*(*func() *core.QMetaObject)(signal))())
 	}
 
 	return core.PointerFromQMetaObject(NewQWebChannelFromPointer(ptr).MetaObjectDefault())
@@ -610,7 +594,7 @@ func (ptr *QWebChannel) __children_newList() unsafe.Pointer {
 //export callbackQWebChannel_Event
 func callbackQWebChannel_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt(signal.(func(*core.QEvent) bool)(core.NewQEventFromPointer(e)))))
+		return C.char(int8(qt.GoBoolToInt((*(*func(*core.QEvent) bool)(signal))(core.NewQEventFromPointer(e)))))
 	}
 
 	return C.char(int8(qt.GoBoolToInt(NewQWebChannelFromPointer(ptr).EventDefault(core.NewQEventFromPointer(e)))))
@@ -626,7 +610,7 @@ func (ptr *QWebChannel) EventDefault(e core.QEvent_ITF) bool {
 //export callbackQWebChannel_EventFilter
 func callbackQWebChannel_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt(signal.(func(*core.QObject, *core.QEvent) bool)(core.NewQObjectFromPointer(watched), core.NewQEventFromPointer(event)))))
+		return C.char(int8(qt.GoBoolToInt((*(*func(*core.QObject, *core.QEvent) bool)(signal))(core.NewQObjectFromPointer(watched), core.NewQEventFromPointer(event)))))
 	}
 
 	return C.char(int8(qt.GoBoolToInt(NewQWebChannelFromPointer(ptr).EventFilterDefault(core.NewQObjectFromPointer(watched), core.NewQEventFromPointer(event)))))
@@ -642,7 +626,7 @@ func (ptr *QWebChannel) EventFilterDefault(watched core.QObject_ITF, event core.
 //export callbackQWebChannel_ChildEvent
 func callbackQWebChannel_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
-		signal.(func(*core.QChildEvent))(core.NewQChildEventFromPointer(event))
+		(*(*func(*core.QChildEvent))(signal))(core.NewQChildEventFromPointer(event))
 	} else {
 		NewQWebChannelFromPointer(ptr).ChildEventDefault(core.NewQChildEventFromPointer(event))
 	}
@@ -657,7 +641,7 @@ func (ptr *QWebChannel) ChildEventDefault(event core.QChildEvent_ITF) {
 //export callbackQWebChannel_ConnectNotify
 func callbackQWebChannel_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
-		signal.(func(*core.QMetaMethod))(core.NewQMetaMethodFromPointer(sign))
+		(*(*func(*core.QMetaMethod))(signal))(core.NewQMetaMethodFromPointer(sign))
 	} else {
 		NewQWebChannelFromPointer(ptr).ConnectNotifyDefault(core.NewQMetaMethodFromPointer(sign))
 	}
@@ -672,7 +656,7 @@ func (ptr *QWebChannel) ConnectNotifyDefault(sign core.QMetaMethod_ITF) {
 //export callbackQWebChannel_CustomEvent
 func callbackQWebChannel_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
-		signal.(func(*core.QEvent))(core.NewQEventFromPointer(event))
+		(*(*func(*core.QEvent))(signal))(core.NewQEventFromPointer(event))
 	} else {
 		NewQWebChannelFromPointer(ptr).CustomEventDefault(core.NewQEventFromPointer(event))
 	}
@@ -687,7 +671,7 @@ func (ptr *QWebChannel) CustomEventDefault(event core.QEvent_ITF) {
 //export callbackQWebChannel_DeleteLater
 func callbackQWebChannel_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQWebChannelFromPointer(ptr).DeleteLaterDefault()
 	}
@@ -696,7 +680,6 @@ func callbackQWebChannel_DeleteLater(ptr unsafe.Pointer) {
 func (ptr *QWebChannel) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
 		C.QWebChannel_DeleteLaterDefault(ptr.Pointer())
-		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
@@ -704,7 +687,7 @@ func (ptr *QWebChannel) DeleteLaterDefault() {
 //export callbackQWebChannel_Destroyed
 func callbackQWebChannel_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
-		signal.(func(*core.QObject))(core.NewQObjectFromPointer(obj))
+		(*(*func(*core.QObject))(signal))(core.NewQObjectFromPointer(obj))
 	}
 
 }
@@ -712,7 +695,7 @@ func callbackQWebChannel_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 //export callbackQWebChannel_DisconnectNotify
 func callbackQWebChannel_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
-		signal.(func(*core.QMetaMethod))(core.NewQMetaMethodFromPointer(sign))
+		(*(*func(*core.QMetaMethod))(signal))(core.NewQMetaMethodFromPointer(sign))
 	} else {
 		NewQWebChannelFromPointer(ptr).DisconnectNotifyDefault(core.NewQMetaMethodFromPointer(sign))
 	}
@@ -727,7 +710,7 @@ func (ptr *QWebChannel) DisconnectNotifyDefault(sign core.QMetaMethod_ITF) {
 //export callbackQWebChannel_ObjectNameChanged
 func callbackQWebChannel_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_QtWebChannel_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
-		signal.(func(string))(cGoUnpackString(objectName))
+		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
@@ -735,7 +718,7 @@ func callbackQWebChannel_ObjectNameChanged(ptr unsafe.Pointer, objectName C.stru
 //export callbackQWebChannel_TimerEvent
 func callbackQWebChannel_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
-		signal.(func(*core.QTimerEvent))(core.NewQTimerEventFromPointer(event))
+		(*(*func(*core.QTimerEvent))(signal))(core.NewQTimerEventFromPointer(event))
 	} else {
 		NewQWebChannelFromPointer(ptr).TimerEventDefault(core.NewQTimerEventFromPointer(event))
 	}
@@ -813,34 +796,6 @@ func (ptr *QWebChannelAbstractTransport) Tr(s string, c string, n int) string {
 	return cGoUnpackString(C.QWebChannelAbstractTransport_QWebChannelAbstractTransport_Tr(sC, cC, C.int(int32(n))))
 }
 
-func QWebChannelAbstractTransport_TrUtf8(s string, c string, n int) string {
-	var sC *C.char
-	if s != "" {
-		sC = C.CString(s)
-		defer C.free(unsafe.Pointer(sC))
-	}
-	var cC *C.char
-	if c != "" {
-		cC = C.CString(c)
-		defer C.free(unsafe.Pointer(cC))
-	}
-	return cGoUnpackString(C.QWebChannelAbstractTransport_QWebChannelAbstractTransport_TrUtf8(sC, cC, C.int(int32(n))))
-}
-
-func (ptr *QWebChannelAbstractTransport) TrUtf8(s string, c string, n int) string {
-	var sC *C.char
-	if s != "" {
-		sC = C.CString(s)
-		defer C.free(unsafe.Pointer(sC))
-	}
-	var cC *C.char
-	if c != "" {
-		cC = C.CString(c)
-		defer C.free(unsafe.Pointer(cC))
-	}
-	return cGoUnpackString(C.QWebChannelAbstractTransport_QWebChannelAbstractTransport_TrUtf8(sC, cC, C.int(int32(n))))
-}
-
 func NewQWebChannelAbstractTransport(parent core.QObject_ITF) *QWebChannelAbstractTransport {
 	tmpValue := NewQWebChannelAbstractTransportFromPointer(C.QWebChannelAbstractTransport_NewQWebChannelAbstractTransport(core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
@@ -852,7 +807,7 @@ func NewQWebChannelAbstractTransport(parent core.QObject_ITF) *QWebChannelAbstra
 //export callbackQWebChannelAbstractTransport_MessageReceived
 func callbackQWebChannelAbstractTransport_MessageReceived(ptr unsafe.Pointer, message unsafe.Pointer, transport unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "messageReceived"); signal != nil {
-		signal.(func(*core.QJsonObject, *QWebChannelAbstractTransport))(core.NewQJsonObjectFromPointer(message), NewQWebChannelAbstractTransportFromPointer(transport))
+		(*(*func(*core.QJsonObject, *QWebChannelAbstractTransport))(signal))(core.NewQJsonObjectFromPointer(message), NewQWebChannelAbstractTransportFromPointer(transport))
 	}
 
 }
@@ -865,12 +820,13 @@ func (ptr *QWebChannelAbstractTransport) ConnectMessageReceived(f func(message *
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "messageReceived"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "messageReceived", func(message *core.QJsonObject, transport *QWebChannelAbstractTransport) {
-				signal.(func(*core.QJsonObject, *QWebChannelAbstractTransport))(message, transport)
+			f := func(message *core.QJsonObject, transport *QWebChannelAbstractTransport) {
+				(*(*func(*core.QJsonObject, *QWebChannelAbstractTransport))(signal))(message, transport)
 				f(message, transport)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "messageReceived", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "messageReceived", f)
+			qt.ConnectSignal(ptr.Pointer(), "messageReceived", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -891,7 +847,7 @@ func (ptr *QWebChannelAbstractTransport) MessageReceived(message core.QJsonObjec
 //export callbackQWebChannelAbstractTransport_SendMessage
 func callbackQWebChannelAbstractTransport_SendMessage(ptr unsafe.Pointer, message unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "sendMessage"); signal != nil {
-		signal.(func(*core.QJsonObject))(core.NewQJsonObjectFromPointer(message))
+		(*(*func(*core.QJsonObject))(signal))(core.NewQJsonObjectFromPointer(message))
 	}
 
 }
@@ -900,12 +856,13 @@ func (ptr *QWebChannelAbstractTransport) ConnectSendMessage(f func(message *core
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "sendMessage"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "sendMessage", func(message *core.QJsonObject) {
-				signal.(func(*core.QJsonObject))(message)
+			f := func(message *core.QJsonObject) {
+				(*(*func(*core.QJsonObject))(signal))(message)
 				f(message)
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "sendMessage", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "sendMessage", f)
+			qt.ConnectSignal(ptr.Pointer(), "sendMessage", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -926,7 +883,7 @@ func (ptr *QWebChannelAbstractTransport) SendMessage(message core.QJsonObject_IT
 //export callbackQWebChannelAbstractTransport_DestroyQWebChannelAbstractTransport
 func callbackQWebChannelAbstractTransport_DestroyQWebChannelAbstractTransport(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~QWebChannelAbstractTransport"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).DestroyQWebChannelAbstractTransportDefault()
 	}
@@ -936,12 +893,13 @@ func (ptr *QWebChannelAbstractTransport) ConnectDestroyQWebChannelAbstractTransp
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "~QWebChannelAbstractTransport"); signal != nil {
-			qt.ConnectSignal(ptr.Pointer(), "~QWebChannelAbstractTransport", func() {
-				signal.(func())()
+			f := func() {
+				(*(*func())(signal))()
 				f()
-			})
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QWebChannelAbstractTransport", unsafe.Pointer(&f))
 		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QWebChannelAbstractTransport", f)
+			qt.ConnectSignal(ptr.Pointer(), "~QWebChannelAbstractTransport", unsafe.Pointer(&f))
 		}
 	}
 }
@@ -972,7 +930,7 @@ func (ptr *QWebChannelAbstractTransport) DestroyQWebChannelAbstractTransportDefa
 //export callbackQWebChannelAbstractTransport_MetaObject
 func callbackQWebChannelAbstractTransport_MetaObject(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "metaObject"); signal != nil {
-		return core.PointerFromQMetaObject(signal.(func() *core.QMetaObject)())
+		return core.PointerFromQMetaObject((*(*func() *core.QMetaObject)(signal))())
 	}
 
 	return core.PointerFromQMetaObject(NewQWebChannelAbstractTransportFromPointer(ptr).MetaObjectDefault())
@@ -1091,7 +1049,7 @@ func (ptr *QWebChannelAbstractTransport) __children_newList() unsafe.Pointer {
 //export callbackQWebChannelAbstractTransport_Event
 func callbackQWebChannelAbstractTransport_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt(signal.(func(*core.QEvent) bool)(core.NewQEventFromPointer(e)))))
+		return C.char(int8(qt.GoBoolToInt((*(*func(*core.QEvent) bool)(signal))(core.NewQEventFromPointer(e)))))
 	}
 
 	return C.char(int8(qt.GoBoolToInt(NewQWebChannelAbstractTransportFromPointer(ptr).EventDefault(core.NewQEventFromPointer(e)))))
@@ -1107,7 +1065,7 @@ func (ptr *QWebChannelAbstractTransport) EventDefault(e core.QEvent_ITF) bool {
 //export callbackQWebChannelAbstractTransport_EventFilter
 func callbackQWebChannelAbstractTransport_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt(signal.(func(*core.QObject, *core.QEvent) bool)(core.NewQObjectFromPointer(watched), core.NewQEventFromPointer(event)))))
+		return C.char(int8(qt.GoBoolToInt((*(*func(*core.QObject, *core.QEvent) bool)(signal))(core.NewQObjectFromPointer(watched), core.NewQEventFromPointer(event)))))
 	}
 
 	return C.char(int8(qt.GoBoolToInt(NewQWebChannelAbstractTransportFromPointer(ptr).EventFilterDefault(core.NewQObjectFromPointer(watched), core.NewQEventFromPointer(event)))))
@@ -1123,7 +1081,7 @@ func (ptr *QWebChannelAbstractTransport) EventFilterDefault(watched core.QObject
 //export callbackQWebChannelAbstractTransport_ChildEvent
 func callbackQWebChannelAbstractTransport_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
-		signal.(func(*core.QChildEvent))(core.NewQChildEventFromPointer(event))
+		(*(*func(*core.QChildEvent))(signal))(core.NewQChildEventFromPointer(event))
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).ChildEventDefault(core.NewQChildEventFromPointer(event))
 	}
@@ -1138,7 +1096,7 @@ func (ptr *QWebChannelAbstractTransport) ChildEventDefault(event core.QChildEven
 //export callbackQWebChannelAbstractTransport_ConnectNotify
 func callbackQWebChannelAbstractTransport_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
-		signal.(func(*core.QMetaMethod))(core.NewQMetaMethodFromPointer(sign))
+		(*(*func(*core.QMetaMethod))(signal))(core.NewQMetaMethodFromPointer(sign))
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).ConnectNotifyDefault(core.NewQMetaMethodFromPointer(sign))
 	}
@@ -1153,7 +1111,7 @@ func (ptr *QWebChannelAbstractTransport) ConnectNotifyDefault(sign core.QMetaMet
 //export callbackQWebChannelAbstractTransport_CustomEvent
 func callbackQWebChannelAbstractTransport_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
-		signal.(func(*core.QEvent))(core.NewQEventFromPointer(event))
+		(*(*func(*core.QEvent))(signal))(core.NewQEventFromPointer(event))
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).CustomEventDefault(core.NewQEventFromPointer(event))
 	}
@@ -1168,7 +1126,7 @@ func (ptr *QWebChannelAbstractTransport) CustomEventDefault(event core.QEvent_IT
 //export callbackQWebChannelAbstractTransport_DeleteLater
 func callbackQWebChannelAbstractTransport_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
-		signal.(func())()
+		(*(*func())(signal))()
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).DeleteLaterDefault()
 	}
@@ -1177,7 +1135,6 @@ func callbackQWebChannelAbstractTransport_DeleteLater(ptr unsafe.Pointer) {
 func (ptr *QWebChannelAbstractTransport) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
 		C.QWebChannelAbstractTransport_DeleteLaterDefault(ptr.Pointer())
-		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
@@ -1185,7 +1142,7 @@ func (ptr *QWebChannelAbstractTransport) DeleteLaterDefault() {
 //export callbackQWebChannelAbstractTransport_Destroyed
 func callbackQWebChannelAbstractTransport_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
-		signal.(func(*core.QObject))(core.NewQObjectFromPointer(obj))
+		(*(*func(*core.QObject))(signal))(core.NewQObjectFromPointer(obj))
 	}
 
 }
@@ -1193,7 +1150,7 @@ func callbackQWebChannelAbstractTransport_Destroyed(ptr unsafe.Pointer, obj unsa
 //export callbackQWebChannelAbstractTransport_DisconnectNotify
 func callbackQWebChannelAbstractTransport_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
-		signal.(func(*core.QMetaMethod))(core.NewQMetaMethodFromPointer(sign))
+		(*(*func(*core.QMetaMethod))(signal))(core.NewQMetaMethodFromPointer(sign))
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).DisconnectNotifyDefault(core.NewQMetaMethodFromPointer(sign))
 	}
@@ -1208,7 +1165,7 @@ func (ptr *QWebChannelAbstractTransport) DisconnectNotifyDefault(sign core.QMeta
 //export callbackQWebChannelAbstractTransport_ObjectNameChanged
 func callbackQWebChannelAbstractTransport_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_QtWebChannel_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
-		signal.(func(string))(cGoUnpackString(objectName))
+		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
@@ -1216,7 +1173,7 @@ func callbackQWebChannelAbstractTransport_ObjectNameChanged(ptr unsafe.Pointer, 
 //export callbackQWebChannelAbstractTransport_TimerEvent
 func callbackQWebChannelAbstractTransport_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
-		signal.(func(*core.QTimerEvent))(core.NewQTimerEventFromPointer(event))
+		(*(*func(*core.QTimerEvent))(signal))(core.NewQTimerEventFromPointer(event))
 	} else {
 		NewQWebChannelAbstractTransportFromPointer(ptr).TimerEventDefault(core.NewQTimerEventFromPointer(event))
 	}

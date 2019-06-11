@@ -243,11 +243,6 @@ struct QtCharts_PackedString QAbstractAxis_QAbstractAxis_Tr(char* s, char* c, in
 	return ({ QByteArray t51d483 = QAbstractAxis::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t51d483.prepend("WHITESPACE").constData()+10), t51d483.size()-10 }; });
 }
 
-struct QtCharts_PackedString QAbstractAxis_QAbstractAxis_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t96fa0d = QAbstractAxis::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t96fa0d.prepend("WHITESPACE").constData()+10), t96fa0d.size()-10 }; });
-}
-
 void QAbstractAxis_ConnectColorChanged(void* ptr)
 {
 	QObject::connect(static_cast<QAbstractAxis*>(ptr), static_cast<void (QAbstractAxis::*)(QColor)>(&QAbstractAxis::colorChanged), static_cast<MyQAbstractAxis*>(ptr), static_cast<void (MyQAbstractAxis::*)(QColor)>(&MyQAbstractAxis::Signal_ColorChanged));
@@ -1616,11 +1611,6 @@ struct QtCharts_PackedString QAbstractSeries_QAbstractSeries_Tr(char* s, char* c
 	return ({ QByteArray t43d83a = QAbstractSeries::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t43d83a.prepend("WHITESPACE").constData()+10), t43d83a.size()-10 }; });
 }
 
-struct QtCharts_PackedString QAbstractSeries_QAbstractSeries_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tbc095b = QAbstractSeries::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(tbc095b.prepend("WHITESPACE").constData()+10), tbc095b.size()-10 }; });
-}
-
 char QAbstractSeries_AttachAxis(void* ptr, void* axis)
 {
 	return static_cast<QAbstractSeries*>(ptr)->attachAxis(static_cast<QAbstractAxis*>(axis));
@@ -2753,7 +2743,7 @@ void* QBarCategoryAxis_NewQBarCategoryAxis(void* parent)
 
 struct QtCharts_PackedString QBarCategoryAxis_Categories(void* ptr)
 {
-	return ({ QByteArray tcc0bf4 = static_cast<QBarCategoryAxis*>(ptr)->categories().join("|").toUtf8(); QtCharts_PackedString { const_cast<char*>(tcc0bf4.prepend("WHITESPACE").constData()+10), tcc0bf4.size()-10 }; });
+	return ({ QByteArray tcc0bf4 = static_cast<QBarCategoryAxis*>(ptr)->categories().join("¡¦!").toUtf8(); QtCharts_PackedString { const_cast<char*>(tcc0bf4.prepend("WHITESPACE").constData()+10), tcc0bf4.size()-10 }; });
 }
 
 void QBarCategoryAxis_Append2(void* ptr, struct QtCharts_PackedString category)
@@ -2763,7 +2753,7 @@ void QBarCategoryAxis_Append2(void* ptr, struct QtCharts_PackedString category)
 
 void QBarCategoryAxis_Append(void* ptr, struct QtCharts_PackedString categories)
 {
-	static_cast<QBarCategoryAxis*>(ptr)->append(QString::fromUtf8(categories.data, categories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QBarCategoryAxis*>(ptr)->append(QString::fromUtf8(categories.data, categories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QBarCategoryAxis_ConnectCategoriesChanged(void* ptr)
@@ -2863,7 +2853,7 @@ void QBarCategoryAxis_Replace(void* ptr, struct QtCharts_PackedString oldCategor
 
 void QBarCategoryAxis_SetCategories(void* ptr, struct QtCharts_PackedString categories)
 {
-	static_cast<QBarCategoryAxis*>(ptr)->setCategories(QString::fromUtf8(categories.data, categories.len).split("|", QString::SkipEmptyParts));
+	static_cast<QBarCategoryAxis*>(ptr)->setCategories(QString::fromUtf8(categories.data, categories.len).split("¡¦!", QString::SkipEmptyParts));
 }
 
 void QBarCategoryAxis_SetMax(void* ptr, struct QtCharts_PackedString max)
@@ -3185,11 +3175,6 @@ void* QBarSet_LabelColor(void* ptr)
 struct QtCharts_PackedString QBarSet_QBarSet_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t994acf = QBarSet::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t994acf.prepend("WHITESPACE").constData()+10), t994acf.size()-10 }; });
-}
-
-struct QtCharts_PackedString QBarSet_QBarSet_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tb413d1 = QBarSet::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(tb413d1.prepend("WHITESPACE").constData()+10), tb413d1.size()-10 }; });
 }
 
 void QBarSet_Append2(void* ptr, void* values)
@@ -4291,11 +4276,6 @@ struct QtCharts_PackedString QBoxSet_QBoxSet_Tr(char* s, char* c, int n)
 	return ({ QByteArray t792b87 = QBoxSet::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t792b87.prepend("WHITESPACE").constData()+10), t792b87.size()-10 }; });
 }
 
-struct QtCharts_PackedString QBoxSet_QBoxSet_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t4739cc = QBoxSet::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t4739cc.prepend("WHITESPACE").constData()+10), t4739cc.size()-10 }; });
-}
-
 void QBoxSet_Append2(void* ptr, void* values)
 {
 	static_cast<QBoxSet*>(ptr)->append(*static_cast<QList<qreal>*>(values));
@@ -4789,11 +4769,6 @@ struct QtCharts_PackedString QCandlestickModelMapper_QCandlestickModelMapper_Tr(
 	return ({ QByteArray t4b5918 = QCandlestickModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t4b5918.prepend("WHITESPACE").constData()+10), t4b5918.size()-10 }; });
 }
 
-struct QtCharts_PackedString QCandlestickModelMapper_QCandlestickModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t19ba4e = QCandlestickModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t19ba4e.prepend("WHITESPACE").constData()+10), t19ba4e.size()-10 }; });
-}
-
 void QCandlestickModelMapper_ConnectModelReplaced(void* ptr)
 {
 	QObject::connect(static_cast<QCandlestickModelMapper*>(ptr), static_cast<void (QCandlestickModelMapper::*)()>(&QCandlestickModelMapper::modelReplaced), static_cast<MyQCandlestickModelMapper*>(ptr), static_cast<void (MyQCandlestickModelMapper::*)()>(&MyQCandlestickModelMapper::Signal_ModelReplaced));
@@ -5105,8 +5080,8 @@ public:
 	void Signal_BodyOutlineVisibilityChanged() { callbackQCandlestickSeries_BodyOutlineVisibilityChanged(this); };
 	void Signal_BodyWidthChanged() { callbackQCandlestickSeries_BodyWidthChanged(this); };
 	void Signal_BrushChanged() { callbackQCandlestickSeries_BrushChanged(this); };
-	void Signal_CandlestickSetsAdded(const QList<QCandlestickSet *> & sets) { callbackQCandlestickSeries_CandlestickSetsAdded(this, ({ QList<QCandlestickSet *>* tmpValue = const_cast<QList<QCandlestickSet *>*>(&sets); QtCharts_PackedList { tmpValue, tmpValue->size() }; })); };
-	void Signal_CandlestickSetsRemoved(const QList<QCandlestickSet *> & sets) { callbackQCandlestickSeries_CandlestickSetsRemoved(this, ({ QList<QCandlestickSet *>* tmpValue = const_cast<QList<QCandlestickSet *>*>(&sets); QtCharts_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_CandlestickSetsAdded(const QList<QCandlestickSet *> & sets) { callbackQCandlestickSeries_CandlestickSetsAdded(this, ({ QList<QCandlestickSet *>* tmpValue = new QList<QCandlestickSet *>(sets); QtCharts_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_CandlestickSetsRemoved(const QList<QCandlestickSet *> & sets) { callbackQCandlestickSeries_CandlestickSetsRemoved(this, ({ QList<QCandlestickSet *>* tmpValue = new QList<QCandlestickSet *>(sets); QtCharts_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_CapsVisibilityChanged() { callbackQCandlestickSeries_CapsVisibilityChanged(this); };
 	void Signal_CapsWidthChanged() { callbackQCandlestickSeries_CapsWidthChanged(this); };
 	void Signal_Clicked(QCandlestickSet * set) { callbackQCandlestickSeries_Clicked(this, set); };
@@ -5816,11 +5791,6 @@ struct QtCharts_PackedString QCandlestickSet_QCandlestickSet_Tr(char* s, char* c
 	return ({ QByteArray t442373 = QCandlestickSet::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t442373.prepend("WHITESPACE").constData()+10), t442373.size()-10 }; });
 }
 
-struct QtCharts_PackedString QCandlestickSet_QCandlestickSet_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t808f5d = QCandlestickSet::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t808f5d.prepend("WHITESPACE").constData()+10), t808f5d.size()-10 }; });
-}
-
 void QCandlestickSet_ConnectBrushChanged(void* ptr)
 {
 	QObject::connect(static_cast<QCandlestickSet*>(ptr), static_cast<void (QCandlestickSet::*)()>(&QCandlestickSet::brushChanged), static_cast<MyQCandlestickSet*>(ptr), static_cast<void (MyQCandlestickSet::*)()>(&MyQCandlestickSet::Signal_BrushChanged));
@@ -6308,7 +6278,7 @@ void* QCategoryAxis_NewQCategoryAxis(void* parent)
 
 struct QtCharts_PackedString QCategoryAxis_CategoriesLabels(void* ptr)
 {
-	return ({ QByteArray t6d5777 = static_cast<QCategoryAxis*>(ptr)->categoriesLabels().join("|").toUtf8(); QtCharts_PackedString { const_cast<char*>(t6d5777.prepend("WHITESPACE").constData()+10), t6d5777.size()-10 }; });
+	return ({ QByteArray t6d5777 = static_cast<QCategoryAxis*>(ptr)->categoriesLabels().join("¡¦!").toUtf8(); QtCharts_PackedString { const_cast<char*>(t6d5777.prepend("WHITESPACE").constData()+10), t6d5777.size()-10 }; });
 }
 
 void QCategoryAxis_Append(void* ptr, struct QtCharts_PackedString categoryLabel, double categoryEndValue)
@@ -6508,11 +6478,6 @@ void* QChart_MapToValue(void* ptr, void* position, void* series)
 struct QtCharts_PackedString QChart_QChart_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t6e2025 = QChart::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t6e2025.prepend("WHITESPACE").constData()+10), t6e2025.size()-10 }; });
-}
-
-struct QtCharts_PackedString QChart_QChart_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray taa5f7e = QChart::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(taa5f7e.prepend("WHITESPACE").constData()+10), taa5f7e.size()-10 }; });
 }
 
 char QChart_IsZoomed(void* ptr)
@@ -7660,7 +7625,7 @@ public:
 	void scrollContentsBy(int dx, int dy) { callbackQChartView_ScrollContentsBy(this, dx, dy); };
 	void setupViewport(QWidget * widget) { callbackQChartView_SetupViewport(this, widget); };
 	void showEvent(QShowEvent * event) { callbackQChartView_ShowEvent(this, event); };
-	void updateScene(const QList<QRectF> & rects) { callbackQChartView_UpdateScene(this, ({ QList<QRectF>* tmpValue = const_cast<QList<QRectF>*>(&rects); QtCharts_PackedList { tmpValue, tmpValue->size() }; })); };
+	void updateScene(const QList<QRectF> & rects) { callbackQChartView_UpdateScene(this, ({ QList<QRectF>* tmpValue = new QList<QRectF>(rects); QtCharts_PackedList { tmpValue, tmpValue->size() }; })); };
 	void updateSceneRect(const QRectF & rect) { callbackQChartView_UpdateSceneRect(this, const_cast<QRectF*>(&rect)); };
 	void wheelEvent(QWheelEvent * event) { callbackQChartView_WheelEvent(this, event); };
 	QSize sizeHint() const { return *static_cast<QSize*>(callbackQChartView_SizeHint(const_cast<void*>(static_cast<const void*>(this)))); };
@@ -7669,7 +7634,7 @@ public:
 	QSize viewportSizeHint() const { return *static_cast<QSize*>(callbackQChartView_ViewportSizeHint(const_cast<void*>(static_cast<const void*>(this)))); };
 	void changeEvent(QEvent * ev) { callbackQChartView_ChangeEvent(this, ev); };
 	bool close() { return callbackQChartView_Close(this) != 0; };
-	bool nativeEvent(const QByteArray & eventType, void * message, long * result) { return callbackQChartView_NativeEvent(this, const_cast<QByteArray*>(&eventType), message, result ? *result : 0) != 0; };
+	bool nativeEvent(const QByteArray & eventType, void * message, long * result) { return callbackQChartView_NativeEvent(this, const_cast<QByteArray*>(&eventType), message, result) != 0; };
 	void actionEvent(QActionEvent * event) { callbackQChartView_ActionEvent(this, event); };
 	void closeEvent(QCloseEvent * event) { callbackQChartView_CloseEvent(this, event); };
 	void Signal_CustomContextMenuRequested(const QPoint & pos) { callbackQChartView_CustomContextMenuRequested(this, const_cast<QPoint*>(&pos)); };
@@ -7732,11 +7697,6 @@ void* QChartView_NewQChartView(void* parent)
 struct QtCharts_PackedString QChartView_QChartView_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t31d26c = QChartView::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t31d26c.prepend("WHITESPACE").constData()+10), t31d26c.size()-10 }; });
-}
-
-struct QtCharts_PackedString QChartView_QChartView_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t573d3c = QChartView::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t573d3c.prepend("WHITESPACE").constData()+10), t573d3c.size()-10 }; });
 }
 
 void QChartView_MouseMoveEventDefault(void* ptr, void* event)
@@ -8217,9 +8177,9 @@ char QChartView_CloseDefault(void* ptr)
 		return static_cast<QChartView*>(ptr)->QChartView::close();
 }
 
-char QChartView_NativeEventDefault(void* ptr, void* eventType, void* message, long result)
+char QChartView_NativeEventDefault(void* ptr, void* eventType, void* message, long* result)
 {
-		return static_cast<QChartView*>(ptr)->QChartView::nativeEvent(*static_cast<QByteArray*>(eventType), message, &result);
+		return static_cast<QChartView*>(ptr)->QChartView::nativeEvent(*static_cast<QByteArray*>(eventType), message, result);
 }
 
 void QChartView_ActionEventDefault(void* ptr, void* event)
@@ -8716,11 +8676,6 @@ struct QtCharts_PackedString QHBarModelMapper_QHBarModelMapper_Tr(char* s, char*
 	return ({ QByteArray tb32295 = QHBarModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(tb32295.prepend("WHITESPACE").constData()+10), tb32295.size()-10 }; });
 }
 
-struct QtCharts_PackedString QHBarModelMapper_QHBarModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tb5a44f = QHBarModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(tb5a44f.prepend("WHITESPACE").constData()+10), tb5a44f.size()-10 }; });
-}
-
 void QHBarModelMapper_ConnectColumnCountChanged(void* ptr)
 {
 	QObject::connect(static_cast<QHBarModelMapper*>(ptr), static_cast<void (QHBarModelMapper::*)()>(&QHBarModelMapper::columnCountChanged), static_cast<MyQHBarModelMapper*>(ptr), static_cast<void (MyQHBarModelMapper::*)()>(&MyQHBarModelMapper::Signal_ColumnCountChanged));
@@ -9065,11 +9020,6 @@ void* QHBoxPlotModelMapper_NewQHBoxPlotModelMapper(void* parent)
 struct QtCharts_PackedString QHBoxPlotModelMapper_QHBoxPlotModelMapper_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray ta4366e = QHBoxPlotModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(ta4366e.prepend("WHITESPACE").constData()+10), ta4366e.size()-10 }; });
-}
-
-struct QtCharts_PackedString QHBoxPlotModelMapper_QHBoxPlotModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t684cf5 = QHBoxPlotModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t684cf5.prepend("WHITESPACE").constData()+10), t684cf5.size()-10 }; });
 }
 
 void QHBoxPlotModelMapper_ConnectColumnCountChanged(void* ptr)
@@ -9659,11 +9609,6 @@ struct QtCharts_PackedString QHPieModelMapper_QHPieModelMapper_Tr(char* s, char*
 	return ({ QByteArray td9016d = QHPieModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(td9016d.prepend("WHITESPACE").constData()+10), td9016d.size()-10 }; });
 }
 
-struct QtCharts_PackedString QHPieModelMapper_QHPieModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t15efa5 = QHPieModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t15efa5.prepend("WHITESPACE").constData()+10), t15efa5.size()-10 }; });
-}
-
 void QHPieModelMapper_ConnectColumnCountChanged(void* ptr)
 {
 	QObject::connect(static_cast<QHPieModelMapper*>(ptr), static_cast<void (QHPieModelMapper::*)()>(&QHPieModelMapper::columnCountChanged), static_cast<MyQHPieModelMapper*>(ptr), static_cast<void (MyQHPieModelMapper::*)()>(&MyQHPieModelMapper::Signal_ColumnCountChanged));
@@ -9879,11 +9824,6 @@ void* QHXYModelMapper_NewQHXYModelMapper(void* parent)
 struct QtCharts_PackedString QHXYModelMapper_QHXYModelMapper_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray td40d08 = QHXYModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(td40d08.prepend("WHITESPACE").constData()+10), td40d08.size()-10 }; });
-}
-
-struct QtCharts_PackedString QHXYModelMapper_QHXYModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t9ffaef = QHXYModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t9ffaef.prepend("WHITESPACE").constData()+10), t9ffaef.size()-10 }; });
 }
 
 void QHXYModelMapper_ConnectColumnCountChanged(void* ptr)
@@ -10452,11 +10392,6 @@ void* QLegend_Color(void* ptr)
 struct QtCharts_PackedString QLegend_QLegend_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t3c7212 = QLegend::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t3c7212.prepend("WHITESPACE").constData()+10), t3c7212.size()-10 }; });
-}
-
-struct QtCharts_PackedString QLegend_QLegend_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t208a86 = QLegend::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t208a86.prepend("WHITESPACE").constData()+10), t208a86.size()-10 }; });
 }
 
 char QLegend_IsAttachedToChart(void* ptr)
@@ -11278,11 +11213,6 @@ long long QLegendMarker_Type(void* ptr)
 struct QtCharts_PackedString QLegendMarker_QLegendMarker_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tb5ab52 = QLegendMarker::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(tb5ab52.prepend("WHITESPACE").constData()+10), tb5ab52.size()-10 }; });
-}
-
-struct QtCharts_PackedString QLegendMarker_QLegendMarker_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray te47f1a = QLegendMarker::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(te47f1a.prepend("WHITESPACE").constData()+10), te47f1a.size()-10 }; });
 }
 
 void QLegendMarker_ConnectBrushChanged(void* ptr)
@@ -12877,11 +12807,6 @@ struct QtCharts_PackedString QPieSlice_QPieSlice_Tr(char* s, char* c, int n)
 	return ({ QByteArray t9788e8 = QPieSlice::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t9788e8.prepend("WHITESPACE").constData()+10), t9788e8.size()-10 }; });
 }
 
-struct QtCharts_PackedString QPieSlice_QPieSlice_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray ta7f9e8 = QPieSlice::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(ta7f9e8.prepend("WHITESPACE").constData()+10), ta7f9e8.size()-10 }; });
-}
-
 int QPieSlice_BorderWidth(void* ptr)
 {
 	return static_cast<QPieSlice*>(ptr)->borderWidth();
@@ -13993,11 +13918,6 @@ struct QtCharts_PackedString QVBarModelMapper_QVBarModelMapper_Tr(char* s, char*
 	return ({ QByteArray t58ecd7 = QVBarModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t58ecd7.prepend("WHITESPACE").constData()+10), t58ecd7.size()-10 }; });
 }
 
-struct QtCharts_PackedString QVBarModelMapper_QVBarModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray te6614e = QVBarModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(te6614e.prepend("WHITESPACE").constData()+10), te6614e.size()-10 }; });
-}
-
 void* QVBarModelMapper_NewQVBarModelMapper(void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
@@ -14342,11 +14262,6 @@ int QVBoxPlotModelMapper_QVBoxPlotModelMapper_QRegisterMetaType(){qRegisterMetaT
 struct QtCharts_PackedString QVBoxPlotModelMapper_QVBoxPlotModelMapper_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray td7141a = QVBoxPlotModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(td7141a.prepend("WHITESPACE").constData()+10), td7141a.size()-10 }; });
-}
-
-struct QtCharts_PackedString QVBoxPlotModelMapper_QVBoxPlotModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t8ee883 = QVBoxPlotModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t8ee883.prepend("WHITESPACE").constData()+10), t8ee883.size()-10 }; });
 }
 
 void* QVBoxPlotModelMapper_NewQVBoxPlotModelMapper(void* parent)
@@ -14936,11 +14851,6 @@ struct QtCharts_PackedString QVPieModelMapper_QVPieModelMapper_Tr(char* s, char*
 	return ({ QByteArray t94ee0a = QVPieModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t94ee0a.prepend("WHITESPACE").constData()+10), t94ee0a.size()-10 }; });
 }
 
-struct QtCharts_PackedString QVPieModelMapper_QVPieModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t8cf786 = QVPieModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t8cf786.prepend("WHITESPACE").constData()+10), t8cf786.size()-10 }; });
-}
-
 void* QVPieModelMapper_NewQVPieModelMapper(void* parent)
 {
 	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
@@ -15156,11 +15066,6 @@ public:
 struct QtCharts_PackedString QVXYModelMapper_QVXYModelMapper_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t96ad4f = QVXYModelMapper::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(t96ad4f.prepend("WHITESPACE").constData()+10), t96ad4f.size()-10 }; });
-}
-
-struct QtCharts_PackedString QVXYModelMapper_QVXYModelMapper_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray td34d04 = QVXYModelMapper::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtCharts_PackedString { const_cast<char*>(td34d04.prepend("WHITESPACE").constData()+10), td34d04.size()-10 }; });
 }
 
 void* QVXYModelMapper_NewQVXYModelMapper(void* parent)

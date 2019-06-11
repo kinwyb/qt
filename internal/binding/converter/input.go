@@ -73,7 +73,7 @@ func GoInput(name, value string, f *parser.Function, p string) string {
 
 	case "QStringList":
 		{
-			return fmt.Sprintf("C.CString(strings.Join(%v, \"|\"))", name)
+			return fmt.Sprintf("C.CString(strings.Join(%v, \"¡¦!\"))", name)
 		}
 
 	case "void", "GLvoid" /*, ""*/ :
@@ -113,6 +113,9 @@ func GoInput(name, value string, f *parser.Function, p string) string {
 
 	case "long":
 		{
+			if strings.Contains(vOld, "*") {
+				return fmt.Sprintf("C.long(int32(*%v))", name)
+			}
 			return fmt.Sprintf("C.long(int32(%v))", name)
 		}
 
@@ -207,18 +210,26 @@ func GoInput(name, value string, f *parser.Function, p string) string {
 
 	case parser.IsPackedList(value):
 		{
-			if strings.ContainsAny(name, "*&()[]") {
-				return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_newList%v())\nfor _,v := range %v{\ntmpList.__%v_setList%v(v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, f.OverloadNumber, name, f.Name, f.OverloadNumber)
+			v := "v"
+			if value == "QList<QVariant>" && p != "" {
+				v = "std_core.NewQVariant1(v)"
 			}
-			return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_%v_newList%v())\nfor _,v := range %v{\ntmpList.__%v_%v_setList%v(v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, name, f.OverloadNumber, name, f.Name, name, f.OverloadNumber)
+			if strings.ContainsAny(name, "*&()[]") {
+				return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_newList%v())\nfor _,v := range %v{\ntmpList.__%v_setList%v(%v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, f.OverloadNumber, name, f.Name, f.OverloadNumber, v)
+			}
+			return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_%v_newList%v())\nfor _,v := range %v{\ntmpList.__%v_%v_setList%v(%v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, name, f.OverloadNumber, name, f.Name, name, f.OverloadNumber, v)
 		}
 
 	case parser.IsPackedMap(value):
 		{
-			if strings.ContainsAny(name, "*&()[]") {
-				return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_newList%v())\nfor k,v := range %v{\ntmpList.__%v_setList%v(k, v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, f.OverloadNumber, name, f.Name, f.OverloadNumber)
+			v := "v"
+			if value == "QMap<QString, QVariant>" && p != "" {
+				v = "std_core.NewQVariant1(v)"
 			}
-			return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_%v_newList%v())\nfor k,v := range %v{\ntmpList.__%v_%v_setList%v(k, v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, name, f.OverloadNumber, name, f.Name, name, f.OverloadNumber)
+			if strings.ContainsAny(name, "*&()[]") {
+				return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_newList%v())\nfor k,v := range %v{\ntmpList.__%v_setList%v(k, %v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, f.OverloadNumber, name, f.Name, f.OverloadNumber, v)
+			}
+			return fmt.Sprintf("func() unsafe.Pointer {\ntmpList := New%vFromPointer(New%vFromPointer(nil).__%v_%v_newList%v())\nfor k,v := range %v{\ntmpList.__%v_%v_setList%v(k, %v)\n}\nreturn tmpList.Pointer()\n}()", strings.Title(f.ClassName()), strings.Title(f.ClassName()), f.Name, name, f.OverloadNumber, name, f.Name, name, f.OverloadNumber, v)
 		}
 	}
 
@@ -331,9 +342,9 @@ func cppInput(name, value string, f *parser.Function) string {
 			}
 
 			if parser.UseJs() {
-				return fmt.Sprintf("QString::fromStdString(%v[\"data\"].as<std::string>()).split(\"|\", QString::SkipEmptyParts)", name)
+				return fmt.Sprintf("QString::fromStdString(%v[\"data\"].as<std::string>()).split(\"¡¦!\", QString::SkipEmptyParts)", name)
 			}
-			return fmt.Sprintf("QString::fromUtf8(%[1]v.data, %[1]v.len).split(\"|\", QString::SkipEmptyParts)", name)
+			return fmt.Sprintf("QString::fromUtf8(%[1]v.data, %[1]v.len).split(\"¡¦!\", QString::SkipEmptyParts)", name)
 		}
 
 	case "void", "GLvoid" /*, ""*/ :
@@ -361,7 +372,7 @@ func cppInput(name, value string, f *parser.Function) string {
 		{
 			if strings.Contains(vOld, "*") {
 				if parser.UseJs() && f.SignalMode == parser.CALLBACK {
-					return fmt.Sprintf("reinterpret_cast<uintptr_t>(%v)", value, name)
+					return fmt.Sprintf("reinterpret_cast<uintptr_t>(%v)", name)
 				}
 				return fmt.Sprintf("reinterpret_cast<%v*>(%v)", value, name)
 			}
@@ -403,7 +414,18 @@ func cppInput(name, value string, f *parser.Function) string {
 				if strings.Contains(vOld, "const") {
 					return fmt.Sprintf("const_cast<const %v*>(&%v)", value, name)
 				}
-				return fmt.Sprintf("&%v", name)
+				switch value {
+				case "long":
+					if parser.UseJs() {
+						if f.SignalMode == parser.CALLBACK {
+							return fmt.Sprintf("reinterpret_cast<uintptr_t>(%v)", name)
+						}
+						return fmt.Sprintf("reinterpret_cast<%v*>(%v)", value, name)
+					}
+					return fmt.Sprintf("%v", name)
+				default:
+					return fmt.Sprintf("&%v", name)
+				}
 			}
 
 			return name
@@ -515,9 +537,7 @@ func GoInputJS(name, value string, f *parser.Function, p string) string {
 				return fmt.Sprintf("func() *js.Object {\ntmp := new(js.Object)\ntmp.Set(\"data\", []byte(strings.Join(%v, \"|\")))\nreturn tmp\n}()", name)
 			}
 
-			if value == "char" && strings.Count(vOld, "*") == 1 && f.Name == "readData" {
-				//TODO:
-			}
+			/* TODO: if value == "char" && strings.Count(vOld, "*") == 1 && f.Name == "readData" {} */
 
 			if parser.UseWasm() {
 				return fmt.Sprintf("func() js.Value {\ntmp := js.TypedArrayOf([]byte(%v))\nreturn js.ValueOf(map[string]interface{}{\"data\": tmp, \"data_ptr\": unsafe.Pointer(&tmp)})\n}()", name)
@@ -528,12 +548,12 @@ func GoInputJS(name, value string, f *parser.Function, p string) string {
 	case "QStringList":
 		{
 			if parser.UseWasm() {
-				return fmt.Sprintf("func() js.Value {\ntmp := js.TypedArrayOf([]byte(strings.Join(%v, \"|\")))\nreturn js.ValueOf(map[string]interface{}{\"data\": tmp, \"data_ptr\": unsafe.Pointer(&tmp)})\n}()", name)
+				return fmt.Sprintf("func() js.Value {\ntmp := js.TypedArrayOf([]byte(strings.Join(%v, \"¡¦!\")))\nreturn js.ValueOf(map[string]interface{}{\"data\": tmp, \"data_ptr\": unsafe.Pointer(&tmp)})\n}()", name)
 			}
 			if f.SignalMode != parser.CALLBACK {
-				return fmt.Sprintf("func() *js.Object {\ntmp := new(js.Object)\nif js.InternalObject(%v).Get(\"$val\") == js.Undefined {\ntmp.Set(\"data\", []byte(js.InternalObject(%v).Call(\"join\", \"|\").String()))\n} else {\ntmp.Set(\"data\", []byte(strings.Join(%v, \"|\")))\n}\nreturn tmp\n}()", name, name, name) //needed for indirect exported pure js call -> can be ommited if build without js support
+				return fmt.Sprintf("func() *js.Object {\ntmp := new(js.Object)\nif js.InternalObject(%v).Get(\"$val\") == js.Undefined {\ntmp.Set(\"data\", []byte(js.InternalObject(%v).Call(\"join\", \"¡¦!\").String()))\n} else {\ntmp.Set(\"data\", []byte(strings.Join(%v, \"¡¦!\")))\n}\nreturn tmp\n}()", name, name, name) //needed for indirect exported pure js call -> can be ommited if build without js support
 			}
-			return fmt.Sprintf("func() *js.Object {\ntmp := new(js.Object)\ntmp.Set(\"data\", []byte(strings.Join(%v, \"|\")))\nreturn tmp\n}()", name)
+			return fmt.Sprintf("func() *js.Object {\ntmp := new(js.Object)\ntmp.Set(\"data\", []byte(strings.Join(%v, \"¡¦!\")))\nreturn tmp\n}()", name)
 		}
 
 	case "void", "GLvoid", "":
@@ -571,6 +591,9 @@ func GoInputJS(name, value string, f *parser.Function, p string) string {
 
 	case "long":
 		{
+			if strings.Contains(vOld, "*") {
+				return name
+			}
 			return fmt.Sprintf("int(int32(%v))", name)
 		}
 

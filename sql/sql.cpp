@@ -104,12 +104,12 @@ void* QSqlDatabase_NewQSqlDatabase3(struct QtSql_PackedString ty)
 
 struct QtSql_PackedString QSqlDatabase_QSqlDatabase_ConnectionNames()
 {
-	return ({ QByteArray t34c9e9 = QSqlDatabase::connectionNames().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t34c9e9.prepend("WHITESPACE").constData()+10), t34c9e9.size()-10 }; });
+	return ({ QByteArray t34c9e9 = QSqlDatabase::connectionNames().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t34c9e9.prepend("WHITESPACE").constData()+10), t34c9e9.size()-10 }; });
 }
 
 struct QtSql_PackedString QSqlDatabase_QSqlDatabase_Drivers()
 {
-	return ({ QByteArray tf3b332 = QSqlDatabase::drivers().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(tf3b332.prepend("WHITESPACE").constData()+10), tf3b332.size()-10 }; });
+	return ({ QByteArray tf3b332 = QSqlDatabase::drivers().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(tf3b332.prepend("WHITESPACE").constData()+10), tf3b332.size()-10 }; });
 }
 
 char QSqlDatabase_Commit(void* ptr)
@@ -269,7 +269,7 @@ struct QtSql_PackedString QSqlDatabase_UserName(void* ptr)
 
 struct QtSql_PackedString QSqlDatabase_Tables(void* ptr, long long ty)
 {
-	return ({ QByteArray t302bb5 = static_cast<QSqlDatabase*>(ptr)->tables(static_cast<QSql::TableType>(ty)).join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t302bb5.prepend("WHITESPACE").constData()+10), t302bb5.size()-10 }; });
+	return ({ QByteArray t302bb5 = static_cast<QSqlDatabase*>(ptr)->tables(static_cast<QSql::TableType>(ty)).join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t302bb5.prepend("WHITESPACE").constData()+10), t302bb5.size()-10 }; });
 }
 
 char QSqlDatabase_IsOpen(void* ptr)
@@ -321,8 +321,8 @@ public:
 	QString formatValue(const QSqlField & field, bool trimStrings) const { return ({ QtSql_PackedString tempVal = callbackQSqlDriver_FormatValue(const_cast<void*>(static_cast<const void*>(this)), const_cast<QSqlField*>(&field), trimStrings); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	QString sqlStatement(QSqlDriver::StatementType ty, const QString & tableName, const QSqlRecord & rec, bool preparedStatement) const { QByteArray t3e7060 = tableName.toUtf8(); QtSql_PackedString tableNamePacked = { const_cast<char*>(t3e7060.prepend("WHITESPACE").constData()+10), t3e7060.size()-10 };return ({ QtSql_PackedString tempVal = callbackQSqlDriver_SqlStatement(const_cast<void*>(static_cast<const void*>(this)), ty, tableNamePacked, const_cast<QSqlRecord*>(&rec), preparedStatement); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	QString stripDelimiters(const QString & identifier, QSqlDriver::IdentifierType ty) const { QByteArray tfae9fd = identifier.toUtf8(); QtSql_PackedString identifierPacked = { const_cast<char*>(tfae9fd.prepend("WHITESPACE").constData()+10), tfae9fd.size()-10 };return ({ QtSql_PackedString tempVal = callbackQSqlDriver_StripDelimiters(const_cast<void*>(static_cast<const void*>(this)), identifierPacked, ty); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
-	QStringList subscribedToNotifications() const { return ({ QtSql_PackedString tempVal = callbackQSqlDriver_SubscribedToNotifications(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("|", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
-	QStringList tables(QSql::TableType tableType) const { return ({ QtSql_PackedString tempVal = callbackQSqlDriver_Tables(const_cast<void*>(static_cast<const void*>(this)), tableType); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("|", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
+	QStringList subscribedToNotifications() const { return ({ QtSql_PackedString tempVal = callbackQSqlDriver_SubscribedToNotifications(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
+	QStringList tables(QSql::TableType tableType) const { return ({ QtSql_PackedString tempVal = callbackQSqlDriver_Tables(const_cast<void*>(static_cast<const void*>(this)), tableType); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
 	QVariant handle() const { return *static_cast<QVariant*>(callbackQSqlDriver_Handle(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool hasFeature(QSqlDriver::DriverFeature feature) const { return callbackQSqlDriver_HasFeature(const_cast<void*>(static_cast<const void*>(this)), feature) != 0; };
 	bool isIdentifierEscaped(const QString & identifier, QSqlDriver::IdentifierType ty) const { QByteArray tfae9fd = identifier.toUtf8(); QtSql_PackedString identifierPacked = { const_cast<char*>(tfae9fd.prepend("WHITESPACE").constData()+10), tfae9fd.size()-10 };return callbackQSqlDriver_IsIdentifierEscaped(const_cast<void*>(static_cast<const void*>(this)), identifierPacked, ty) != 0; };
@@ -386,11 +386,6 @@ void* QSqlDriver_NewQSqlDriver(void* parent)
 struct QtSql_PackedString QSqlDriver_QSqlDriver_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t3ae513 = QSqlDriver::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSql_PackedString { const_cast<char*>(t3ae513.prepend("WHITESPACE").constData()+10), t3ae513.size()-10 }; });
-}
-
-struct QtSql_PackedString QSqlDriver_QSqlDriver_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tededeb = QSqlDriver::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSql_PackedString { const_cast<char*>(tededeb.prepend("WHITESPACE").constData()+10), tededeb.size()-10 }; });
 }
 
 char QSqlDriver_BeginTransaction(void* ptr)
@@ -606,22 +601,22 @@ struct QtSql_PackedString QSqlDriver_StripDelimitersDefault(void* ptr, struct Qt
 
 struct QtSql_PackedString QSqlDriver_SubscribedToNotifications(void* ptr)
 {
-	return ({ QByteArray t545d09 = static_cast<QSqlDriver*>(ptr)->subscribedToNotifications().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t545d09.prepend("WHITESPACE").constData()+10), t545d09.size()-10 }; });
+	return ({ QByteArray t545d09 = static_cast<QSqlDriver*>(ptr)->subscribedToNotifications().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t545d09.prepend("WHITESPACE").constData()+10), t545d09.size()-10 }; });
 }
 
 struct QtSql_PackedString QSqlDriver_SubscribedToNotificationsDefault(void* ptr)
 {
-		return ({ QByteArray t063c3c = static_cast<QSqlDriver*>(ptr)->QSqlDriver::subscribedToNotifications().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t063c3c.prepend("WHITESPACE").constData()+10), t063c3c.size()-10 }; });
+		return ({ QByteArray t063c3c = static_cast<QSqlDriver*>(ptr)->QSqlDriver::subscribedToNotifications().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t063c3c.prepend("WHITESPACE").constData()+10), t063c3c.size()-10 }; });
 }
 
 struct QtSql_PackedString QSqlDriver_Tables(void* ptr, long long tableType)
 {
-	return ({ QByteArray tcfb904 = static_cast<QSqlDriver*>(ptr)->tables(static_cast<QSql::TableType>(tableType)).join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(tcfb904.prepend("WHITESPACE").constData()+10), tcfb904.size()-10 }; });
+	return ({ QByteArray tcfb904 = static_cast<QSqlDriver*>(ptr)->tables(static_cast<QSql::TableType>(tableType)).join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(tcfb904.prepend("WHITESPACE").constData()+10), tcfb904.size()-10 }; });
 }
 
 struct QtSql_PackedString QSqlDriver_TablesDefault(void* ptr, long long tableType)
 {
-		return ({ QByteArray tf0f7df = static_cast<QSqlDriver*>(ptr)->QSqlDriver::tables(static_cast<QSql::TableType>(tableType)).join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(tf0f7df.prepend("WHITESPACE").constData()+10), tf0f7df.size()-10 }; });
+		return ({ QByteArray tf0f7df = static_cast<QSqlDriver*>(ptr)->QSqlDriver::tables(static_cast<QSql::TableType>(tableType)).join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(tf0f7df.prepend("WHITESPACE").constData()+10), tf0f7df.size()-10 }; });
 }
 
 void* QSqlDriver_Handle(void* ptr)
@@ -882,11 +877,6 @@ void* QSqlDriverPlugin_NewQSqlDriverPlugin(void* parent)
 struct QtSql_PackedString QSqlDriverPlugin_QSqlDriverPlugin_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray tf86c07 = QSqlDriverPlugin::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSql_PackedString { const_cast<char*>(tf86c07.prepend("WHITESPACE").constData()+10), tf86c07.size()-10 }; });
-}
-
-struct QtSql_PackedString QSqlDriverPlugin_QSqlDriverPlugin_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tb59155 = QSqlDriverPlugin::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSql_PackedString { const_cast<char*>(tb59155.prepend("WHITESPACE").constData()+10), tb59155.size()-10 }; });
 }
 
 void QSqlDriverPlugin_DestroyQSqlDriverPlugin(void* ptr)
@@ -1597,7 +1587,7 @@ public:
 	bool moveRows(const QModelIndex & sourceParent, int sourceRow, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackQSqlQueryModel_MoveRows(this, const_cast<QModelIndex*>(&sourceParent), sourceRow, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
 	bool removeRows(int row, int count, const QModelIndex & parent) { return callbackQSqlQueryModel_RemoveRows(this, row, count, const_cast<QModelIndex*>(&parent)) != 0; };
 	bool setData(const QModelIndex & index, const QVariant & value, int role) { return callbackQSqlQueryModel_SetData(this, const_cast<QModelIndex*>(&index), const_cast<QVariant*>(&value), role) != 0; };
-	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackQSqlQueryModel_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = const_cast<QMap<int, QVariant>*>(&roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
+	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackQSqlQueryModel_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = new QMap<int, QVariant>(roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
 	bool submit() { return callbackQSqlQueryModel_Submit(this) != 0; };
 	void Signal_ColumnsAboutToBeInserted(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
 	void Signal_ColumnsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationColumn) { callbackQSqlQueryModel_ColumnsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationColumn); };
@@ -1605,10 +1595,10 @@ public:
 	void Signal_ColumnsInserted(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
 	void Signal_ColumnsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int column) { callbackQSqlQueryModel_ColumnsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), column); };
 	void Signal_ColumnsRemoved(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackQSqlQueryModel_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = const_cast<QVector<int>*>(&roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackQSqlQueryModel_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = new QVector<int>(roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_HeaderDataChanged(Qt::Orientation orientation, int first, int last) { callbackQSqlQueryModel_HeaderDataChanged(this, orientation, first, last); };
-	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = const_cast<QList<QPersistentModelIndex>*>(&parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
-	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = const_cast<QList<QPersistentModelIndex>*>(&parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
 	void Signal_ModelAboutToBeReset() { callbackQSqlQueryModel_ModelAboutToBeReset(this); };
 	void Signal_ModelReset() { callbackQSqlQueryModel_ModelReset(this); };
 	void resetInternalData() { callbackQSqlQueryModel_ResetInternalData(this); };
@@ -1626,7 +1616,7 @@ public:
 	QModelIndex parent(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackQSqlQueryModel_Parent(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
 	QList<QModelIndex> match(const QModelIndex & start, int role, const QVariant & value, int hits, Qt::MatchFlags flags) const { return ({ QList<QModelIndex>* tmpP = static_cast<QList<QModelIndex>*>(callbackQSqlQueryModel_Match(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&start), role, const_cast<QVariant*>(&value), hits, flags)); QList<QModelIndex> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	QSize span(const QModelIndex & index) const { return *static_cast<QSize*>(callbackQSqlQueryModel_Span(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	QStringList mimeTypes() const { return ({ QtSql_PackedString tempVal = callbackQSqlQueryModel_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("|", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
+	QStringList mimeTypes() const { return ({ QtSql_PackedString tempVal = callbackQSqlQueryModel_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
 	Qt::DropActions supportedDragActions() const { return static_cast<Qt::DropAction>(callbackQSqlQueryModel_SupportedDragActions(const_cast<void*>(static_cast<const void*>(this)))); };
 	Qt::DropActions supportedDropActions() const { return static_cast<Qt::DropAction>(callbackQSqlQueryModel_SupportedDropActions(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool canDropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const { return callbackQSqlQueryModel_CanDropMimeData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
@@ -1689,11 +1679,6 @@ void* QSqlQueryModel_NewQSqlQueryModel(void* parent)
 struct QtSql_PackedString QSqlQueryModel_QSqlQueryModel_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t5980ae = QSqlQueryModel::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSql_PackedString { const_cast<char*>(t5980ae.prepend("WHITESPACE").constData()+10), t5980ae.size()-10 }; });
-}
-
-struct QtSql_PackedString QSqlQueryModel_QSqlQueryModel_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t013540 = QSqlQueryModel::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtSql_PackedString { const_cast<char*>(t013540.prepend("WHITESPACE").constData()+10), t013540.size()-10 }; });
 }
 
 char QSqlQueryModel_InsertColumnsDefault(void* ptr, int column, int count, void* parent)
@@ -2500,11 +2485,11 @@ void* QSqlQueryModel_SpanDefault(void* ptr, void* index)
 struct QtSql_PackedString QSqlQueryModel_MimeTypesDefault(void* ptr)
 {
 	if (dynamic_cast<QSqlRelationalTableModel*>(static_cast<QObject*>(ptr))) {
-		return ({ QByteArray t026d85 = static_cast<QSqlRelationalTableModel*>(ptr)->QSqlRelationalTableModel::mimeTypes().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t026d85.prepend("WHITESPACE").constData()+10), t026d85.size()-10 }; });
+		return ({ QByteArray t026d85 = static_cast<QSqlRelationalTableModel*>(ptr)->QSqlRelationalTableModel::mimeTypes().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t026d85.prepend("WHITESPACE").constData()+10), t026d85.size()-10 }; });
 	} else if (dynamic_cast<QSqlTableModel*>(static_cast<QObject*>(ptr))) {
-		return ({ QByteArray t026d85 = static_cast<QSqlTableModel*>(ptr)->QSqlTableModel::mimeTypes().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t026d85.prepend("WHITESPACE").constData()+10), t026d85.size()-10 }; });
+		return ({ QByteArray t026d85 = static_cast<QSqlTableModel*>(ptr)->QSqlTableModel::mimeTypes().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t026d85.prepend("WHITESPACE").constData()+10), t026d85.size()-10 }; });
 	} else {
-		return ({ QByteArray t026d85 = static_cast<QSqlQueryModel*>(ptr)->QSqlQueryModel::mimeTypes().join("|").toUtf8(); QtSql_PackedString { const_cast<char*>(t026d85.prepend("WHITESPACE").constData()+10), t026d85.size()-10 }; });
+		return ({ QByteArray t026d85 = static_cast<QSqlQueryModel*>(ptr)->QSqlQueryModel::mimeTypes().join("¡¦!").toUtf8(); QtSql_PackedString { const_cast<char*>(t026d85.prepend("WHITESPACE").constData()+10), t026d85.size()-10 }; });
 	}
 }
 
@@ -3147,7 +3132,7 @@ public:
 	QModelIndex sibling(int row, int column, const QModelIndex & idx) const { return *static_cast<QModelIndex*>(callbackQSqlQueryModel_Sibling(const_cast<void*>(static_cast<const void*>(this)), row, column, const_cast<QModelIndex*>(&idx))); };
 	bool moveColumns(const QModelIndex & sourceParent, int sourceColumn, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackQSqlQueryModel_MoveColumns(this, const_cast<QModelIndex*>(&sourceParent), sourceColumn, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
 	bool moveRows(const QModelIndex & sourceParent, int sourceRow, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackQSqlQueryModel_MoveRows(this, const_cast<QModelIndex*>(&sourceParent), sourceRow, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
-	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackQSqlQueryModel_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = const_cast<QMap<int, QVariant>*>(&roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
+	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackQSqlQueryModel_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = new QMap<int, QVariant>(roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
 	bool submit() { return callbackQSqlQueryModel_Submit(this) != 0; };
 	void Signal_ColumnsAboutToBeInserted(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
 	void Signal_ColumnsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationColumn) { callbackQSqlQueryModel_ColumnsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationColumn); };
@@ -3155,10 +3140,10 @@ public:
 	void Signal_ColumnsInserted(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
 	void Signal_ColumnsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int column) { callbackQSqlQueryModel_ColumnsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), column); };
 	void Signal_ColumnsRemoved(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackQSqlQueryModel_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = const_cast<QVector<int>*>(&roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackQSqlQueryModel_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = new QVector<int>(roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_HeaderDataChanged(Qt::Orientation orientation, int first, int last) { callbackQSqlQueryModel_HeaderDataChanged(this, orientation, first, last); };
-	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = const_cast<QList<QPersistentModelIndex>*>(&parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
-	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = const_cast<QList<QPersistentModelIndex>*>(&parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
 	void Signal_ModelAboutToBeReset() { callbackQSqlQueryModel_ModelAboutToBeReset(this); };
 	void Signal_ModelReset() { callbackQSqlQueryModel_ModelReset(this); };
 	void resetInternalData() { callbackQSqlQueryModel_ResetInternalData(this); };
@@ -3175,7 +3160,7 @@ public:
 	QModelIndex parent(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackQSqlQueryModel_Parent(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
 	QList<QModelIndex> match(const QModelIndex & start, int role, const QVariant & value, int hits, Qt::MatchFlags flags) const { return ({ QList<QModelIndex>* tmpP = static_cast<QList<QModelIndex>*>(callbackQSqlQueryModel_Match(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&start), role, const_cast<QVariant*>(&value), hits, flags)); QList<QModelIndex> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	QSize span(const QModelIndex & index) const { return *static_cast<QSize*>(callbackQSqlQueryModel_Span(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	QStringList mimeTypes() const { return ({ QtSql_PackedString tempVal = callbackQSqlQueryModel_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("|", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
+	QStringList mimeTypes() const { return ({ QtSql_PackedString tempVal = callbackQSqlQueryModel_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
 	Qt::DropActions supportedDragActions() const { return static_cast<Qt::DropAction>(callbackQSqlQueryModel_SupportedDragActions(const_cast<void*>(static_cast<const void*>(this)))); };
 	Qt::DropActions supportedDropActions() const { return static_cast<Qt::DropAction>(callbackQSqlQueryModel_SupportedDropActions(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool canDropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const { return callbackQSqlQueryModel_CanDropMimeData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
@@ -3711,7 +3696,7 @@ public:
 	QModelIndex sibling(int row, int column, const QModelIndex & idx) const { return *static_cast<QModelIndex*>(callbackQSqlQueryModel_Sibling(const_cast<void*>(static_cast<const void*>(this)), row, column, const_cast<QModelIndex*>(&idx))); };
 	bool moveColumns(const QModelIndex & sourceParent, int sourceColumn, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackQSqlQueryModel_MoveColumns(this, const_cast<QModelIndex*>(&sourceParent), sourceColumn, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
 	bool moveRows(const QModelIndex & sourceParent, int sourceRow, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackQSqlQueryModel_MoveRows(this, const_cast<QModelIndex*>(&sourceParent), sourceRow, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
-	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackQSqlQueryModel_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = const_cast<QMap<int, QVariant>*>(&roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
+	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackQSqlQueryModel_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = new QMap<int, QVariant>(roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
 	bool submit() { return callbackQSqlQueryModel_Submit(this) != 0; };
 	void Signal_ColumnsAboutToBeInserted(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
 	void Signal_ColumnsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationColumn) { callbackQSqlQueryModel_ColumnsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationColumn); };
@@ -3719,10 +3704,10 @@ public:
 	void Signal_ColumnsInserted(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
 	void Signal_ColumnsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int column) { callbackQSqlQueryModel_ColumnsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), column); };
 	void Signal_ColumnsRemoved(const QModelIndex & parent, int first, int last) { callbackQSqlQueryModel_ColumnsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackQSqlQueryModel_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = const_cast<QVector<int>*>(&roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackQSqlQueryModel_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = new QVector<int>(roles); QtSql_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_HeaderDataChanged(Qt::Orientation orientation, int first, int last) { callbackQSqlQueryModel_HeaderDataChanged(this, orientation, first, last); };
-	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = const_cast<QList<QPersistentModelIndex>*>(&parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
-	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = const_cast<QList<QPersistentModelIndex>*>(&parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackQSqlQueryModel_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); QtSql_PackedList { tmpValue, tmpValue->size() }; }), hint); };
 	void Signal_ModelAboutToBeReset() { callbackQSqlQueryModel_ModelAboutToBeReset(this); };
 	void Signal_ModelReset() { callbackQSqlQueryModel_ModelReset(this); };
 	void resetInternalData() { callbackQSqlQueryModel_ResetInternalData(this); };
@@ -3739,7 +3724,7 @@ public:
 	QModelIndex parent(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackQSqlQueryModel_Parent(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
 	QList<QModelIndex> match(const QModelIndex & start, int role, const QVariant & value, int hits, Qt::MatchFlags flags) const { return ({ QList<QModelIndex>* tmpP = static_cast<QList<QModelIndex>*>(callbackQSqlQueryModel_Match(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&start), role, const_cast<QVariant*>(&value), hits, flags)); QList<QModelIndex> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	QSize span(const QModelIndex & index) const { return *static_cast<QSize*>(callbackQSqlQueryModel_Span(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	QStringList mimeTypes() const { return ({ QtSql_PackedString tempVal = callbackQSqlQueryModel_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("|", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
+	QStringList mimeTypes() const { return ({ QtSql_PackedString tempVal = callbackQSqlQueryModel_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
 	Qt::DropActions supportedDragActions() const { return static_cast<Qt::DropAction>(callbackQSqlQueryModel_SupportedDragActions(const_cast<void*>(static_cast<const void*>(this)))); };
 	Qt::DropActions supportedDropActions() const { return static_cast<Qt::DropAction>(callbackQSqlQueryModel_SupportedDropActions(const_cast<void*>(static_cast<const void*>(this)))); };
 	bool canDropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const { return callbackQSqlQueryModel_CanDropMimeData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };

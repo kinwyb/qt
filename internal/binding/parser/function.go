@@ -91,6 +91,8 @@ func (f *Function) register(m string) {
 //TODO: multipoly [][]string
 //TODO: connect/disconnect slot functions + add necessary SIGNAL_* functions (check first if really needed)
 func (f *Function) PossiblePolymorphicDerivations(self bool) ([]string, string) {
+	fc, _ := f.Class()
+
 	var out = make([]string, 0)
 
 	var params = func() []*Parameter {
@@ -109,7 +111,7 @@ func (f *Function) PossiblePolymorphicDerivations(self bool) ([]string, string) 
 		if f.Meta == CONSTRUCTOR {
 			for _, class := range State.ClassMap {
 				//TODO: use target to block certain classes
-				if ShouldBuildForTarget(strings.TrimPrefix(class.Module, "Qt"), State.Target) &&
+				if shouldBuildForTarget(strings.TrimPrefix(class.Module, "Qt"), State.Target, fc.Module == MOC) &&
 					!(class.Name == "QCameraViewfinder" || class.Name == "QGraphicsVideoItem" ||
 						class.Name == "QVideoWidget" || class.Name == "QVideoWidgetControl") {
 					if class.IsPolymorphic() && class.IsSubClassOf(c.Name) && class.IsSupported() {
@@ -294,13 +296,6 @@ func (f *Function) IsSupported() bool {
 		return false
 	}
 
-	//https://github.com/therecipe/qt/issues/451
-	if strings.Contains(State.Target, "ios") &&
-		(f.Fullname == "QLayoutItem::widget" || (strings.Contains(f.ClassName(), "Layout") && (f.Name == "itemAt" || f.Name == "geometry"))) {
-		f.Access = "unsupported_isBlockedFunction"
-		return false
-	}
-
 	switch {
 	case
 		f.Fullname == "QOcspResponse::certificateStatus", f.Fullname == "QOcspResponse::revocationReason",
@@ -423,6 +418,10 @@ func (f *Function) IsSupported() bool {
 		f.Name == "setDtlsCookieVerificationEnabled", f.Name == "dtlsCookieVerificationEnabled",
 		f.Fullname == "QNearFieldManager::adapterStateChanged", f.Name == "singletonInstance",
 		f.Fullname == "QWebEngineUrlScheme::syntax",
+
+		f.Fullname == "QVirtualKeyboardSelectionListModel::setCount",
+		f.Fullname == "QtVirtualKeyboard::qlcVirtualKeyboard",
+		f.Name == "trUtf8",
 
 		strings.Contains(f.Access, "unsupported"):
 		{
@@ -564,10 +563,7 @@ func (f *Function) IsDerivedFromVirtual() bool {
 		return true
 	}
 
-	var class, ok = f.Class()
-	if !ok {
-		//return false
-	}
+	var class, _ = f.Class()
 
 	for _, bc := range class.GetAllBases() {
 		if bclass, ok := State.ClassMap[bc]; ok {
@@ -602,10 +598,7 @@ func (f *Function) IsDerivedFromImpure() bool {
 		return false
 	}
 
-	var class, ok = f.Class()
-	if !ok {
-		//return false
-	}
+	var class, _ = f.Class()
 
 	if f.Virtual == IMPURE {
 		return true
@@ -639,10 +632,7 @@ func (f *Function) IsDerivedFromImpure() bool {
 }
 
 func (f *Function) IsDerivedFromPure() bool {
-	var class, ok = f.Class()
-	if !ok {
-		//return false
-	}
+	var class, _ = f.Class()
 
 	if f.Virtual == PURE {
 		return true

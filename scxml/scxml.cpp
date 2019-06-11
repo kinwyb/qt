@@ -205,11 +205,6 @@ struct QtScxml_PackedString QScxmlDataModel_QScxmlDataModel_Tr(char* s, char* c,
 	return ({ QByteArray t61259e = QScxmlDataModel::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(t61259e.prepend("WHITESPACE").constData()+10), t61259e.size()-10 }; });
 }
 
-struct QtScxml_PackedString QScxmlDataModel_QScxmlDataModel_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray tb69434 = QScxmlDataModel::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(tb69434.prepend("WHITESPACE").constData()+10), tb69434.size()-10 }; });
-}
-
 char QScxmlDataModel_SetScxmlProperty(void* ptr, struct QtScxml_PackedString name, void* value, struct QtScxml_PackedString context)
 {
 	return static_cast<QScxmlDataModel*>(ptr)->setScxmlProperty(QString::fromUtf8(name.data, name.len), *static_cast<QVariant*>(value), QString::fromUtf8(context.data, context.len));
@@ -853,11 +848,6 @@ struct QtScxml_PackedString QScxmlInvokableService_QScxmlInvokableService_Tr(cha
 	return ({ QByteArray t9523b3 = QScxmlInvokableService::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(t9523b3.prepend("WHITESPACE").constData()+10), t9523b3.size()-10 }; });
 }
 
-struct QtScxml_PackedString QScxmlInvokableService_QScxmlInvokableService_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t5519c2 = QScxmlInvokableService::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(t5519c2.prepend("WHITESPACE").constData()+10), t5519c2.size()-10 }; });
-}
-
 char QScxmlInvokableService_Start(void* ptr)
 {
 	return static_cast<QScxmlInvokableService*>(ptr)->start();
@@ -1037,11 +1027,6 @@ void* QScxmlInvokableServiceFactory_Invoke(void* ptr, void* parentStateMachine)
 struct QtScxml_PackedString QScxmlInvokableServiceFactory_QScxmlInvokableServiceFactory_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t432df3 = QScxmlInvokableServiceFactory::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(t432df3.prepend("WHITESPACE").constData()+10), t432df3.size()-10 }; });
-}
-
-struct QtScxml_PackedString QScxmlInvokableServiceFactory_QScxmlInvokableServiceFactory_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray t4d15df = QScxmlInvokableServiceFactory::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(t4d15df.prepend("WHITESPACE").constData()+10), t4d15df.size()-10 }; });
 }
 
 void* QScxmlInvokableServiceFactory_MetaObjectDefault(void* ptr)
@@ -1383,7 +1368,7 @@ public:
 	void Signal_DataModelChanged(QScxmlDataModel * model) { callbackQScxmlStateMachine_DataModelChanged(this, model); };
 	void Signal_Finished() { callbackQScxmlStateMachine_Finished(this); };
 	void Signal_InitializedChanged(bool initialized) { callbackQScxmlStateMachine_InitializedChanged(this, initialized); };
-	void Signal_InvokedServicesChanged(const QVector<QScxmlInvokableService *> & invokedServices) { callbackQScxmlStateMachine_InvokedServicesChanged(this, ({ QVector<QScxmlInvokableService *>* tmpValue = const_cast<QVector<QScxmlInvokableService *>*>(&invokedServices); QtScxml_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_InvokedServicesChanged(const QVector<QScxmlInvokableService *> & invokedServices) { callbackQScxmlStateMachine_InvokedServicesChanged(this, ({ QVector<QScxmlInvokableService *>* tmpValue = new QVector<QScxmlInvokableService *>(invokedServices); QtScxml_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_Log(const QString & label, const QString & msg) { QByteArray t64c653 = label.toUtf8(); QtScxml_PackedString labelPacked = { const_cast<char*>(t64c653.prepend("WHITESPACE").constData()+10), t64c653.size()-10 };QByteArray t19f34e = msg.toUtf8(); QtScxml_PackedString msgPacked = { const_cast<char*>(t19f34e.prepend("WHITESPACE").constData()+10), t19f34e.size()-10 };callbackQScxmlStateMachine_Log(this, labelPacked, msgPacked); };
 	void Signal_ReachedStableState() { callbackQScxmlStateMachine_ReachedStableState(this); };
 	void Signal_RunningChanged(bool running) { callbackQScxmlStateMachine_RunningChanged(this, running); };
@@ -1459,11 +1444,6 @@ void* QScxmlStateMachine_NewQScxmlStateMachine(void* metaObject, void* parent)
 struct QtScxml_PackedString QScxmlStateMachine_QScxmlStateMachine_Tr(char* s, char* c, int n)
 {
 	return ({ QByteArray t18c5fb = QScxmlStateMachine::tr(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(t18c5fb.prepend("WHITESPACE").constData()+10), t18c5fb.size()-10 }; });
-}
-
-struct QtScxml_PackedString QScxmlStateMachine_QScxmlStateMachine_TrUtf8(char* s, char* c, int n)
-{
-	return ({ QByteArray te4cedf = QScxmlStateMachine::trUtf8(const_cast<const char*>(s), const_cast<const char*>(c), n).toUtf8(); QtScxml_PackedString { const_cast<char*>(te4cedf.prepend("WHITESPACE").constData()+10), te4cedf.size()-10 }; });
 }
 
 struct QtScxml_PackedList QScxmlStateMachine_InitialValues(void* ptr)
@@ -1685,12 +1665,12 @@ struct QtScxml_PackedString QScxmlStateMachine_SessionId(void* ptr)
 
 struct QtScxml_PackedString QScxmlStateMachine_ActiveStateNames(void* ptr, char compress)
 {
-	return ({ QByteArray t57b518 = static_cast<QScxmlStateMachine*>(ptr)->activeStateNames(compress != 0).join("|").toUtf8(); QtScxml_PackedString { const_cast<char*>(t57b518.prepend("WHITESPACE").constData()+10), t57b518.size()-10 }; });
+	return ({ QByteArray t57b518 = static_cast<QScxmlStateMachine*>(ptr)->activeStateNames(compress != 0).join("¡¦!").toUtf8(); QtScxml_PackedString { const_cast<char*>(t57b518.prepend("WHITESPACE").constData()+10), t57b518.size()-10 }; });
 }
 
 struct QtScxml_PackedString QScxmlStateMachine_StateNames(void* ptr, char compress)
 {
-	return ({ QByteArray td672b5 = static_cast<QScxmlStateMachine*>(ptr)->stateNames(compress != 0).join("|").toUtf8(); QtScxml_PackedString { const_cast<char*>(td672b5.prepend("WHITESPACE").constData()+10), td672b5.size()-10 }; });
+	return ({ QByteArray td672b5 = static_cast<QScxmlStateMachine*>(ptr)->stateNames(compress != 0).join("¡¦!").toUtf8(); QtScxml_PackedString { const_cast<char*>(td672b5.prepend("WHITESPACE").constData()+10), td672b5.size()-10 }; });
 }
 
 struct QtScxml_PackedList QScxmlStateMachine_ParseErrors(void* ptr)

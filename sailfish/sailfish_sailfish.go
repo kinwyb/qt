@@ -24,9 +24,16 @@ func cGoUnpackString(s C.struct_QtSailfish_PackedString) string {
 }
 func cGoUnpackBytes(s C.struct_QtSailfish_PackedString) []byte {
 	if int(s.len) == -1 {
-		return []byte(C.GoString(s.data))
+		gs := C.GoString(s.data)
+		return *(*[]byte)(unsafe.Pointer(&gs))
 	}
 	return C.GoBytes(unsafe.Pointer(s.data), C.int(s.len))
+}
+func unpackStringList(s string) []string {
+	if len(s) == 0 {
+		return make([]string, 0)
+	}
+	return strings.Split(s, "¡¦!")
 }
 
 type SailfishApp struct {

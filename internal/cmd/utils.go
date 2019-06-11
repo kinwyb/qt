@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -16,6 +17,9 @@ var (
 
 	imported      = make(map[string]string)
 	importedMutex = new(sync.Mutex)
+
+	importedStd      = make(map[string]struct{})
+	importedStdMutex = new(sync.Mutex)
 )
 
 func IsStdPkg(pkg string) bool {
@@ -34,7 +38,7 @@ func IsStdPkg(pkg string) bool {
 	return false
 }
 
-func GetImports(path, target, tagsCustom string, level int, onlyDirect, moc bool) []string {
+func GetImports(path, target, tagsCustom string, level int, onlyDirect bool) []string {
 	utils.Log.WithField("path", path).WithField("level", level).Debug("get imports")
 
 	env, tags, _, _ := BuildEnv(target, "", "")
@@ -57,17 +61,13 @@ func GetImports(path, target, tagsCustom string, level int, onlyDirect, moc bool
 	}
 
 	//TODO: cache
-	cmd := utils.GoList("'{{ join .TestImports \"|\" }}':'{{ join .XTestImports \"|\" }}':'{{ join ."+imp+" \"|\" }}'", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
+	cmd := utils.GoList("{{join .TestImports \"|\"}}|{{join .XTestImports \"|\"}}|{{join ."+imp+" \"|\"}}", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
 	cmd.Dir = path
 	for k, v := range env {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", k, v))
 	}
 
-	out := strings.TrimSpace(utils.RunCmd(cmd, "go list deps"))
-	out = strings.Replace(out, "'", "", -1)
-	out = strings.Replace(out, ":", "|", -1)
-	libs := strings.Split(out, "|")
-
+	libs := strings.Split(strings.TrimSpace(utils.RunCmd(cmd, "go list deps")), "|")
 	for i := len(libs) - 1; i >= 0; i-- {
 		if strings.TrimSpace(libs[i]) == "" {
 			libs = append(libs[:i], libs[i+1:]...)
@@ -92,7 +92,7 @@ func GetImports(path, target, tagsCustom string, level int, onlyDirect, moc bool
 	}
 
 	wg := new(sync.WaitGroup)
-	wc := make(chan bool, 50)
+	wc := make(chan bool, runtime.NumCPU()*2)
 	wg.Add(len(libs))
 	for _, l := range libs {
 		wc <- true
@@ -103,10 +103,15 @@ func GetImports(path, target, tagsCustom string, level int, onlyDirect, moc bool
 			}()
 
 			if strings.Contains(l, "github.com/therecipe/qt") && !strings.Contains(l, "qt/internal") {
+				if strings.Contains(l, "github.com/therecipe/qt/") {
+					importedStdMutex.Lock()
+					importedStd[l] = struct{}{}
+					importedStdMutex.Unlock()
+				}
 				return
 			}
 
-			cmd := utils.GoList("{{.Dir}}", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")), l)
+			cmd := utils.GoList("{{.Dir}}", "-find", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")), l)
 			for k, v := range env {
 				cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", k, v))
 			}
@@ -131,6 +136,13 @@ func GetImports(path, target, tagsCustom string, level int, onlyDirect, moc bool
 	return imports
 }
 
+func GetQtStdImports() (o []string) {
+	for k := range importedStd {
+		o = append(o, strings.TrimPrefix(k, "github.com/therecipe/qt/"))
+	}
+	return
+}
+
 func GetGoFiles(path, target, tagsCustom string) []string {
 	utils.Log.WithField("path", path).WithField("target", target).WithField("tagsCustom", tagsCustom).Debug("get go files")
 
@@ -140,18 +152,14 @@ func GetGoFiles(path, target, tagsCustom string) []string {
 	}
 
 	//TODO: cache
-	cmd := utils.GoList("'{{ join .GoFiles \"|\" }}':'{{ join .CgoFiles \"|\" }}':'{{ join .TestGoFiles \"|\" }}':'{{ join .XTestGoFiles \"|\" }}'", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
+	cmd := utils.GoList("{{join .GoFiles \"|\"}}|{{join .CgoFiles \"|\"}}|{{join .TestGoFiles \"|\"}}|{{join .XTestGoFiles \"|\"}}", "-find", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
 	cmd.Dir = path
 	for k, v := range env {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", k, v))
 	}
 
-	out := strings.TrimSpace(utils.RunCmd(cmd, "go list gofiles"))
-	out = strings.Replace(out, "'", "", -1)
-	out = strings.Replace(out, ":", "|", -1)
-
 	importMap := make(map[string]struct{})
-	for _, v := range strings.Split(out, "|") {
+	for _, v := range strings.Split(strings.TrimSpace(utils.RunCmd(cmd, "go list gofiles")), "|") {
 		if strings.TrimSpace(v) != "" {
 			importMap[v] = struct{}{}
 		}
