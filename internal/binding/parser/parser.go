@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/sirupsen/logrus"
+
 	"github.com/therecipe/qt/internal/utils"
 )
 
@@ -108,10 +109,10 @@ func LoadModule(m string) *Module {
 		err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/5.8.0", "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
 
 	case utils.QT_MXE():
-		err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.12.0"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
+		err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.13.0"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
 
 	case utils.QT_HOMEBREW():
-		err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.12.0"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
+		err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.13.0"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
 
 	case utils.QT_MACPORTS(), utils.QT_NIX(), utils.QT_FELGO():
 		err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.11.1"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
@@ -135,7 +136,7 @@ func LoadModule(m string) *Module {
 			err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(utils.QT_DOC_DIR(), fmt.Sprintf("qt%v", strings.ToLower(m)), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
 			if err != nil {
 				utils.Log.WithFields(logFields).Debug("falling back to bundled *.index files")
-				err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.12.0"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
+				err = xml.Unmarshal([]byte(utils.LoadOptional(filepath.Join(strings.TrimSpace(utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API("5.13.0"), "-find", "get doc dir")), fmt.Sprintf("qt%v.index", strings.ToLower(m))))), &module)
 			}
 		}
 
@@ -155,10 +156,11 @@ func LoadModule(m string) *Module {
 		}
 	}
 	if err != nil {
-		if m != "DataVisualization" && m != "Charts" {
-			utils.Log.WithFields(logFields).WithError(err).Warn(logName)
-		} else {
+		switch m {
+		case "Charts", "DataVisualization", "VirtualKeyboard":
 			utils.Log.WithFields(logFields).WithError(err).Debug(logName)
+		default:
+			utils.Log.WithFields(logFields).WithError(err).Warn(logName)
 		}
 		return nil
 	}

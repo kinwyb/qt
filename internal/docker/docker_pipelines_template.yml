@@ -70,6 +70,11 @@ jobs:
   -
     template: docker_job_template.yml
     parameters:
+      file: linux/Dockerfile.512
+      tag: linux_512
+  -
+    template: docker_job_template.yml
+    parameters:
       file: linux/Dockerfile.arch
       tag: linux_arch
 #  -
@@ -164,13 +169,13 @@ jobs:
       file: windows_32_shared/Dockerfile
       tag: windows_32_shared
       dep:
-#        - windows_32_shared_base
+ #       - windows_32_shared_base
         - linux
-#  -
-#    template: docker_job_template.yml
-#    parameters:
-#      file: windows_32_shared/Dockerfile.base
-#      tag: windows_32_shared_base
+ # -
+ #   template: docker_job_template.yml
+ #   parameters:
+ #     file: windows_32_shared/Dockerfile.base
+ #     tag: windows_32_shared_base
   -
     template: docker_job_template.yml
     parameters:
@@ -275,6 +280,12 @@ jobs:
     parameters:
       file: wine/Dockerfile.59
       tag: windows_32_shared_59
+      dep: wine_base
+  -
+    template: docker_job_template.yml
+    parameters:
+      file: wine/Dockerfile.512
+      tag: windows_64_shared_512
       dep: wine_base
   -
     template: docker_job_template.yml

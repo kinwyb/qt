@@ -174,6 +174,20 @@ func (c *Class) fixGeneral_Version() {
 				f.Status = "active"
 			}
 		}
+
+	case "QWebEnginePage", "QWebEngineView":
+		{
+			for _, f := range c.Functions {
+				switch f.Name {
+				case "setHtml", "setWebChannel", "runJavaScript", "setPage", "QWebEnginePage", "QWebEngineView", "QWebChannel":
+					if !((f.Name == "QWebEnginePage" && f.OverloadNumber == "3") ||
+						(f.Name == "QWebEngineView" && f.OverloadNumber == "2")) {
+						f.Status = "active"
+						f.Access = "public"
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -251,7 +265,7 @@ func (c *Class) fixBases() {
 						break
 					}
 				}
-			} else {
+			} else if !utils.QT_STATIC() {
 				infixPath = "lib"
 				suffixPath = ".framework/Headers/"
 			}
@@ -269,6 +283,9 @@ func (c *Class) fixBases() {
 				}
 				prefixPath = pkgConfigIncludeDir
 				pkgConfigIncludeDirMutex.Unlock()
+			} else if strings.HasPrefix(State.Target, "sailfish") && runtime.GOOS == "darwin" {
+				infixPath = "lib"
+				suffixPath = ".framework/Headers/"
 			}
 		}
 	}

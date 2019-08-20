@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -241,11 +242,13 @@ func IsPrivateSignal(f *parser.Function) bool {
 			}
 			fData = utils.LoadOptional(filepath.Join(pkgConfigIncludeDirCache, fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
 			pkgConfigIncludeDirCacheMutex.Unlock()
-		} else {
+		} else if !utils.QT_STATIC() {
 			fData = utils.LoadOptional(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
 			if fData == "" {
 				fData = utils.LoadOptional(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Headers", fPath))
 			}
+		} else {
+			fData = utils.Load(filepath.Join(utils.QT_INSTALL_PREFIX(target), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
 		}
 	default:
 		if utils.QT_SAILFISH() {
@@ -257,6 +260,11 @@ func IsPrivateSignal(f *parser.Function) bool {
 			}
 			fData = utils.LoadOptional(filepath.Join(pkgConfigIncludeDirCache, strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
 			pkgConfigIncludeDirCacheMutex.Unlock()
+		} else if strings.HasPrefix(parser.State.Target, "sailfish") && runtime.GOOS == "darwin" {
+			fData = utils.LoadOptional(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Versions", "5", "Headers", fPath))
+			if fData == "" {
+				fData = utils.LoadOptional(filepath.Join(utils.QT_INSTALL_PREFIX(target), "lib", fmt.Sprintf("%v.framework", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule)), "Headers", fPath))
+			}
 		} else {
 			fData = utils.Load(filepath.Join(utils.QT_INSTALL_PREFIX(target), "include", strings.Title(parser.State.ClassMap[f.ClassName()].DocModule), fPath))
 		}

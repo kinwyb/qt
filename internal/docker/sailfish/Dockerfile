@@ -5,7 +5,7 @@ ENV HOME /home/$USER
 ENV GOPATH $HOME/work
 
 RUN apt-get -qq update && apt-get --no-install-recommends -qq -y install ca-certificates curl git
-RUN GO=go1.12.4.linux-386.tar.gz && curl -sL --retry 10 --retry-delay 60 -O https://dl.google.com/go/$GO && tar -xzf $GO -C /usr/local
+RUN GO=go1.12.6.linux-386.tar.gz && curl -sL --retry 10 --retry-delay 60 -O https://dl.google.com/go/$GO && tar -xzf $GO -C /usr/local
 RUN /usr/local/go/bin/go get -tags=no_env github.com/therecipe/qt/cmd/...
 
 
@@ -19,6 +19,7 @@ ENV SF_SDK_TOOLING_DIR /srv/mer/toolings/SailfishOS-2.2.1.18
 ENV PATH /usr/local/go/bin:$PATH
 ENV QT_DOCKER true
 ENV QT_SAILFISH true
+ENV QT_SAILFISH_VERSION 2.2.1.18
 
 COPY --from=base /usr/local/go /usr/local/go
 COPY --from=base $GOPATH/bin $GOPATH/bin
@@ -29,7 +30,7 @@ RUN apt-get -qq update && apt-get -y -qq purge python && apt-get -qq clean
 
 RUN SF_SDK_TOOLING=Sailfish_OS-3.0.2.8-Sailfish_SDK_Tooling-i486.tar.7z && mkdir -p $SF_SDK_TOOLING_DIR && curl -sL --retry 10 --retry-delay 60 -O https://releases.sailfishos.org/sdk/targets/$SF_SDK_TOOLING && 7z x -so $SF_SDK_TOOLING | tar --numeric-owner -p -xf - -C $SF_SDK_TOOLING_DIR && rm -f $SF_SDK_TOOLING
 
-RUN SF_SDK_TOOLING=Sailfish_OS-3.0.2.8-Platform_SDK_Chroot-i486.tar.bz2 && mkdir -p $SF_SDK_TOOLING_DIR && curl -sL --retry 10 --retry-delay 60 -O https://releases.sailfishos.org/sdk/installers/2.0/$SF_SDK_TOOLING && tar --numeric-owner -p -xjf $SF_SDK_TOOLING -C $SF_SDK_TOOLING_DIR && rm -f $SF_SDK_TOOLING
+RUN SF_SDK_TOOLING=Sailfish_OS-3.0.2.8-Platform_SDK_Chroot-i486.tar.bz2 && mkdir -p $SF_SDK_TOOLING_DIR && curl -sL --retry 10 --retry-delay 60 -O https://releases.sailfishos.org/sdk/installers/2.0.deprecated/$SF_SDK_TOOLING && tar --numeric-owner -p -xjf $SF_SDK_TOOLING -C $SF_SDK_TOOLING_DIR && rm -f $SF_SDK_TOOLING
 
 RUN SF_SDK_TARGET=Sailfish_OS-3.0.2.8-Sailfish_SDK_Target-i486.tar.7z && mkdir -p /srv/mer/targets/SailfishOS-2.2.1.18-i486 && curl -sL --retry 10 --retry-delay 60 -O https://releases.sailfishos.org/sdk/targets/$SF_SDK_TARGET && 7z x -so $SF_SDK_TARGET | tar --numeric-owner -p -xf - -C /srv/mer/targets/SailfishOS-2.2.1.18-i486 && rm -f $SF_SDK_TARGET
 

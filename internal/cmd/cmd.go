@@ -44,7 +44,8 @@ func ParseFlags() bool {
 		os.Setenv("QT_API", api)
 	}
 
-	if api := utils.QT_API(""); api != "" {
+	_, err := exec.LookPath("go")
+	if api := utils.QT_API(""); api != "" && err == nil {
 		if utils.GoListOptional("{{.Dir}}", "github.com/therecipe/qt/internal/binding/files/docs/"+api, "-find", "get doc dir") == "" {
 			utils.Log.Errorf("invalid api version provided: '%v'", api)
 			fmt.Println("valid api versions are:")
@@ -103,7 +104,7 @@ func InitEnv(target string) {
 			return
 		}
 	case "darwin":
-		if utils.QT_PKG_CONFIG() || utils.QT_HOMEBREW() || utils.QT_MACPORTS() || utils.QT_NIX() || utils.QT_FELGO() {
+		if utils.QT_PKG_CONFIG() || utils.QT_HOMEBREW() || utils.QT_MACPORTS() || utils.QT_NIX() || utils.QT_FELGO() || utils.QT_STATIC() {
 			return
 		}
 	case "windows":
@@ -340,9 +341,9 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 	gpath := strings.Join(paths, pathseperator)
 	if writeCacheToHost {
 		gpath += pathseperator + gpfs
-		args = append(args, []string{"-e", "QT_STUB=true"}...)
+		args = append(args, []string{"-e", "QT_STUB=true"}...) //TODO: won't work with wine images atm
 	} else {
-		if strings.Contains(path, "github.com/therecipe/qt/internal/examples") {
+		if strings.Contains(path, "github.com/therecipe/qt/internal/examples") && !strings.Contains(path, "github.com/therecipe/qt/internal/examples/androidextras") {
 			gpath += pathseperator + gpfs
 		} else {
 			gpath = gpfs + pathseperator + gpath
@@ -370,7 +371,7 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 	}
 
 	if p, ok := os.LookupEnv("PKG_CONFIG_PATH"); ok {
-		args = append(args, []string{"-e", "PKG_CONFIG_PATH=" + p}...)
+		args = append(args, []string{"-e", "PKG_CONFIG_PATH=" + p}...) //TODO: won't work with wine images atm
 	}
 
 	if utils.QT_WEBKIT() {
@@ -383,6 +384,18 @@ func virtual(arg []string, target, path string, writeCacheToHost bool, docker bo
 
 	if target == "android" && utils.GOARCH() == "arm64" {
 		args = append(args, []string{"-e", "GOARCH=arm64"}...)
+	}
+
+	if v, ok := os.LookupEnv("GO111MODULE"); ok {
+		args = append(args, []string{"-e", "GO111MODULE=" + v}...)
+	}
+
+	if v, ok := os.LookupEnv("GOPROXY"); ok {
+		args = append(args, []string{"-e", "GOPROXY=" + v}...)
+	}
+
+	if v, ok := os.LookupEnv("GOPRIVATE"); ok {
+		args = append(args, []string{"-e", "GOPRIVATE=" + v}...)
 	}
 
 	//TODO: flag for shared GOCACHE
@@ -534,13 +547,13 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			"CC":          filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "llvm", "prebuilt", runtime.GOOS+"-x86_64", "bin", "clang"),
 			"CXX":         filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "llvm", "prebuilt", runtime.GOOS+"-x86_64", "bin", "clang++"),
 
-			"CGO_CPPFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=16 -target armv7-none-linux-androideabi -gcc-toolchain %v --sysroot=%v -isystem %v",
+			"CGO_CPPFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=21 -target armv7-none-linux-androideabi -gcc-toolchain %v --sysroot=%v -isystem %v",
 				filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "arm-linux-androideabi-4.9", "prebuilt", runtime.GOOS+"-x86_64"),
 				filepath.Join(utils.ANDROID_NDK_DIR(), "sysroot"),
 				filepath.Join(utils.ANDROID_NDK_DIR(), "sysroot", "usr", "include", "arm-linux-androideabi")),
-			"CGO_LDFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=16 -target armv7-none-linux-androideabi -gcc-toolchain %v --sysroot=%v",
+			"CGO_LDFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=21 -target armv7-none-linux-androideabi -gcc-toolchain %v --sysroot=%v",
 				filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "arm-linux-androideabi-4.9", "prebuilt", runtime.GOOS+"-x86_64"),
-				filepath.Join(utils.ANDROID_NDK_DIR(), "platforms", "android-16", "arch-arm")),
+				filepath.Join(utils.ANDROID_NDK_DIR(), "platforms", "android-21", "arch-arm")),
 		}
 		if runtime.GOOS == "windows" {
 			env["TMP"] = os.Getenv("TMP")
@@ -575,13 +588,13 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 			"CC":          filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "llvm", "prebuilt", runtime.GOOS+"-x86_64", "bin", "clang"),
 			"CXX":         filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "llvm", "prebuilt", runtime.GOOS+"-x86_64", "bin", "clang++"),
 
-			"CGO_CPPFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=16 -target i686-none-linux-android -mstackrealign -gcc-toolchain %v --sysroot=%v -isystem %v",
+			"CGO_CPPFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=21 -target i686-none-linux-android -mstackrealign -gcc-toolchain %v --sysroot=%v -isystem %v",
 				filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "x86-4.9", "prebuilt", runtime.GOOS+"-x86_64"),
 				filepath.Join(utils.ANDROID_NDK_DIR(), "sysroot"),
 				filepath.Join(utils.ANDROID_NDK_DIR(), "sysroot", "usr", "include", "i686-linux-android")),
-			"CGO_LDFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=16 -target i686-none-linux-android -mstackrealign -gcc-toolchain %v --sysroot=%v",
+			"CGO_LDFLAGS": fmt.Sprintf("-Wno-unused-command-line-argument -D__ANDROID_API__=21 -target i686-none-linux-android -mstackrealign -gcc-toolchain %v --sysroot=%v",
 				filepath.Join(utils.ANDROID_NDK_DIR(), "toolchains", "x86-4.9", "prebuilt", runtime.GOOS+"-x86_64"),
-				filepath.Join(utils.ANDROID_NDK_DIR(), "platforms", "android-16", "arch-x86")),
+				filepath.Join(utils.ANDROID_NDK_DIR(), "platforms", "android-21", "arch-x86")),
 		}
 		if runtime.GOOS == "windows" {
 			env["TMP"] = os.Getenv("TMP")
@@ -666,8 +679,8 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 					env["GOARCH"] = utils.GOARCH()
 				}
 
-				//TODO: support 32 and 64 bit support; fix InitEnv as well
-				if strings.Contains(utils.QT_INSTALL_PREFIX(target), "env_windows_amd64") {
+				//TODO: support 32 and 64 bit; fix InitEnv as well (for 32 bit support)
+				if strings.Contains(utils.QT_INSTALL_PREFIX(target), "env_windows_amd64") && utils.QT_VERSION_NUM() < 5130 { //TODO: fix env_windows_amd64_512 instead
 					env["CGO_LDFLAGS"] = filepath.Join("C:\\", "Users", "Public", "env_windows_amd64", "Tools", "mingw730_64", "x86_64-w64-mingw32", "lib", "libmsvcrt.a")
 				}
 			}
@@ -864,12 +877,17 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 				env["LLVM_ROOT"] = strings.Split(l, "=")[1]
 			case strings.HasPrefix(l, "BINARYEN_ROOT"):
 				env["BINARYEN_ROOT"] = strings.Split(l, "=")[1]
+			case strings.HasPrefix(l, "EMSCRIPTEN_NATIVE_OPTIMIZER"):
+				env["EMSCRIPTEN_NATIVE_OPTIMIZER"] = strings.Split(l, "=")[1]
 			case strings.HasPrefix(l, "NODE_JS"):
 				env["NODE_JS"] = strings.TrimSuffix(strings.Split(l, "=")[1], "/node")
 			case strings.HasPrefix(l, "EMSCRIPTEN_ROOT"):
 				env["EMSCRIPTEN"] = strings.Split(l, "=")[1]
 				env["EMSDK"] = strings.Split(env["EMSCRIPTEN"], "/emscripten/1.")[0]
 			}
+		}
+		if _, ok := env["EMSCRIPTEN"]; !ok {
+			env["EMSCRIPTEN"] = filepath.Join(env["BINARYEN_ROOT"], "emscripten")
 		}
 		env["PATH"] = env["PATH"] + ":" + env["EMSDK"] + ":" + env["LLVM_ROOT"] + ":" + env["NODE_JS"] + ":" + env["EMSCRIPTEN"]
 	}
@@ -889,6 +907,11 @@ func BuildEnv(target, name, depPath string) (map[string]string, []string, []stri
 		if _, ok := env[es[0]]; !ok {
 			env[es[0]] = strings.Join(es[1:], "=")
 		}
+	}
+
+	//TODO: this can probably by removed, since it's explicitly set in UseGOMOD
+	if strings.Contains(strings.Replace(depPath, "\\", "/", -1), "src/"+utils.PackageName) && env["GO111MODULE"] != "on" {
+		env["GO111MODULE"] = "off"
 	}
 
 	return env, tags, ldFlags, out
