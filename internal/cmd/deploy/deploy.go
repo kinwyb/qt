@@ -50,6 +50,17 @@ func Deploy(mode, target, path string, docker bool, ldFlags, tags string, fast b
 				cmd.Dir = path
 				utils.RunCmd(cmd, "go mod vendor")
 			}
+			if utils.QT_DOCKER() {
+				cmd := exec.Command("go", "get", "-v", "-d", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API(utils.QT_VERSION())) //TODO: needs to pull 5.8.0 if QT_WEBKIT
+				cmd.Dir = path
+				utils.RunCmdOptional(cmd, "go get docs") //TODO: this can fail if QT_PKG_CONFIG
+
+				if strings.HasPrefix(target, "sailfish") || strings.HasPrefix(target, "android") { //TODO: generate android and sailfish minimal instead
+					cmd := exec.Command(filepath.Join(utils.GOBIN(), "qtsetup"), "generate", target)
+					cmd.Dir = path
+					utils.RunCmd(cmd, "run setup")
+				}
+			}
 		}
 
 		if docker || vagrant {
@@ -102,6 +113,11 @@ func Deploy(mode, target, path string, docker bool, ldFlags, tags string, fast b
 			case "darwin":
 				if fn := filepath.Join(depPath, name+".app", "Contents", "Info.plist"); !utils.ExistsFile(fn) {
 					utils.Save(fn, darwin_plist(name))
+				}
+			case "windows":
+				if utils.QT_MSVC() {
+					_, _, _, out := cmd.BuildEnv(target, name, depPath)
+					cmd.PatchBinary(out + ".exe")
 				}
 			}
 		}

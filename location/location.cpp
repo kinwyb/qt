@@ -6,6 +6,7 @@
 #include "location.h"
 #include "_cgo_export.h"
 
+#include <QAudioSystemPlugin>
 #include <QByteArray>
 #include <QCameraImageCapture>
 #include <QChildEvent>
@@ -33,7 +34,9 @@
 #include <QMap>
 #include <QMediaPlaylist>
 #include <QMediaRecorder>
+#include <QMediaServiceProviderPlugin>
 #include <QMetaMethod>
+#include <QMetaObject>
 #include <QObject>
 #include <QOffscreenSurface>
 #include <QPaintDeviceWindow>
@@ -41,6 +44,7 @@
 #include <QQuickItem>
 #include <QRadioData>
 #include <QRemoteObjectPendingCallWatcher>
+#include <QScriptExtensionPlugin>
 #include <QString>
 #include <QTimerEvent>
 #include <QVariant>
@@ -69,7 +73,7 @@ double QGeoManeuver_DistanceToNextInstruction(void* ptr)
 
 struct QtLocation_PackedList QGeoManeuver_ExtendedAttributes(void* ptr)
 {
-	return ({ QMap<QString, QVariant>* tmpValue = new QMap<QString, QVariant>(static_cast<QGeoManeuver*>(ptr)->extendedAttributes()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMap<QString, QVariant>* tmpValuea18eb4 = new QMap<QString, QVariant>(static_cast<QGeoManeuver*>(ptr)->extendedAttributes()); QtLocation_PackedList { tmpValuea18eb4, tmpValuea18eb4->size() }; });
 }
 
 struct QtLocation_PackedString QGeoManeuver_InstructionText(void* ptr)
@@ -155,7 +159,7 @@ void* QGeoManeuver___extendedAttributes_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoManeuver___extendedAttributes_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoManeuver___setExtendedAttributes_extendedAttributes_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -176,7 +180,7 @@ void* QGeoManeuver___setExtendedAttributes_extendedAttributes_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoManeuver___setExtendedAttributes_extendedAttributes_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 struct QtLocation_PackedString QGeoManeuver_____extendedAttributes_keyList_atList(void* ptr, int i)
@@ -233,7 +237,7 @@ double QGeoRoute_Distance(void* ptr)
 
 struct QtLocation_PackedList QGeoRoute_ExtendedAttributes(void* ptr)
 {
-	return ({ QMap<QString, QVariant>* tmpValue = new QMap<QString, QVariant>(static_cast<QGeoRoute*>(ptr)->extendedAttributes()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMap<QString, QVariant>* tmpValue7e83bf = new QMap<QString, QVariant>(static_cast<QGeoRoute*>(ptr)->extendedAttributes()); QtLocation_PackedList { tmpValue7e83bf, tmpValue7e83bf->size() }; });
 }
 
 void* QGeoRoute_FirstRouteSegment(void* ptr)
@@ -243,7 +247,7 @@ void* QGeoRoute_FirstRouteSegment(void* ptr)
 
 struct QtLocation_PackedList QGeoRoute_Path(void* ptr)
 {
-	return ({ QList<QGeoCoordinate>* tmpValue = new QList<QGeoCoordinate>(static_cast<QGeoRoute*>(ptr)->path()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QGeoCoordinate>* tmpValue38ece8 = new QList<QGeoCoordinate>(static_cast<QGeoRoute*>(ptr)->path()); QtLocation_PackedList { tmpValue38ece8, tmpValue38ece8->size() }; });
 }
 
 void* QGeoRoute_Request(void* ptr)
@@ -258,7 +262,7 @@ struct QtLocation_PackedString QGeoRoute_RouteId(void* ptr)
 
 struct QtLocation_PackedList QGeoRoute_RouteLegs(void* ptr)
 {
-	return ({ QList<QGeoRouteLeg>* tmpValue = new QList<QGeoRouteLeg>(static_cast<QGeoRoute*>(ptr)->routeLegs()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QGeoRouteLeg>* tmpValue7b4e55 = new QList<QGeoRouteLeg>(static_cast<QGeoRoute*>(ptr)->routeLegs()); QtLocation_PackedList { tmpValue7b4e55, tmpValue7b4e55->size() }; });
 }
 
 void QGeoRoute_SetBounds(void* ptr, void* bounds)
@@ -344,7 +348,7 @@ void* QGeoRoute___extendedAttributes_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRoute___extendedAttributes_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRoute___path_atList(void* ptr, int i)
@@ -397,7 +401,7 @@ void* QGeoRoute___setExtendedAttributes_extendedAttributes_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRoute___setExtendedAttributes_extendedAttributes_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRoute___setPath_path_atList(void* ptr, int i)
@@ -517,6 +521,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQGeoRouteReply_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQGeoRouteReply_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQGeoRouteReply_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQGeoRouteReply_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtLocation_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQGeoRouteReply_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQGeoRouteReply_TimerEvent(this, event); };
 };
@@ -527,7 +532,9 @@ int QGeoRouteReply_QGeoRouteReply_QRegisterMetaType(){qRegisterMetaType<QGeoRout
 
 void* QGeoRouteReply_NewQGeoRouteReply(long long error, struct QtLocation_PackedString errorString, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -545,6 +552,8 @@ void* QGeoRouteReply_NewQGeoRouteReply(long long error, struct QtLocation_Packed
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -557,6 +566,8 @@ void* QGeoRouteReply_NewQGeoRouteReply(long long error, struct QtLocation_Packed
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(static_cast<QGeoRouteReply::Error>(error), QString::fromUtf8(errorString.data, errorString.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -568,7 +579,9 @@ void* QGeoRouteReply_NewQGeoRouteReply(long long error, struct QtLocation_Packed
 
 void* QGeoRouteReply_NewQGeoRouteReply2(void* request, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -586,6 +599,8 @@ void* QGeoRouteReply_NewQGeoRouteReply2(void* request, void* parent)
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -598,6 +613,8 @@ void* QGeoRouteReply_NewQGeoRouteReply2(void* request, void* parent)
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRouteReply(*static_cast<QGeoRouteRequest*>(request), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -689,7 +706,7 @@ void* QGeoRouteReply_Request(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteReply_Routes(void* ptr)
 {
-	return ({ QList<QGeoRoute>* tmpValue = new QList<QGeoRoute>(static_cast<QGeoRouteReply*>(ptr)->routes()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QGeoRoute>* tmpValuecee788 = new QList<QGeoRoute>(static_cast<QGeoRouteReply*>(ptr)->routes()); QtLocation_PackedList { tmpValuecee788, tmpValuecee788->size() }; });
 }
 
 void QGeoRouteReply_SetError(void* ptr, long long error, struct QtLocation_PackedString errorString)
@@ -881,6 +898,11 @@ char QGeoRouteReply_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QGeoRouteReply*>(ptr)->QGeoRouteReply::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QGeoRouteReply_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QGeoRouteReply*>(ptr)->QGeoRouteReply::metaObject());
+}
+
 void QGeoRouteReply_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QGeoRouteReply*>(ptr)->QGeoRouteReply::timerEvent(static_cast<QTimerEvent*>(event));
@@ -908,12 +930,12 @@ void* QGeoRouteRequest_DepartureTime(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest_ExcludeAreas(void* ptr)
 {
-	return ({ QList<QGeoRectangle>* tmpValue = new QList<QGeoRectangle>(static_cast<QGeoRouteRequest*>(ptr)->excludeAreas()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QGeoRectangle>* tmpValue327b2e = new QList<QGeoRectangle>(static_cast<QGeoRouteRequest*>(ptr)->excludeAreas()); QtLocation_PackedList { tmpValue327b2e, tmpValue327b2e->size() }; });
 }
 
 struct QtLocation_PackedList QGeoRouteRequest_ExtraParameters(void* ptr)
 {
-	return ({ QMap<QString, QVariant>* tmpValue = new QMap<QString, QVariant>(static_cast<QGeoRouteRequest*>(ptr)->extraParameters()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMap<QString, QVariant>* tmpValued420fe = new QMap<QString, QVariant>(static_cast<QGeoRouteRequest*>(ptr)->extraParameters()); QtLocation_PackedList { tmpValued420fe, tmpValued420fe->size() }; });
 }
 
 long long QGeoRouteRequest_FeatureWeight(void* ptr, long long featureType)
@@ -998,7 +1020,7 @@ long long QGeoRouteRequest_TravelModes(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest_Waypoints(void* ptr)
 {
-	return ({ QList<QGeoCoordinate>* tmpValue = new QList<QGeoCoordinate>(static_cast<QGeoRouteRequest*>(ptr)->waypoints()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QGeoCoordinate>* tmpValueccc416 = new QList<QGeoCoordinate>(static_cast<QGeoRouteRequest*>(ptr)->waypoints()); QtLocation_PackedList { tmpValueccc416, tmpValueccc416->size() }; });
 }
 
 void QGeoRouteRequest_DestroyQGeoRouteRequest(void* ptr)
@@ -1056,7 +1078,7 @@ void* QGeoRouteRequest___extraParameters_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest___extraParameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRouteRequest___setExcludeAreas_areas_atList(void* ptr, int i)
@@ -1093,7 +1115,7 @@ void* QGeoRouteRequest___setExtraParameters_extraParameters_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest___setExtraParameters_extraParameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRouteRequest___setWaypoints_waypoints_atList(void* ptr, int i)
@@ -1114,7 +1136,7 @@ void* QGeoRouteRequest___setWaypoints_waypoints_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest___setWaypointsMetadata_waypointMetadata_atList(void* ptr, int i)
 {
-	return ({ QMap<QString, QVariant>* tmpValue = new QMap<QString, QVariant>(({QMap<QString, QVariant> tmp = static_cast<QList<QMap<QString, QVariant>>*>(ptr)->at(i); if (i == static_cast<QList<QMap<QString, QVariant>>*>(ptr)->size()-1) { static_cast<QList<QMap<QString, QVariant>>*>(ptr)->~QList(); free(ptr); }; tmp; })); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMap<QString, QVariant>* tmpValue5dc32e = new QMap<QString, QVariant>(({QMap<QString, QVariant> tmp = static_cast<QList<QMap<QString, QVariant>>*>(ptr)->at(i); if (i == static_cast<QList<QMap<QString, QVariant>>*>(ptr)->size()-1) { static_cast<QList<QMap<QString, QVariant>>*>(ptr)->~QList(); free(ptr); }; tmp; })); QtLocation_PackedList { tmpValue5dc32e, tmpValue5dc32e->size() }; });
 }
 
 void QGeoRouteRequest___setWaypointsMetadata_waypointMetadata_setList(void* ptr, void* i)
@@ -1146,7 +1168,7 @@ void* QGeoRouteRequest___waypoints_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest___waypointsMetadata_atList(void* ptr, int i)
 {
-	return ({ QMap<QString, QVariant>* tmpValue = new QMap<QString, QVariant>(({QMap<QString, QVariant> tmp = static_cast<QList<QMap<QString, QVariant>>*>(ptr)->at(i); if (i == static_cast<QList<QMap<QString, QVariant>>*>(ptr)->size()-1) { static_cast<QList<QMap<QString, QVariant>>*>(ptr)->~QList(); free(ptr); }; tmp; })); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMap<QString, QVariant>* tmpValue5dc32e = new QMap<QString, QVariant>(({QMap<QString, QVariant> tmp = static_cast<QList<QMap<QString, QVariant>>*>(ptr)->at(i); if (i == static_cast<QList<QMap<QString, QVariant>>*>(ptr)->size()-1) { static_cast<QList<QMap<QString, QVariant>>*>(ptr)->~QList(); free(ptr); }; tmp; })); QtLocation_PackedList { tmpValue5dc32e, tmpValue5dc32e->size() }; });
 }
 
 void QGeoRouteRequest___waypointsMetadata_setList(void* ptr, void* i)
@@ -1210,7 +1232,7 @@ void* QGeoRouteRequest_____setWaypointsMetadata_waypointMetadata_atList_newList(
 
 struct QtLocation_PackedList QGeoRouteRequest_____setWaypointsMetadata_waypointMetadata_atList_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRouteRequest_____setWaypointsMetadata_waypointMetadata_setList_i_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -1231,7 +1253,7 @@ void* QGeoRouteRequest_____setWaypointsMetadata_waypointMetadata_setList_i_newLi
 
 struct QtLocation_PackedList QGeoRouteRequest_____setWaypointsMetadata_waypointMetadata_setList_i_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRouteRequest_____waypointsMetadata_atList_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -1252,7 +1274,7 @@ void* QGeoRouteRequest_____waypointsMetadata_atList_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest_____waypointsMetadata_atList_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoRouteRequest_____waypointsMetadata_setList_i_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -1273,7 +1295,7 @@ void* QGeoRouteRequest_____waypointsMetadata_setList_i_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteRequest_____waypointsMetadata_setList_i_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 struct QtLocation_PackedString QGeoRouteRequest_______setWaypointsMetadata_waypointMetadata_atList_keyList_atList(void* ptr, int i)
@@ -1377,7 +1399,7 @@ void* QGeoRouteSegment_NextRouteSegment(void* ptr)
 
 struct QtLocation_PackedList QGeoRouteSegment_Path(void* ptr)
 {
-	return ({ QList<QGeoCoordinate>* tmpValue = new QList<QGeoCoordinate>(static_cast<QGeoRouteSegment*>(ptr)->path()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QGeoCoordinate>* tmpValue0158d6 = new QList<QGeoCoordinate>(static_cast<QGeoRouteSegment*>(ptr)->path()); QtLocation_PackedList { tmpValue0158d6, tmpValue0158d6->size() }; });
 }
 
 void QGeoRouteSegment_SetDistance(void* ptr, double distance)
@@ -1461,6 +1483,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQGeoRoutingManager_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQGeoRoutingManager_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQGeoRoutingManager_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQGeoRoutingManager_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtLocation_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQGeoRoutingManager_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQGeoRoutingManager_TimerEvent(this, event); };
 };
@@ -1695,6 +1718,11 @@ char QGeoRoutingManager_EventFilterDefault(void* ptr, void* watched, void* event
 		return static_cast<QGeoRoutingManager*>(ptr)->QGeoRoutingManager::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QGeoRoutingManager_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QGeoRoutingManager*>(ptr)->QGeoRoutingManager::metaObject());
+}
+
 void QGeoRoutingManager_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QGeoRoutingManager*>(ptr)->QGeoRoutingManager::timerEvent(static_cast<QTimerEvent*>(event));
@@ -1717,6 +1745,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQGeoRoutingManagerEngine_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQGeoRoutingManagerEngine_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQGeoRoutingManagerEngine_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQGeoRoutingManagerEngine_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtLocation_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQGeoRoutingManagerEngine_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQGeoRoutingManagerEngine_TimerEvent(this, event); };
 };
@@ -1727,7 +1756,9 @@ int QGeoRoutingManagerEngine_QGeoRoutingManagerEngine_QRegisterMetaType(){qRegis
 
 void* QGeoRoutingManagerEngine_NewQGeoRoutingManagerEngine(void* parameters, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -1745,6 +1776,8 @@ void* QGeoRoutingManagerEngine_NewQGeoRoutingManagerEngine(void* parameters, voi
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -1757,6 +1790,8 @@ void* QGeoRoutingManagerEngine_NewQGeoRoutingManagerEngine(void* parameters, voi
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQGeoRoutingManagerEngine(({ QMap<QString, QVariant>* tmpP = static_cast<QMap<QString, QVariant>*>(parameters); QMap<QString, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1930,7 +1965,7 @@ void* QGeoRoutingManagerEngine___QGeoRoutingManagerEngine_parameters_newList(voi
 
 struct QtLocation_PackedList QGeoRoutingManagerEngine___QGeoRoutingManagerEngine_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 struct QtLocation_PackedString QGeoRoutingManagerEngine_____QGeoRoutingManagerEngine_parameters_keyList_atList(void* ptr, int i)
@@ -2064,6 +2099,11 @@ char QGeoRoutingManagerEngine_EventFilterDefault(void* ptr, void* watched, void*
 		return static_cast<QGeoRoutingManagerEngine*>(ptr)->QGeoRoutingManagerEngine::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QGeoRoutingManagerEngine_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QGeoRoutingManagerEngine*>(ptr)->QGeoRoutingManagerEngine::metaObject());
+}
+
 void QGeoRoutingManagerEngine_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QGeoRoutingManagerEngine*>(ptr)->QGeoRoutingManagerEngine::timerEvent(static_cast<QTimerEvent*>(event));
@@ -2082,6 +2122,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQGeoServiceProvider_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQGeoServiceProvider_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQGeoServiceProvider_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQGeoServiceProvider_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtLocation_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQGeoServiceProvider_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQGeoServiceProvider_TimerEvent(this, event); };
 };
@@ -2399,7 +2440,7 @@ void* QGeoServiceProvider___QGeoServiceProvider_parameters_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoServiceProvider___QGeoServiceProvider_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoServiceProvider___setParameters_parameters_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -2420,7 +2461,7 @@ void* QGeoServiceProvider___setParameters_parameters_newList(void* ptr)
 
 struct QtLocation_PackedList QGeoServiceProvider___setParameters_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 struct QtLocation_PackedString QGeoServiceProvider_____QGeoServiceProvider_parameters_keyList_atList(void* ptr, int i)
@@ -2570,6 +2611,11 @@ char QGeoServiceProvider_EventFilterDefault(void* ptr, void* watched, void* even
 		return static_cast<QGeoServiceProvider*>(ptr)->QGeoServiceProvider::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QGeoServiceProvider_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QGeoServiceProvider*>(ptr)->QGeoServiceProvider::metaObject());
+}
+
 void QGeoServiceProvider_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QGeoServiceProvider*>(ptr)->QGeoServiceProvider::timerEvent(static_cast<QTimerEvent*>(event));
@@ -2610,7 +2656,7 @@ void* QGeoServiceProviderFactory___createGeocodingManagerEngine_parameters_newLi
 
 struct QtLocation_PackedList QGeoServiceProviderFactory___createGeocodingManagerEngine_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoServiceProviderFactory___createMappingManagerEngine_parameters_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -2631,7 +2677,7 @@ void* QGeoServiceProviderFactory___createMappingManagerEngine_parameters_newList
 
 struct QtLocation_PackedList QGeoServiceProviderFactory___createMappingManagerEngine_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoServiceProviderFactory___createPlaceManagerEngine_parameters_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -2652,7 +2698,7 @@ void* QGeoServiceProviderFactory___createPlaceManagerEngine_parameters_newList(v
 
 struct QtLocation_PackedList QGeoServiceProviderFactory___createPlaceManagerEngine_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 void* QGeoServiceProviderFactory___createRoutingManagerEngine_parameters_atList(void* ptr, struct QtLocation_PackedString v, int i)
@@ -2673,7 +2719,7 @@ void* QGeoServiceProviderFactory___createRoutingManagerEngine_parameters_newList
 
 struct QtLocation_PackedList QGeoServiceProviderFactory___createRoutingManagerEngine_parameters_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValue1ab909 = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); QtLocation_PackedList { tmpValue1ab909, tmpValue1ab909->size() }; });
 }
 
 struct QtLocation_PackedString QGeoServiceProviderFactory_____createGeocodingManagerEngine_parameters_keyList_atList(void* ptr, int i)

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"runtime"
 	"sort"
@@ -424,7 +425,7 @@ func GetLibs() []string {
 
 	for i := len(libs) - 1; i >= 0; i-- {
 		switch {
-		case !(runtime.GOOS == "darwin" || runtime.GOOS == "linux" || runtime.GOOS == "freebsd") && (libs[i] == "WebEngine" || libs[i] == "WebView"),
+		case !(runtime.GOOS == "darwin" || runtime.GOOS == "linux" || runtime.GOOS == "freebsd" || (runtime.GOOS == "windows" && utils.QT_MSVC())) && (libs[i] == "WebEngine" || libs[i] == "WebView"),
 			runtime.GOOS != "windows" && libs[i] == "WinExtras",
 			runtime.GOOS != "darwin" && libs[i] == "MacExtras",
 			!(runtime.GOOS == "linux" || runtime.GOOS == "freebsd") && libs[i] == "X11Extras":
@@ -479,7 +480,7 @@ func GetCustomLibs(target string, env map[string]string, tags []string) map[stri
 	}
 
 	if len(modules) > 0 {
-		cmd := utils.GoList(append([]string{"{{.ImportPath}}", "-find", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \""))}, pkgs...)...)
+		cmd := utils.GoList(append([]string{"{{.ImportPath}}", "-find", utils.BuildTags(tags)}, pkgs...)...)
 		for k, v := range env {
 			cmd.Env = append(cmd.Env, fmt.Sprintf("%v=%v", k, v))
 		}
@@ -500,6 +501,9 @@ func Dump() {
 		var bb = new(bytes.Buffer)
 		defer bb.Reset()
 
+		fmt.Fprint(bb, "class\n\n")
+		fmt.Fprintln(bb, c)
+
 		fmt.Fprint(bb, "funcs\n\n")
 		for _, f := range c.Functions {
 			fmt.Fprintln(bb, f)
@@ -509,6 +513,10 @@ func Dump() {
 		for _, e := range c.Enums {
 			fmt.Fprintln(bb, e)
 		}
+
+		fmt.Fprint(bb, "json\n\n")
+		jb, _ := json.Marshal(c)
+		bb.Write(jb)
 
 		utils.MkdirAll(utils.GoQtPkgPath("internal", "binding", "dump", c.Module))
 		utils.SaveBytes(utils.GoQtPkgPath("internal", "binding", "dump", c.Module, fmt.Sprintf("%v.txt", c.Name)), bb.Bytes())

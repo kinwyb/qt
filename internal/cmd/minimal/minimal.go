@@ -26,6 +26,17 @@ func Minimal(path, target, tags string) {
 			cmd.Dir = path
 			utils.RunCmd(cmd, "go mod vendor")
 		}
+		if utils.QT_DOCKER() {
+			cmd := exec.Command("go", "get", "-v", "-d", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API(utils.QT_VERSION())) //TODO: needs to pull 5.8.0 if QT_WEBKIT
+			cmd.Dir = path
+			utils.RunCmdOptional(cmd, "go get docs") //TODO: this can fail if QT_PKG_CONFIG
+
+			if strings.HasPrefix(target, "sailfish") || strings.HasPrefix(target, "android") { //TODO: generate android and sailfish minimal instead
+				cmd := exec.Command(filepath.Join(utils.GOBIN(), "qtsetup"), "generate", target)
+				cmd.Dir = path
+				utils.RunCmd(cmd, "run setup")
+			}
+		}
 	}
 
 	if !(target == "js" || target == "wasm" || utils.QT_NOT_CACHED()) { //TODO: remove for module support + resolve dependencies
@@ -38,7 +49,7 @@ func Minimal(path, target, tags string) {
 		if tags != "" {
 			tagsEnv = append(tagsEnv, strings.Split(tags, " ")...)
 		}
-		scmd.Args = append(scmd.Args, fmt.Sprintf("-tags=\"%v\"", strings.Join(tagsEnv, "\" \"")))
+		scmd.Args = append(scmd.Args, utils.BuildTags(tagsEnv))
 
 		if target != runtime.GOOS {
 			scmd.Args = append(scmd.Args, []string{"-pkgdir", filepath.Join(utils.MustGoPath(), "pkg", fmt.Sprintf("%v_%v_%v", strings.Replace(target, "-", "_", -1), env["GOOS"], env["GOARCH"]))}...)
@@ -58,7 +69,7 @@ func Minimal(path, target, tags string) {
 
 	//TODO: cleanup state from moc for minimal first -->
 	for _, c := range parser.State.ClassMap {
-		if c.Module == parser.MOC || strings.HasPrefix(c.Module, "custom_") {
+		if c.Module == parser.MOC || strings.HasPrefix(c.Module, "custom_") || c.ToBeCleanedUp {
 			delete(parser.State.ClassMap, c.Name)
 		}
 	}
@@ -231,7 +242,7 @@ func Minimal(path, target, tags string) {
 		}
 	case "js", "wasm":
 		exportClass(parser.State.ClassMap["QSvgWidget"], files)
-	case "android", "android-emulator": //TODO: generate minimal androidextras instead?
+	default: //"android", "android-emulator": //TODO: generate minimal androidextras instead, otherwise using the androidextras module reports missing classes when building for targets other than android
 		exportClass(parser.State.ClassMap["QChildEvent"], files)
 		exportClass(parser.State.ClassMap["QTimerEvent"], files)
 		exportClass(parser.State.ClassMap["QMetaObject"], files)

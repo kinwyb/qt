@@ -1,4 +1,4 @@
-//source: http://doc.qt.io/qt-5/qtgui-analogclock-example.html
+//source: https://doc.qt.io/qt-5/qtgui-analogclock-example.html
 
 package main
 
@@ -44,7 +44,7 @@ func (w *AnalogClockWindow) renderFunc(p *gui.QPainter) {
 		core.NewQPoint2(0, -40),
 	})
 
-	var minuteHand = gui.NewQPolygon4([]*core.QPoint{
+	var minuteHand = gui.NewQPolygon3([]*core.QPoint{
 		core.NewQPoint2(7, 8),
 		core.NewQPoint2(-7, 8),
 		core.NewQPoint2(0, -70),

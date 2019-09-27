@@ -9,6 +9,7 @@
 #include <QAccessibleInterface>
 #include <QAction>
 #include <QActionEvent>
+#include <QAudioSystemPlugin>
 #include <QByteArray>
 #include <QCameraImageCapture>
 #include <QChildEvent>
@@ -38,7 +39,9 @@
 #include <QMatrix4x4>
 #include <QMediaPlaylist>
 #include <QMediaRecorder>
+#include <QMediaServiceProviderPlugin>
 #include <QMetaMethod>
+#include <QMetaObject>
 #include <QMouseEvent>
 #include <QMoveEvent>
 #include <QObject>
@@ -89,6 +92,7 @@
 #include <QSGImageNode>
 #include <QSGMaterial>
 #include <QSGMaterialShader>
+#include <QSGMaterialType>
 #include <QSGNode>
 #include <QSGOpacityNode>
 #include <QSGOpaqueTextureMaterial>
@@ -103,6 +107,7 @@
 #include <QSGTransformNode>
 #include <QSGVertexColorMaterial>
 #include <QScreen>
+#include <QScriptExtensionPlugin>
 #include <QShowEvent>
 #include <QSize>
 #include <QSizeF>
@@ -123,7 +128,9 @@
 class MyQQuickAsyncImageProvider: public QQuickAsyncImageProvider
 {
 public:
+	MyQQuickAsyncImageProvider() : QQuickAsyncImageProvider() {};
 	QQuickImageResponse * requestImageResponse(const QString & id, const QSize & requestedSize) { QByteArray t87ea5d = id.toUtf8(); QtQuick_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };return static_cast<QQuickImageResponse*>(callbackQQuickAsyncImageProvider_RequestImageResponse(this, idPacked, const_cast<QSize*>(&requestedSize))); };
+	 ~MyQQuickAsyncImageProvider() { callbackQQuickAsyncImageProvider_DestroyQQuickAsyncImageProvider(this); };
 	QQmlImageProviderBase::Flags flags() const { return static_cast<QQmlImageProviderBase::Flag>(callbackQQuickImageProvider_Flags(const_cast<void*>(static_cast<const void*>(this)))); };
 	QQmlImageProviderBase::ImageType imageType() const { return static_cast<QQmlImageProviderBase::ImageType>(callbackQQuickImageProvider_ImageType(const_cast<void*>(static_cast<const void*>(this)))); };
 	QImage requestImage(const QString & id, QSize * size, const QSize & requestedSize) { QByteArray t87ea5d = id.toUtf8(); QtQuick_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };return *static_cast<QImage*>(callbackQQuickImageProvider_RequestImage(this, idPacked, size, const_cast<QSize*>(&requestedSize))); };
@@ -131,9 +138,25 @@ public:
 	QQuickTextureFactory * requestTexture(const QString & id, QSize * size, const QSize & requestedSize) { QByteArray t87ea5d = id.toUtf8(); QtQuick_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };return static_cast<QQuickTextureFactory*>(callbackQQuickImageProvider_RequestTexture(this, idPacked, size, const_cast<QSize*>(&requestedSize))); };
 };
 
+void* QQuickAsyncImageProvider_NewQQuickAsyncImageProvider()
+{
+	return new MyQQuickAsyncImageProvider();
+}
+
 void* QQuickAsyncImageProvider_RequestImageResponse(void* ptr, struct QtQuick_PackedString id, void* requestedSize)
 {
 	return static_cast<QQuickAsyncImageProvider*>(ptr)->requestImageResponse(QString::fromUtf8(id.data, id.len), *static_cast<QSize*>(requestedSize));
+}
+
+void QQuickAsyncImageProvider_DestroyQQuickAsyncImageProvider(void* ptr)
+{
+	static_cast<QQuickAsyncImageProvider*>(ptr)->~QQuickAsyncImageProvider();
+}
+
+void QQuickAsyncImageProvider_DestroyQQuickAsyncImageProviderDefault(void* ptr)
+{
+	Q_UNUSED(ptr);
+
 }
 
 class MyQQuickFramebufferObject: public QQuickFramebufferObject
@@ -205,6 +228,7 @@ public:
 	void Signal_Destroyed(QObject * obj) { callbackQQuickItem_Destroyed(this, obj); };
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickItem_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickItem_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickItem_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickItem_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickItem_TimerEvent(this, event); };
 };
@@ -378,6 +402,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickImageResponse_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQQuickImageResponse_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickImageResponse_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickImageResponse_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickImageResponse_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickImageResponse_TimerEvent(this, event); };
 };
@@ -577,6 +602,11 @@ char QQuickImageResponse_EventFilterDefault(void* ptr, void* watched, void* even
 	}
 }
 
+void* QQuickImageResponse_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickImageResponse*>(ptr)->QQuickImageResponse::metaObject());
+}
+
 void QQuickImageResponse_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickImageResponse*>(ptr)->QQuickImageResponse::timerEvent(static_cast<QTimerEvent*>(event));
@@ -651,6 +681,7 @@ public:
 	void Signal_Destroyed(QObject * obj) { callbackQQuickItem_Destroyed(this, obj); };
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickItem_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickItem_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickItem_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickItem_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickItem_TimerEvent(this, event); };
 };
@@ -761,7 +792,7 @@ void* QQuickItem_ChildAt(void* ptr, double x, double y)
 
 struct QtQuick_PackedList QQuickItem_ChildItems(void* ptr)
 {
-		return ({ QList<QQuickItem *>* tmpValue = new QList<QQuickItem *>(static_cast<QQuickItem*>(ptr)->childItems()); QtQuick_PackedList { tmpValue, tmpValue->size() }; });
+		return ({ QList<QQuickItem *>* tmpValue890fa7 = new QList<QQuickItem *>(static_cast<QQuickItem*>(ptr)->childItems()); QtQuick_PackedList { tmpValue890fa7, tmpValue890fa7->size() }; });
 }
 
 char QQuickItem_ChildMouseEventFilter(void* ptr, void* item, void* event)
@@ -2307,6 +2338,22 @@ char QQuickItem_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QQuickItem_MetaObject(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickItem*>(ptr)->metaObject());
+}
+
+void* QQuickItem_MetaObjectDefault(void* ptr)
+{
+	if (dynamic_cast<QQuickPaintedItem*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QQuickPaintedItem*>(ptr)->QQuickPaintedItem::metaObject());
+	} else if (dynamic_cast<QQuickFramebufferObject*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QQuickFramebufferObject*>(ptr)->QQuickFramebufferObject::metaObject());
+	} else {
+		return const_cast<QMetaObject*>(static_cast<QQuickItem*>(ptr)->QQuickItem::metaObject());
+	}
+}
+
 void QQuickItem_TimerEvent(void* ptr, void* event)
 {
 		static_cast<QQuickItem*>(ptr)->timerEvent(static_cast<QTimerEvent*>(event));
@@ -2335,6 +2382,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickItemGrabResult_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQQuickItemGrabResult_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickItemGrabResult_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickItemGrabResult_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickItemGrabResult_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickItemGrabResult_TimerEvent(this, event); };
 };
@@ -2508,6 +2556,11 @@ char QQuickItemGrabResult_EventFilterDefault(void* ptr, void* watched, void* eve
 	}
 }
 
+void* QQuickItemGrabResult_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickItemGrabResult*>(ptr)->QQuickItemGrabResult::metaObject());
+}
+
 void QQuickItemGrabResult_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickItemGrabResult*>(ptr)->QQuickItemGrabResult::timerEvent(static_cast<QTimerEvent*>(event));
@@ -2587,6 +2640,7 @@ public:
 	void Signal_Destroyed(QObject * obj) { callbackQQuickItem_Destroyed(this, obj); };
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickItem_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickItem_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickItem_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickItem_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickItem_TimerEvent(this, event); };
 };
@@ -2797,6 +2851,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickRenderControl_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQQuickRenderControl_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickRenderControl_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickRenderControl_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickRenderControl_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickRenderControl_TimerEvent(this, event); };
 };
@@ -2807,7 +2862,9 @@ int QQuickRenderControl_QQuickRenderControl_QRegisterMetaType(){qRegisterMetaTyp
 
 void* QQuickRenderControl_NewQQuickRenderControl(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQQuickRenderControl(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQQuickRenderControl(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQQuickRenderControl(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -2825,6 +2882,8 @@ void* QQuickRenderControl_NewQQuickRenderControl(void* parent)
 		return new MyQQuickRenderControl(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQQuickRenderControl(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQQuickRenderControl(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQQuickRenderControl(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -2837,6 +2896,8 @@ void* QQuickRenderControl_NewQQuickRenderControl(void* parent)
 		return new MyQQuickRenderControl(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQQuickRenderControl(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQQuickRenderControl(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQQuickRenderControl(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -3072,6 +3133,11 @@ char QQuickRenderControl_EventFilterDefault(void* ptr, void* watched, void* even
 	}
 }
 
+void* QQuickRenderControl_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickRenderControl*>(ptr)->QQuickRenderControl::metaObject());
+}
+
 void QQuickRenderControl_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickRenderControl*>(ptr)->QQuickRenderControl::timerEvent(static_cast<QTimerEvent*>(event));
@@ -3089,6 +3155,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickTextDocument_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQQuickTextDocument_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickTextDocument_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickTextDocument_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickTextDocument_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickTextDocument_TimerEvent(this, event); };
 };
@@ -3242,6 +3309,11 @@ char QQuickTextDocument_EventFilterDefault(void* ptr, void* watched, void* event
 	}
 }
 
+void* QQuickTextDocument_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickTextDocument*>(ptr)->QQuickTextDocument::metaObject());
+}
+
 void QQuickTextDocument_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickTextDocument*>(ptr)->QQuickTextDocument::timerEvent(static_cast<QTimerEvent*>(event));
@@ -3264,6 +3336,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickTextureFactory_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQQuickTextureFactory_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickTextureFactory_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickTextureFactory_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickTextureFactory_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickTextureFactory_TimerEvent(this, event); };
 };
@@ -3453,6 +3526,11 @@ char QQuickTextureFactory_EventFilterDefault(void* ptr, void* watched, void* eve
 	}
 }
 
+void* QQuickTextureFactory_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickTextureFactory*>(ptr)->QQuickTextureFactory::metaObject());
+}
+
 void QQuickTextureFactory_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickTextureFactory*>(ptr)->QQuickTextureFactory::timerEvent(static_cast<QTimerEvent*>(event));
@@ -3469,6 +3547,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickTransform_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQQuickTransform_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickTransform_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickTransform_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickTransform_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickTransform_TimerEvent(this, event); };
 };
@@ -3612,6 +3691,11 @@ char QQuickTransform_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QQuickTransform_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickTransform*>(ptr)->QQuickTransform::metaObject());
+}
+
 void QQuickTransform_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickTransform*>(ptr)->QQuickTransform::timerEvent(static_cast<QTimerEvent*>(event));
@@ -3713,6 +3797,7 @@ public:
 	void Signal_Destroyed(QObject * obj) { callbackQQuickWindow_Destroyed(this, obj); };
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickWindow_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickWindow_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickWindow_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickWindow_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickWindow_TimerEvent(this, event); };
 };
@@ -3755,7 +3840,7 @@ void* QQuickView_Engine(void* ptr)
 
 struct QtQuick_PackedList QQuickView_Errors(void* ptr)
 {
-	return ({ QList<QQmlError>* tmpValue = new QList<QQmlError>(static_cast<QQuickView*>(ptr)->errors()); QtQuick_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QQmlError>* tmpValue33c655 = new QList<QQmlError>(static_cast<QQuickView*>(ptr)->errors()); QtQuick_PackedList { tmpValue33c655, tmpValue33c655->size() }; });
 }
 
 void* QQuickView_InitialSize(void* ptr)
@@ -3923,6 +4008,7 @@ public:
 	void Signal_Destroyed(QObject * obj) { callbackQQuickWidget_Destroyed(this, obj); };
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickWidget_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickWidget_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickWidget_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickWidget_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickWidget_TimerEvent(this, event); };
 };
@@ -3973,7 +4059,7 @@ void* QQuickWidget_Engine(void* ptr)
 
 struct QtQuick_PackedList QQuickWidget_Errors(void* ptr)
 {
-	return ({ QList<QQmlError>* tmpValue = new QList<QQmlError>(static_cast<QQuickWidget*>(ptr)->errors()); QtQuick_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QQmlError>* tmpValueeba523 = new QList<QQmlError>(static_cast<QQuickWidget*>(ptr)->errors()); QtQuick_PackedList { tmpValueeba523, tmpValueeba523->size() }; });
 }
 
 char QQuickWidget_EventDefault(void* ptr, void* e)
@@ -4548,6 +4634,11 @@ char QQuickWidget_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QQuickWidget_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QQuickWidget*>(ptr)->QQuickWidget::metaObject());
+}
+
 void QQuickWidget_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QQuickWidget*>(ptr)->QQuickWidget::timerEvent(static_cast<QTimerEvent*>(event));
@@ -4645,6 +4736,7 @@ public:
 	void Signal_Destroyed(QObject * obj) { callbackQQuickWindow_Destroyed(this, obj); };
 	void disconnectNotify(const QMetaMethod & sign) { callbackQQuickWindow_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQQuickWindow_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQQuickWindow_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQQuickWindow_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQQuickWindow_TimerEvent(this, event); };
 };
@@ -5663,6 +5755,15 @@ char QQuickWindow_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QQuickWindow_MetaObjectDefault(void* ptr)
+{
+	if (dynamic_cast<QQuickView*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QQuickView*>(ptr)->QQuickView::metaObject());
+	} else {
+		return const_cast<QMetaObject*>(static_cast<QQuickWindow*>(ptr)->QQuickWindow::metaObject());
+	}
+}
+
 void QQuickWindow_TimerEventDefault(void* ptr, void* event)
 {
 	if (dynamic_cast<QQuickView*>(static_cast<QObject*>(ptr))) {
@@ -5685,6 +5786,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQSGAbstractRenderer_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQSGAbstractRenderer_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQSGAbstractRenderer_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSGAbstractRenderer_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQSGAbstractRenderer_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQSGAbstractRenderer_TimerEvent(this, event); };
 };
@@ -5913,6 +6015,11 @@ char QSGAbstractRenderer_EventFilterDefault(void* ptr, void* watched, void* even
 	}
 }
 
+void* QSGAbstractRenderer_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QSGAbstractRenderer*>(ptr)->QSGAbstractRenderer::metaObject());
+}
+
 void QSGAbstractRenderer_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QSGAbstractRenderer*>(ptr)->QSGAbstractRenderer::timerEvent(static_cast<QTimerEvent*>(event));
@@ -6017,6 +6124,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQSGTexture_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQSGTexture_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQSGTexture_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSGTexture_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQSGTexture_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQSGTexture_TimerEvent(this, event); };
 };
@@ -6098,6 +6206,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQSGEngine_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQSGEngine_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQSGEngine_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSGEngine_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQSGEngine_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQSGEngine_TimerEvent(this, event); };
 };
@@ -6108,7 +6217,9 @@ int QSGEngine_QSGEngine_QRegisterMetaType(){qRegisterMetaType<QSGEngine*>(); ret
 
 void* QSGEngine_NewQSGEngine(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQSGEngine(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQSGEngine(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQSGEngine(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -6126,6 +6237,8 @@ void* QSGEngine_NewQSGEngine(void* parent)
 		return new MyQSGEngine(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQSGEngine(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQSGEngine(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQSGEngine(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -6138,6 +6251,8 @@ void* QSGEngine_NewQSGEngine(void* parent)
 		return new MyQSGEngine(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQSGEngine(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQSGEngine(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSGEngine(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6333,6 +6448,11 @@ char QSGEngine_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QSGEngine_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QSGEngine*>(ptr)->QSGEngine::metaObject());
+}
+
 void QSGEngine_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QSGEngine*>(ptr)->QSGEngine::timerEvent(static_cast<QTimerEvent*>(event));
@@ -6344,6 +6464,7 @@ public:
 	MyQSGFlatColorMaterial() : QSGFlatColorMaterial() {};
 	int compare(const QSGMaterial * other) const { return callbackQSGMaterial_Compare(const_cast<void*>(static_cast<const void*>(this)), const_cast<QSGMaterial*>(other)); };
 	QSGMaterialShader * createShader() const { return static_cast<QSGMaterialShader*>(callbackQSGFlatColorMaterial_CreateShader(const_cast<void*>(static_cast<const void*>(this)))); };
+	QSGMaterialType * type() const { return static_cast<QSGMaterialType*>(callbackQSGFlatColorMaterial_Type(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QSGFlatColorMaterial_NewQSGFlatColorMaterial()
@@ -6369,6 +6490,16 @@ void* QSGFlatColorMaterial_CreateShader(void* ptr)
 void* QSGFlatColorMaterial_CreateShaderDefault(void* ptr)
 {
 		return static_cast<QSGFlatColorMaterial*>(ptr)->QSGFlatColorMaterial::createShader();
+}
+
+void* QSGFlatColorMaterial_Type(void* ptr)
+{
+	return static_cast<QSGFlatColorMaterial*>(ptr)->type();
+}
+
+void* QSGFlatColorMaterial_TypeDefault(void* ptr)
+{
+		return static_cast<QSGFlatColorMaterial*>(ptr)->QSGFlatColorMaterial::type();
 }
 
 class MyQSGGeometry: public QSGGeometry
@@ -6684,6 +6815,7 @@ class MyQSGMaterial: public QSGMaterial
 public:
 	int compare(const QSGMaterial * other) const { return callbackQSGMaterial_Compare(const_cast<void*>(static_cast<const void*>(this)), const_cast<QSGMaterial*>(other)); };
 	QSGMaterialShader * createShader() const { return static_cast<QSGMaterialShader*>(callbackQSGMaterial_CreateShader(const_cast<void*>(static_cast<const void*>(this)))); };
+	QSGMaterialType * type() const { return static_cast<QSGMaterialType*>(callbackQSGMaterial_Type(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 int QSGMaterial_Compare(void* ptr, void* other)
@@ -6719,6 +6851,11 @@ long long QSGMaterial_Flags(void* ptr)
 void QSGMaterial_SetFlag(void* ptr, long long flags, char on)
 {
 	static_cast<QSGMaterial*>(ptr)->setFlag(static_cast<QSGMaterial::Flag>(flags), on != 0);
+}
+
+void* QSGMaterial_Type(void* ptr)
+{
+	return static_cast<QSGMaterial*>(ptr)->type();
 }
 
 class MyQSGMaterialShader: public QSGMaterialShader
@@ -7027,6 +7164,7 @@ public:
 	MyQSGOpaqueTextureMaterial() : QSGOpaqueTextureMaterial() {};
 	int compare(const QSGMaterial * other) const { return callbackQSGMaterial_Compare(const_cast<void*>(static_cast<const void*>(this)), const_cast<QSGMaterial*>(other)); };
 	QSGMaterialShader * createShader() const { return static_cast<QSGMaterialShader*>(callbackQSGOpaqueTextureMaterial_CreateShader(const_cast<void*>(static_cast<const void*>(this)))); };
+	QSGMaterialType * type() const { return static_cast<QSGMaterialType*>(callbackQSGOpaqueTextureMaterial_Type(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QSGOpaqueTextureMaterial_NewQSGOpaqueTextureMaterial()
@@ -7105,6 +7243,20 @@ void* QSGOpaqueTextureMaterial_CreateShaderDefault(void* ptr)
 		return static_cast<QSGTextureMaterial*>(ptr)->QSGTextureMaterial::createShader();
 	} else {
 		return static_cast<QSGOpaqueTextureMaterial*>(ptr)->QSGOpaqueTextureMaterial::createShader();
+	}
+}
+
+void* QSGOpaqueTextureMaterial_Type(void* ptr)
+{
+	return static_cast<QSGOpaqueTextureMaterial*>(ptr)->type();
+}
+
+void* QSGOpaqueTextureMaterial_TypeDefault(void* ptr)
+{
+	if (dynamic_cast<QSGTextureMaterial*>(static_cast<QSGOpaqueTextureMaterial*>(ptr))) {
+		return static_cast<QSGTextureMaterial*>(ptr)->QSGTextureMaterial::type();
+	} else {
+		return static_cast<QSGOpaqueTextureMaterial*>(ptr)->QSGOpaqueTextureMaterial::type();
 	}
 }
 
@@ -7433,6 +7585,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQSGTexture_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQSGTexture_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQSGTexture_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSGTexture_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQSGTexture_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQSGTexture_TimerEvent(this, event); };
 };
@@ -7751,6 +7904,15 @@ char QSGTexture_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QSGTexture_MetaObjectDefault(void* ptr)
+{
+	if (dynamic_cast<QSGDynamicTexture*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QSGDynamicTexture*>(ptr)->QSGDynamicTexture::metaObject());
+	} else {
+		return const_cast<QMetaObject*>(static_cast<QSGTexture*>(ptr)->QSGTexture::metaObject());
+	}
+}
+
 void QSGTexture_TimerEventDefault(void* ptr, void* event)
 {
 	if (dynamic_cast<QSGDynamicTexture*>(static_cast<QObject*>(ptr))) {
@@ -7765,6 +7927,7 @@ class MyQSGTextureMaterial: public QSGTextureMaterial
 public:
 	int compare(const QSGMaterial * other) const { return callbackQSGMaterial_Compare(const_cast<void*>(static_cast<const void*>(this)), const_cast<QSGMaterial*>(other)); };
 	QSGMaterialShader * createShader() const { return static_cast<QSGMaterialShader*>(callbackQSGOpaqueTextureMaterial_CreateShader(const_cast<void*>(static_cast<const void*>(this)))); };
+	QSGMaterialType * type() const { return static_cast<QSGMaterialType*>(callbackQSGOpaqueTextureMaterial_Type(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 class MyQSGTextureProvider: public QSGTextureProvider
@@ -7780,6 +7943,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQSGTextureProvider_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQSGTextureProvider_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQSGTextureProvider_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQSGTextureProvider_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtQuick_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQSGTextureProvider_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQSGTextureProvider_TimerEvent(this, event); };
 };
@@ -7943,6 +8107,11 @@ char QSGTextureProvider_EventFilterDefault(void* ptr, void* watched, void* event
 	}
 }
 
+void* QSGTextureProvider_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QSGTextureProvider*>(ptr)->QSGTextureProvider::metaObject());
+}
+
 void QSGTextureProvider_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QSGTextureProvider*>(ptr)->QSGTextureProvider::timerEvent(static_cast<QTimerEvent*>(event));
@@ -7989,6 +8158,7 @@ public:
 	MyQSGVertexColorMaterial() : QSGVertexColorMaterial() {};
 	int compare(const QSGMaterial * other) const { return callbackQSGMaterial_Compare(const_cast<void*>(static_cast<const void*>(this)), const_cast<QSGMaterial*>(other)); };
 	QSGMaterialShader * createShader() const { return static_cast<QSGMaterialShader*>(callbackQSGVertexColorMaterial_CreateShader(const_cast<void*>(static_cast<const void*>(this)))); };
+	QSGMaterialType * type() const { return static_cast<QSGMaterialType*>(callbackQSGVertexColorMaterial_Type(const_cast<void*>(static_cast<const void*>(this)))); };
 };
 
 void* QSGVertexColorMaterial_NewQSGVertexColorMaterial()
@@ -8004,5 +8174,15 @@ void* QSGVertexColorMaterial_CreateShader(void* ptr)
 void* QSGVertexColorMaterial_CreateShaderDefault(void* ptr)
 {
 		return static_cast<QSGVertexColorMaterial*>(ptr)->QSGVertexColorMaterial::createShader();
+}
+
+void* QSGVertexColorMaterial_Type(void* ptr)
+{
+	return static_cast<QSGVertexColorMaterial*>(ptr)->type();
+}
+
+void* QSGVertexColorMaterial_TypeDefault(void* ptr)
+{
+		return static_cast<QSGVertexColorMaterial*>(ptr)->QSGVertexColorMaterial::type();
 }
 

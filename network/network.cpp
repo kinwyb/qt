@@ -8,6 +8,7 @@
 
 #include <QAbstractNetworkCache>
 #include <QAbstractSocket>
+#include <QAudioSystemPlugin>
 #include <QAuthenticator>
 #include <QByteArray>
 #include <QCameraImageCapture>
@@ -40,7 +41,9 @@
 #include <QMap>
 #include <QMediaPlaylist>
 #include <QMediaRecorder>
+#include <QMediaServiceProviderPlugin>
 #include <QMetaMethod>
+#include <QMetaObject>
 #include <QMultiMap>
 #include <QNetworkAccessManager>
 #include <QNetworkAddressEntry>
@@ -67,6 +70,7 @@
 #include <QRadioData>
 #include <QRegExp>
 #include <QRemoteObjectPendingCallWatcher>
+#include <QScriptExtensionPlugin>
 #include <QSslCertificate>
 #include <QSslCertificateExtension>
 #include <QSslCipher>
@@ -109,6 +113,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQAbstractNetworkCache_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQAbstractNetworkCache_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQAbstractNetworkCache_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractNetworkCache_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQAbstractNetworkCache_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQAbstractNetworkCache_TimerEvent(this, event); };
 };
@@ -119,7 +124,9 @@ int QAbstractNetworkCache_QAbstractNetworkCache_QRegisterMetaType(){qRegisterMet
 
 void* QAbstractNetworkCache_NewQAbstractNetworkCache(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQAbstractNetworkCache(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractNetworkCache(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractNetworkCache(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -137,6 +144,8 @@ void* QAbstractNetworkCache_NewQAbstractNetworkCache(void* parent)
 		return new MyQAbstractNetworkCache(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractNetworkCache(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQAbstractNetworkCache(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractNetworkCache(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -149,6 +158,8 @@ void* QAbstractNetworkCache_NewQAbstractNetworkCache(void* parent)
 		return new MyQAbstractNetworkCache(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractNetworkCache(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQAbstractNetworkCache(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractNetworkCache(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -352,6 +363,15 @@ char QAbstractNetworkCache_EventFilterDefault(void* ptr, void* watched, void* ev
 	}
 }
 
+void* QAbstractNetworkCache_MetaObjectDefault(void* ptr)
+{
+	if (dynamic_cast<QNetworkDiskCache*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QNetworkDiskCache*>(ptr)->QNetworkDiskCache::metaObject());
+	} else {
+		return const_cast<QMetaObject*>(static_cast<QAbstractNetworkCache*>(ptr)->QAbstractNetworkCache::metaObject());
+	}
+}
+
 void QAbstractNetworkCache_TimerEventDefault(void* ptr, void* event)
 {
 	if (dynamic_cast<QNetworkDiskCache*>(static_cast<QObject*>(ptr))) {
@@ -411,6 +431,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQAbstractSocket_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQAbstractSocket_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQAbstractSocket_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractSocket_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQAbstractSocket_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQAbstractSocket_TimerEvent(this, event); };
 };
@@ -421,7 +442,9 @@ int QAbstractSocket_QAbstractSocket_QRegisterMetaType(){qRegisterMetaType<QAbstr
 
 void* QAbstractSocket_NewQAbstractSocket(long long socketType, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -439,6 +462,8 @@ void* QAbstractSocket_NewQAbstractSocket(long long socketType, void* parent)
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -451,6 +476,8 @@ void* QAbstractSocket_NewQAbstractSocket(long long socketType, void* parent)
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQAbstractSocket(static_cast<QAbstractSocket::SocketType>(socketType), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1249,6 +1276,19 @@ char QAbstractSocket_EventFilterDefault(void* ptr, void* watched, void* event)
 	}
 }
 
+void* QAbstractSocket_MetaObjectDefault(void* ptr)
+{
+	if (dynamic_cast<QUdpSocket*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QUdpSocket*>(ptr)->QUdpSocket::metaObject());
+	} else if (dynamic_cast<QSslSocket*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QSslSocket*>(ptr)->QSslSocket::metaObject());
+	} else if (dynamic_cast<QTcpSocket*>(static_cast<QObject*>(ptr))) {
+		return const_cast<QMetaObject*>(static_cast<QTcpSocket*>(ptr)->QTcpSocket::metaObject());
+	} else {
+		return const_cast<QMetaObject*>(static_cast<QAbstractSocket*>(ptr)->QAbstractSocket::metaObject());
+	}
+}
+
 void QAbstractSocket_TimerEventDefault(void* ptr, void* event)
 {
 	if (dynamic_cast<QUdpSocket*>(static_cast<QObject*>(ptr))) {
@@ -1284,7 +1324,7 @@ void* QAuthenticator_Option(void* ptr, struct QtNetwork_PackedString opt)
 
 struct QtNetwork_PackedList QAuthenticator_Options(void* ptr)
 {
-	return ({ QHash<QString, QVariant>* tmpValue = new QHash<QString, QVariant>(static_cast<QAuthenticator*>(ptr)->options()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QHash<QString, QVariant>* tmpValue6cf1f6 = new QHash<QString, QVariant>(static_cast<QAuthenticator*>(ptr)->options()); QtNetwork_PackedList { tmpValue6cf1f6, tmpValue6cf1f6->size() }; });
 }
 
 struct QtNetwork_PackedString QAuthenticator_Password(void* ptr)
@@ -1340,7 +1380,7 @@ void* QAuthenticator___options_newList(void* ptr)
 
 struct QtNetwork_PackedList QAuthenticator___options_keyList(void* ptr)
 {
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QHash<QString, QVariant>*>(ptr)->keys()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QString>* tmpValuef43bc5 = new QList<QString>(static_cast<QHash<QString, QVariant>*>(ptr)->keys()); QtNetwork_PackedList { tmpValuef43bc5, tmpValuef43bc5->size() }; });
 }
 
 struct QtNetwork_PackedString QAuthenticator_____options_keyList_atList(void* ptr, int i)
@@ -1450,6 +1490,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQDnsLookup_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQDnsLookup_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQDnsLookup_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQDnsLookup_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQDnsLookup_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQDnsLookup_TimerEvent(this, event); };
 };
@@ -1460,7 +1501,9 @@ int QDnsLookup_QDnsLookup_QRegisterMetaType(){qRegisterMetaType<QDnsLookup*>(); 
 
 void* QDnsLookup_NewQDnsLookup(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -1478,6 +1521,8 @@ void* QDnsLookup_NewQDnsLookup(void* parent)
 		return new MyQDnsLookup(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -1490,6 +1535,8 @@ void* QDnsLookup_NewQDnsLookup(void* parent)
 		return new MyQDnsLookup(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1501,7 +1548,9 @@ void* QDnsLookup_NewQDnsLookup(void* parent)
 
 void* QDnsLookup_NewQDnsLookup2(long long ty, struct QtNetwork_PackedString name, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -1519,6 +1568,8 @@ void* QDnsLookup_NewQDnsLookup2(long long ty, struct QtNetwork_PackedString name
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -1531,6 +1582,8 @@ void* QDnsLookup_NewQDnsLookup2(long long ty, struct QtNetwork_PackedString name
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1542,7 +1595,9 @@ void* QDnsLookup_NewQDnsLookup2(long long ty, struct QtNetwork_PackedString name
 
 void* QDnsLookup_NewQDnsLookup3(long long ty, struct QtNetwork_PackedString name, void* nameserver, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -1560,6 +1615,8 @@ void* QDnsLookup_NewQDnsLookup3(long long ty, struct QtNetwork_PackedString name
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -1572,6 +1629,8 @@ void* QDnsLookup_NewQDnsLookup3(long long ty, struct QtNetwork_PackedString name
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQDnsLookup(static_cast<QDnsLookup::Type>(ty), QString::fromUtf8(name.data, name.len), *static_cast<QHostAddress*>(nameserver), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -1593,7 +1652,7 @@ void QDnsLookup_AbortDefault(void* ptr)
 
 struct QtNetwork_PackedList QDnsLookup_CanonicalNameRecords(void* ptr)
 {
-	return ({ QList<QDnsDomainNameRecord>* tmpValue = new QList<QDnsDomainNameRecord>(static_cast<QDnsLookup*>(ptr)->canonicalNameRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsDomainNameRecord>* tmpValued35e72 = new QList<QDnsDomainNameRecord>(static_cast<QDnsLookup*>(ptr)->canonicalNameRecords()); QtNetwork_PackedList { tmpValued35e72, tmpValued35e72->size() }; });
 }
 
 long long QDnsLookup_Error(void* ptr)
@@ -1623,7 +1682,7 @@ void QDnsLookup_Finished(void* ptr)
 
 struct QtNetwork_PackedList QDnsLookup_HostAddressRecords(void* ptr)
 {
-	return ({ QList<QDnsHostAddressRecord>* tmpValue = new QList<QDnsHostAddressRecord>(static_cast<QDnsLookup*>(ptr)->hostAddressRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsHostAddressRecord>* tmpValueb6c450 = new QList<QDnsHostAddressRecord>(static_cast<QDnsLookup*>(ptr)->hostAddressRecords()); QtNetwork_PackedList { tmpValueb6c450, tmpValueb6c450->size() }; });
 }
 
 char QDnsLookup_IsFinished(void* ptr)
@@ -1643,7 +1702,7 @@ void QDnsLookup_LookupDefault(void* ptr)
 
 struct QtNetwork_PackedList QDnsLookup_MailExchangeRecords(void* ptr)
 {
-	return ({ QList<QDnsMailExchangeRecord>* tmpValue = new QList<QDnsMailExchangeRecord>(static_cast<QDnsLookup*>(ptr)->mailExchangeRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsMailExchangeRecord>* tmpValuee68f25 = new QList<QDnsMailExchangeRecord>(static_cast<QDnsLookup*>(ptr)->mailExchangeRecords()); QtNetwork_PackedList { tmpValuee68f25, tmpValuee68f25->size() }; });
 }
 
 struct QtNetwork_PackedString QDnsLookup_Name(void* ptr)
@@ -1668,7 +1727,7 @@ void QDnsLookup_NameChanged(void* ptr, struct QtNetwork_PackedString name)
 
 struct QtNetwork_PackedList QDnsLookup_NameServerRecords(void* ptr)
 {
-	return ({ QList<QDnsDomainNameRecord>* tmpValue = new QList<QDnsDomainNameRecord>(static_cast<QDnsLookup*>(ptr)->nameServerRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsDomainNameRecord>* tmpValue25c7b1 = new QList<QDnsDomainNameRecord>(static_cast<QDnsLookup*>(ptr)->nameServerRecords()); QtNetwork_PackedList { tmpValue25c7b1, tmpValue25c7b1->size() }; });
 }
 
 void* QDnsLookup_Nameserver(void* ptr)
@@ -1693,12 +1752,12 @@ void QDnsLookup_NameserverChanged(void* ptr, void* nameserver)
 
 struct QtNetwork_PackedList QDnsLookup_PointerRecords(void* ptr)
 {
-	return ({ QList<QDnsDomainNameRecord>* tmpValue = new QList<QDnsDomainNameRecord>(static_cast<QDnsLookup*>(ptr)->pointerRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsDomainNameRecord>* tmpValueccbf28 = new QList<QDnsDomainNameRecord>(static_cast<QDnsLookup*>(ptr)->pointerRecords()); QtNetwork_PackedList { tmpValueccbf28, tmpValueccbf28->size() }; });
 }
 
 struct QtNetwork_PackedList QDnsLookup_ServiceRecords(void* ptr)
 {
-	return ({ QList<QDnsServiceRecord>* tmpValue = new QList<QDnsServiceRecord>(static_cast<QDnsLookup*>(ptr)->serviceRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsServiceRecord>* tmpValue5d8350 = new QList<QDnsServiceRecord>(static_cast<QDnsLookup*>(ptr)->serviceRecords()); QtNetwork_PackedList { tmpValue5d8350, tmpValue5d8350->size() }; });
 }
 
 void QDnsLookup_SetName(void* ptr, struct QtNetwork_PackedString name)
@@ -1718,7 +1777,7 @@ void QDnsLookup_SetType(void* ptr, long long vqd)
 
 struct QtNetwork_PackedList QDnsLookup_TextRecords(void* ptr)
 {
-	return ({ QList<QDnsTextRecord>* tmpValue = new QList<QDnsTextRecord>(static_cast<QDnsLookup*>(ptr)->textRecords()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QDnsTextRecord>* tmpValue3e26d4 = new QList<QDnsTextRecord>(static_cast<QDnsLookup*>(ptr)->textRecords()); QtNetwork_PackedList { tmpValue3e26d4, tmpValue3e26d4->size() }; });
 }
 
 long long QDnsLookup_Type(void* ptr)
@@ -1980,6 +2039,11 @@ char QDnsLookup_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QDnsLookup*>(ptr)->QDnsLookup::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QDnsLookup_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QDnsLookup*>(ptr)->QDnsLookup::metaObject());
+}
+
 void QDnsLookup_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QDnsLookup*>(ptr)->QDnsLookup::timerEvent(static_cast<QTimerEvent*>(event));
@@ -2102,7 +2166,7 @@ unsigned int QDnsTextRecord_TimeToLive(void* ptr)
 
 struct QtNetwork_PackedList QDnsTextRecord_Values(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QDnsTextRecord*>(ptr)->values()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValueade13f = new QList<QByteArray>(static_cast<QDnsTextRecord*>(ptr)->values()); QtNetwork_PackedList { tmpValueade13f, tmpValueade13f->size() }; });
 }
 
 void QDnsTextRecord_DestroyQDnsTextRecord(void* ptr)
@@ -2298,7 +2362,7 @@ void QHostInfo_QHostInfo_AbortHostLookup(int id)
 
 struct QtNetwork_PackedList QHostInfo_Addresses(void* ptr)
 {
-	return ({ QList<QHostAddress>* tmpValue = new QList<QHostAddress>(static_cast<QHostInfo*>(ptr)->addresses()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QHostAddress>* tmpValuefeee0c = new QList<QHostAddress>(static_cast<QHostInfo*>(ptr)->addresses()); QtNetwork_PackedList { tmpValuefeee0c, tmpValuefeee0c->size() }; });
 }
 
 long long QHostInfo_Error(void* ptr)
@@ -2482,6 +2546,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQHttpMultiPart_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQHttpMultiPart_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQHttpMultiPart_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQHttpMultiPart_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQHttpMultiPart_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQHttpMultiPart_TimerEvent(this, event); };
 };
@@ -2492,7 +2557,9 @@ int QHttpMultiPart_QHttpMultiPart_QRegisterMetaType(){qRegisterMetaType<QHttpMul
 
 void* QHttpMultiPart_NewQHttpMultiPart(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQHttpMultiPart(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -2510,6 +2577,8 @@ void* QHttpMultiPart_NewQHttpMultiPart(void* parent)
 		return new MyQHttpMultiPart(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQHttpMultiPart(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -2522,6 +2591,8 @@ void* QHttpMultiPart_NewQHttpMultiPart(void* parent)
 		return new MyQHttpMultiPart(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQHttpMultiPart(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -2533,7 +2604,9 @@ void* QHttpMultiPart_NewQHttpMultiPart(void* parent)
 
 void* QHttpMultiPart_NewQHttpMultiPart2(long long contentType, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -2551,6 +2624,8 @@ void* QHttpMultiPart_NewQHttpMultiPart2(long long contentType, void* parent)
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -2563,6 +2638,8 @@ void* QHttpMultiPart_NewQHttpMultiPart2(long long contentType, void* parent)
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQHttpMultiPart(static_cast<QHttpMultiPart::ContentType>(contentType), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -2718,6 +2795,11 @@ char QHttpMultiPart_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QHttpMultiPart*>(ptr)->QHttpMultiPart::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QHttpMultiPart_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QHttpMultiPart*>(ptr)->QHttpMultiPart::metaObject());
+}
+
 void QHttpMultiPart_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QHttpMultiPart*>(ptr)->QHttpMultiPart::timerEvent(static_cast<QTimerEvent*>(event));
@@ -2780,6 +2862,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQLocalServer_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQLocalServer_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQLocalServer_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQLocalServer_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQLocalServer_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQLocalServer_TimerEvent(this, event); };
 };
@@ -2790,7 +2873,9 @@ int QLocalServer_QLocalServer_QRegisterMetaType(){qRegisterMetaType<QLocalServer
 
 void* QLocalServer_NewQLocalServer(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQLocalServer(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalServer(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalServer(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -2808,6 +2893,8 @@ void* QLocalServer_NewQLocalServer(void* parent)
 		return new MyQLocalServer(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalServer(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQLocalServer(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalServer(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -2820,6 +2907,8 @@ void* QLocalServer_NewQLocalServer(void* parent)
 		return new MyQLocalServer(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalServer(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQLocalServer(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalServer(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -3065,6 +3154,11 @@ char QLocalServer_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QLocalServer*>(ptr)->QLocalServer::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QLocalServer_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QLocalServer*>(ptr)->QLocalServer::metaObject());
+}
+
 void QLocalServer_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QLocalServer*>(ptr)->QLocalServer::timerEvent(static_cast<QTimerEvent*>(event));
@@ -3109,6 +3203,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQLocalSocket_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQLocalSocket_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQLocalSocket_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQLocalSocket_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQLocalSocket_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQLocalSocket_TimerEvent(this, event); };
 };
@@ -3119,7 +3214,9 @@ int QLocalSocket_QLocalSocket_QRegisterMetaType(){qRegisterMetaType<QLocalSocket
 
 void* QLocalSocket_NewQLocalSocket(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQLocalSocket(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalSocket(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalSocket(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -3137,6 +3234,8 @@ void* QLocalSocket_NewQLocalSocket(void* parent)
 		return new MyQLocalSocket(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalSocket(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQLocalSocket(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalSocket(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -3149,6 +3248,8 @@ void* QLocalSocket_NewQLocalSocket(void* parent)
 		return new MyQLocalSocket(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalSocket(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQLocalSocket(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQLocalSocket(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -3509,6 +3610,11 @@ char QLocalSocket_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QLocalSocket*>(ptr)->QLocalSocket::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QLocalSocket_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QLocalSocket*>(ptr)->QLocalSocket::metaObject());
+}
+
 void QLocalSocket_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QLocalSocket*>(ptr)->QLocalSocket::timerEvent(static_cast<QTimerEvent*>(event));
@@ -3525,7 +3631,7 @@ public:
 	void Signal_NetworkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible) { callbackQNetworkAccessManager_NetworkAccessibleChanged(this, accessible); };
 	void Signal_PreSharedKeyAuthenticationRequired(QNetworkReply * reply, QSslPreSharedKeyAuthenticator * authenticator) { callbackQNetworkAccessManager_PreSharedKeyAuthenticationRequired(this, reply, authenticator); };
 	void Signal_ProxyAuthenticationRequired(const QNetworkProxy & proxy, QAuthenticator * authenticator) { callbackQNetworkAccessManager_ProxyAuthenticationRequired(this, const_cast<QNetworkProxy*>(&proxy), authenticator); };
-	void Signal_SslErrors(QNetworkReply * reply, const QList<QSslError> & errors) { callbackQNetworkAccessManager_SslErrors(this, reply, ({ QList<QSslError>* tmpValue = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_SslErrors(QNetworkReply * reply, const QList<QSslError> & errors) { callbackQNetworkAccessManager_SslErrors(this, reply, ({ QList<QSslError>* tmpValue570043 = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue570043, tmpValue570043->size() }; })); };
 	QStringList supportedSchemesImplementation() const { return ({ QtNetwork_PackedString tempVal = callbackQNetworkAccessManager_SupportedSchemesImplementation(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
 	 ~MyQNetworkAccessManager() { callbackQNetworkAccessManager_DestroyQNetworkAccessManager(this); };
 	void childEvent(QChildEvent * event) { callbackQNetworkAccessManager_ChildEvent(this, event); };
@@ -3536,6 +3642,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQNetworkAccessManager_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQNetworkAccessManager_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQNetworkAccessManager_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQNetworkAccessManager_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQNetworkAccessManager_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQNetworkAccessManager_TimerEvent(this, event); };
 };
@@ -3546,7 +3653,9 @@ int QNetworkAccessManager_QNetworkAccessManager_QRegisterMetaType(){qRegisterMet
 
 void* QNetworkAccessManager_NewQNetworkAccessManager(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkAccessManager(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkAccessManager(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkAccessManager(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -3564,6 +3673,8 @@ void* QNetworkAccessManager_NewQNetworkAccessManager(void* parent)
 		return new MyQNetworkAccessManager(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkAccessManager(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkAccessManager(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkAccessManager(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -3576,6 +3687,8 @@ void* QNetworkAccessManager_NewQNetworkAccessManager(void* parent)
 		return new MyQNetworkAccessManager(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkAccessManager(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkAccessManager(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkAccessManager(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -3888,7 +4001,7 @@ void QNetworkAccessManager_SslErrors(void* ptr, void* reply, void* errors)
 
 struct QtNetwork_PackedList QNetworkAccessManager_StrictTransportSecurityHosts(void* ptr)
 {
-	return ({ QVector<QHstsPolicy>* tmpValue = new QVector<QHstsPolicy>(static_cast<QNetworkAccessManager*>(ptr)->strictTransportSecurityHosts()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QVector<QHstsPolicy>* tmpValue84dcc8 = new QVector<QHstsPolicy>(static_cast<QNetworkAccessManager*>(ptr)->strictTransportSecurityHosts()); QtNetwork_PackedList { tmpValue84dcc8, tmpValue84dcc8->size() }; });
 }
 
 struct QtNetwork_PackedString QNetworkAccessManager_SupportedSchemes(void* ptr)
@@ -4080,6 +4193,11 @@ char QNetworkAccessManager_EventDefault(void* ptr, void* e)
 char QNetworkAccessManager_EventFilterDefault(void* ptr, void* watched, void* event)
 {
 		return static_cast<QNetworkAccessManager*>(ptr)->QNetworkAccessManager::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
+}
+
+void* QNetworkAccessManager_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QNetworkAccessManager*>(ptr)->QNetworkAccessManager::metaObject());
 }
 
 void QNetworkAccessManager_TimerEventDefault(void* ptr, void* event)
@@ -4274,7 +4392,7 @@ struct QtNetwork_PackedString QNetworkConfiguration_BearerTypeName(void* ptr)
 
 struct QtNetwork_PackedList QNetworkConfiguration_Children(void* ptr)
 {
-	return ({ QList<QNetworkConfiguration>* tmpValue = new QList<QNetworkConfiguration>(static_cast<QNetworkConfiguration*>(ptr)->children()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkConfiguration>* tmpValue6b59f0 = new QList<QNetworkConfiguration>(static_cast<QNetworkConfiguration*>(ptr)->children()); QtNetwork_PackedList { tmpValue6b59f0, tmpValue6b59f0->size() }; });
 }
 
 int QNetworkConfiguration_ConnectTimeout(void* ptr)
@@ -4367,6 +4485,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQNetworkConfigurationManager_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQNetworkConfigurationManager_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQNetworkConfigurationManager_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQNetworkConfigurationManager_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQNetworkConfigurationManager_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQNetworkConfigurationManager_TimerEvent(this, event); };
 };
@@ -4377,7 +4496,9 @@ int QNetworkConfigurationManager_QNetworkConfigurationManager_QRegisterMetaType(
 
 void* QNetworkConfigurationManager_NewQNetworkConfigurationManager(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkConfigurationManager(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkConfigurationManager(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkConfigurationManager(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -4395,6 +4516,8 @@ void* QNetworkConfigurationManager_NewQNetworkConfigurationManager(void* parent)
 		return new MyQNetworkConfigurationManager(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkConfigurationManager(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkConfigurationManager(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkConfigurationManager(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -4407,6 +4530,8 @@ void* QNetworkConfigurationManager_NewQNetworkConfigurationManager(void* parent)
 		return new MyQNetworkConfigurationManager(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkConfigurationManager(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkConfigurationManager(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkConfigurationManager(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4418,7 +4543,7 @@ void* QNetworkConfigurationManager_NewQNetworkConfigurationManager(void* parent)
 
 struct QtNetwork_PackedList QNetworkConfigurationManager_AllConfigurations(void* ptr, long long filter)
 {
-	return ({ QList<QNetworkConfiguration>* tmpValue = new QList<QNetworkConfiguration>(static_cast<QNetworkConfigurationManager*>(ptr)->allConfigurations(static_cast<QNetworkConfiguration::StateFlag>(filter))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkConfiguration>* tmpValue108f0f = new QList<QNetworkConfiguration>(static_cast<QNetworkConfigurationManager*>(ptr)->allConfigurations(static_cast<QNetworkConfiguration::StateFlag>(filter))); QtNetwork_PackedList { tmpValue108f0f, tmpValue108f0f->size() }; });
 }
 
 long long QNetworkConfigurationManager_Capabilities(void* ptr)
@@ -4668,6 +4793,11 @@ char QNetworkConfigurationManager_EventFilterDefault(void* ptr, void* watched, v
 		return static_cast<QNetworkConfigurationManager*>(ptr)->QNetworkConfigurationManager::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QNetworkConfigurationManager_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QNetworkConfigurationManager*>(ptr)->QNetworkConfigurationManager::metaObject());
+}
+
 void QNetworkConfigurationManager_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QNetworkConfigurationManager*>(ptr)->QNetworkConfigurationManager::timerEvent(static_cast<QTimerEvent*>(event));
@@ -4725,7 +4855,7 @@ void QNetworkCookie_Normalize(void* ptr, void* url)
 
 struct QtNetwork_PackedList QNetworkCookie_QNetworkCookie_ParseCookies(void* cookieString)
 {
-	return ({ QList<QNetworkCookie>* tmpValue = new QList<QNetworkCookie>(QNetworkCookie::parseCookies(*static_cast<QByteArray*>(cookieString))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkCookie>* tmpValue6ccb13 = new QList<QNetworkCookie>(QNetworkCookie::parseCookies(*static_cast<QByteArray*>(cookieString))); QtNetwork_PackedList { tmpValue6ccb13, tmpValue6ccb13->size() }; });
 }
 
 struct QtNetwork_PackedString QNetworkCookie_Path(void* ptr)
@@ -4811,7 +4941,7 @@ public:
 	QList<QNetworkCookie> cookiesForUrl(const QUrl & url) const { return ({ QList<QNetworkCookie>* tmpP = static_cast<QList<QNetworkCookie>*>(callbackQNetworkCookieJar_CookiesForUrl(const_cast<void*>(static_cast<const void*>(this)), const_cast<QUrl*>(&url))); QList<QNetworkCookie> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	bool deleteCookie(const QNetworkCookie & cookie) { return callbackQNetworkCookieJar_DeleteCookie(this, const_cast<QNetworkCookie*>(&cookie)) != 0; };
 	bool insertCookie(const QNetworkCookie & cookie) { return callbackQNetworkCookieJar_InsertCookie(this, const_cast<QNetworkCookie*>(&cookie)) != 0; };
-	bool setCookiesFromUrl(const QList<QNetworkCookie> & cookieList, const QUrl & url) { return callbackQNetworkCookieJar_SetCookiesFromUrl(this, ({ QList<QNetworkCookie>* tmpValue = new QList<QNetworkCookie>(cookieList); QtNetwork_PackedList { tmpValue, tmpValue->size() }; }), const_cast<QUrl*>(&url)) != 0; };
+	bool setCookiesFromUrl(const QList<QNetworkCookie> & cookieList, const QUrl & url) { return callbackQNetworkCookieJar_SetCookiesFromUrl(this, ({ QList<QNetworkCookie>* tmpValuefad2b0 = new QList<QNetworkCookie>(cookieList); QtNetwork_PackedList { tmpValuefad2b0, tmpValuefad2b0->size() }; }), const_cast<QUrl*>(&url)) != 0; };
 	bool updateCookie(const QNetworkCookie & cookie) { return callbackQNetworkCookieJar_UpdateCookie(this, const_cast<QNetworkCookie*>(&cookie)) != 0; };
 	bool validateCookie(const QNetworkCookie & cookie, const QUrl & url) const { return callbackQNetworkCookieJar_ValidateCookie(const_cast<void*>(static_cast<const void*>(this)), const_cast<QNetworkCookie*>(&cookie), const_cast<QUrl*>(&url)) != 0; };
 	 ~MyQNetworkCookieJar() { callbackQNetworkCookieJar_DestroyQNetworkCookieJar(this); };
@@ -4823,6 +4953,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQNetworkCookieJar_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQNetworkCookieJar_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQNetworkCookieJar_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQNetworkCookieJar_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQNetworkCookieJar_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQNetworkCookieJar_TimerEvent(this, event); };
 };
@@ -4833,7 +4964,9 @@ int QNetworkCookieJar_QNetworkCookieJar_QRegisterMetaType(){qRegisterMetaType<QN
 
 void* QNetworkCookieJar_NewQNetworkCookieJar(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkCookieJar(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkCookieJar(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkCookieJar(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -4851,6 +4984,8 @@ void* QNetworkCookieJar_NewQNetworkCookieJar(void* parent)
 		return new MyQNetworkCookieJar(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkCookieJar(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkCookieJar(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkCookieJar(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -4863,6 +4998,8 @@ void* QNetworkCookieJar_NewQNetworkCookieJar(void* parent)
 		return new MyQNetworkCookieJar(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkCookieJar(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkCookieJar(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkCookieJar(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -4874,17 +5011,17 @@ void* QNetworkCookieJar_NewQNetworkCookieJar(void* parent)
 
 struct QtNetwork_PackedList QNetworkCookieJar_AllCookies(void* ptr)
 {
-	return ({ QList<QNetworkCookie>* tmpValue = new QList<QNetworkCookie>(static_cast<QNetworkCookieJar*>(ptr)->allCookies()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkCookie>* tmpValued4b745 = new QList<QNetworkCookie>(static_cast<QNetworkCookieJar*>(ptr)->allCookies()); QtNetwork_PackedList { tmpValued4b745, tmpValued4b745->size() }; });
 }
 
 struct QtNetwork_PackedList QNetworkCookieJar_CookiesForUrl(void* ptr, void* url)
 {
-	return ({ QList<QNetworkCookie>* tmpValue = new QList<QNetworkCookie>(static_cast<QNetworkCookieJar*>(ptr)->cookiesForUrl(*static_cast<QUrl*>(url))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkCookie>* tmpValue1445df = new QList<QNetworkCookie>(static_cast<QNetworkCookieJar*>(ptr)->cookiesForUrl(*static_cast<QUrl*>(url))); QtNetwork_PackedList { tmpValue1445df, tmpValue1445df->size() }; });
 }
 
 struct QtNetwork_PackedList QNetworkCookieJar_CookiesForUrlDefault(void* ptr, void* url)
 {
-		return ({ QList<QNetworkCookie>* tmpValue = new QList<QNetworkCookie>(static_cast<QNetworkCookieJar*>(ptr)->QNetworkCookieJar::cookiesForUrl(*static_cast<QUrl*>(url))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+		return ({ QList<QNetworkCookie>* tmpValue96549e = new QList<QNetworkCookie>(static_cast<QNetworkCookieJar*>(ptr)->QNetworkCookieJar::cookiesForUrl(*static_cast<QUrl*>(url))); QtNetwork_PackedList { tmpValue96549e, tmpValue96549e->size() }; });
 }
 
 char QNetworkCookieJar_DeleteCookie(void* ptr, void* cookie)
@@ -5132,6 +5269,11 @@ char QNetworkCookieJar_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QNetworkCookieJar*>(ptr)->QNetworkCookieJar::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QNetworkCookieJar_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QNetworkCookieJar*>(ptr)->QNetworkCookieJar::metaObject());
+}
+
 void QNetworkCookieJar_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QNetworkCookieJar*>(ptr)->QNetworkCookieJar::timerEvent(static_cast<QTimerEvent*>(event));
@@ -5264,6 +5406,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQAbstractNetworkCache_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQAbstractNetworkCache_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQAbstractNetworkCache_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractNetworkCache_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQAbstractNetworkCache_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQAbstractNetworkCache_TimerEvent(this, event); };
 };
@@ -5274,7 +5417,9 @@ int QNetworkDiskCache_QNetworkDiskCache_QRegisterMetaType(){qRegisterMetaType<QN
 
 void* QNetworkDiskCache_NewQNetworkDiskCache(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkDiskCache(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkDiskCache(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkDiskCache(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -5292,6 +5437,8 @@ void* QNetworkDiskCache_NewQNetworkDiskCache(void* parent)
 		return new MyQNetworkDiskCache(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkDiskCache(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkDiskCache(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkDiskCache(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -5304,6 +5451,8 @@ void* QNetworkDiskCache_NewQNetworkDiskCache(void* parent)
 		return new MyQNetworkDiskCache(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkDiskCache(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkDiskCache(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkDiskCache(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -5451,17 +5600,17 @@ void* QNetworkInterface_NewQNetworkInterface2(void* other)
 
 struct QtNetwork_PackedList QNetworkInterface_AddressEntries(void* ptr)
 {
-	return ({ QList<QNetworkAddressEntry>* tmpValue = new QList<QNetworkAddressEntry>(static_cast<QNetworkInterface*>(ptr)->addressEntries()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkAddressEntry>* tmpValueb61b1e = new QList<QNetworkAddressEntry>(static_cast<QNetworkInterface*>(ptr)->addressEntries()); QtNetwork_PackedList { tmpValueb61b1e, tmpValueb61b1e->size() }; });
 }
 
 struct QtNetwork_PackedList QNetworkInterface_QNetworkInterface_AllAddresses()
 {
-	return ({ QList<QHostAddress>* tmpValue = new QList<QHostAddress>(QNetworkInterface::allAddresses()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QHostAddress>* tmpValue55011c = new QList<QHostAddress>(QNetworkInterface::allAddresses()); QtNetwork_PackedList { tmpValue55011c, tmpValue55011c->size() }; });
 }
 
 struct QtNetwork_PackedList QNetworkInterface_QNetworkInterface_AllInterfaces()
 {
-	return ({ QList<QNetworkInterface>* tmpValue = new QList<QNetworkInterface>(QNetworkInterface::allInterfaces()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkInterface>* tmpValueb463f1 = new QList<QNetworkInterface>(QNetworkInterface::allInterfaces()); QtNetwork_PackedList { tmpValueb463f1, tmpValueb463f1->size() }; });
 }
 
 long long QNetworkInterface_Flags(void* ptr)
@@ -5649,7 +5798,7 @@ void* QNetworkProxy_RawHeader(void* ptr, void* headerName)
 
 struct QtNetwork_PackedList QNetworkProxy_RawHeaderList(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QNetworkProxy*>(ptr)->rawHeaderList()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValue021e9d = new QList<QByteArray>(static_cast<QNetworkProxy*>(ptr)->rawHeaderList()); QtNetwork_PackedList { tmpValue021e9d, tmpValue021e9d->size() }; });
 }
 
 void QNetworkProxy_QNetworkProxy_SetApplicationProxy(void* networkProxy)
@@ -5748,12 +5897,12 @@ void* QNetworkProxyFactory_NewQNetworkProxyFactory()
 
 struct QtNetwork_PackedList QNetworkProxyFactory_QNetworkProxyFactory_ProxyForQuery(void* query)
 {
-	return ({ QList<QNetworkProxy>* tmpValue = new QList<QNetworkProxy>(QNetworkProxyFactory::proxyForQuery(*static_cast<QNetworkProxyQuery*>(query))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkProxy>* tmpValue767aaf = new QList<QNetworkProxy>(QNetworkProxyFactory::proxyForQuery(*static_cast<QNetworkProxyQuery*>(query))); QtNetwork_PackedList { tmpValue767aaf, tmpValue767aaf->size() }; });
 }
 
 struct QtNetwork_PackedList QNetworkProxyFactory_QueryProxy(void* ptr, void* query)
 {
-	return ({ QList<QNetworkProxy>* tmpValue = new QList<QNetworkProxy>(static_cast<QNetworkProxyFactory*>(ptr)->queryProxy(*static_cast<QNetworkProxyQuery*>(query))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkProxy>* tmpValue5028cb = new QList<QNetworkProxy>(static_cast<QNetworkProxyFactory*>(ptr)->queryProxy(*static_cast<QNetworkProxyQuery*>(query))); QtNetwork_PackedList { tmpValue5028cb, tmpValue5028cb->size() }; });
 }
 
 void QNetworkProxyFactory_QNetworkProxyFactory_SetApplicationProxyFactory(void* factory)
@@ -5768,7 +5917,7 @@ void QNetworkProxyFactory_QNetworkProxyFactory_SetUseSystemConfiguration(char en
 
 struct QtNetwork_PackedList QNetworkProxyFactory_QNetworkProxyFactory_SystemProxyForQuery(void* query)
 {
-	return ({ QList<QNetworkProxy>* tmpValue = new QList<QNetworkProxy>(QNetworkProxyFactory::systemProxyForQuery(*static_cast<QNetworkProxyQuery*>(query))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QNetworkProxy>* tmpValuec71594 = new QList<QNetworkProxy>(QNetworkProxyFactory::systemProxyForQuery(*static_cast<QNetworkProxyQuery*>(query))); QtNetwork_PackedList { tmpValuec71594, tmpValuec71594->size() }; });
 }
 
 char QNetworkProxyFactory_QNetworkProxyFactory_UsesSystemConfiguration()
@@ -5941,7 +6090,7 @@ public:
 	void Signal_Error2(QNetworkReply::NetworkError code) { callbackQNetworkReply_Error2(this, code); };
 	void Signal_Finished() { callbackQNetworkReply_Finished(this); };
 	void ignoreSslErrors() { callbackQNetworkReply_IgnoreSslErrors(this); };
-	void ignoreSslErrorsImplementation(const QList<QSslError> & errors) { callbackQNetworkReply_IgnoreSslErrorsImplementation(this, ({ QList<QSslError>* tmpValue = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue, tmpValue->size() }; })); };
+	void ignoreSslErrorsImplementation(const QList<QSslError> & errors) { callbackQNetworkReply_IgnoreSslErrorsImplementation(this, ({ QList<QSslError>* tmpValue570043 = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue570043, tmpValue570043->size() }; })); };
 	void Signal_MetaDataChanged() { callbackQNetworkReply_MetaDataChanged(this); };
 	void Signal_PreSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthenticator * authenticator) { callbackQNetworkReply_PreSharedKeyAuthenticationRequired(this, authenticator); };
 	void Signal_RedirectAllowed() { callbackQNetworkReply_RedirectAllowed(this); };
@@ -5949,7 +6098,7 @@ public:
 	void setReadBufferSize(qint64 size) { callbackQNetworkReply_SetReadBufferSize(this, size); };
 	void setSslConfigurationImplementation(const QSslConfiguration & configuration) { callbackQNetworkReply_SetSslConfigurationImplementation(this, const_cast<QSslConfiguration*>(&configuration)); };
 	void sslConfigurationImplementation(QSslConfiguration & configuration) const { callbackQNetworkReply_SslConfigurationImplementation(const_cast<void*>(static_cast<const void*>(this)), static_cast<QSslConfiguration*>(&configuration)); };
-	void Signal_SslErrors(const QList<QSslError> & errors) { callbackQNetworkReply_SslErrors(this, ({ QList<QSslError>* tmpValue = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_SslErrors(const QList<QSslError> & errors) { callbackQNetworkReply_SslErrors(this, ({ QList<QSslError>* tmpValue570043 = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue570043, tmpValue570043->size() }; })); };
 	void Signal_UploadProgress(qint64 bytesSent, qint64 bytesTotal) { callbackQNetworkReply_UploadProgress(this, bytesSent, bytesTotal); };
 	 ~MyQNetworkReply() { callbackQNetworkReply_DestroyQNetworkReply(this); };
 	void Signal_AboutToClose() { callbackQNetworkReply_AboutToClose(this); };
@@ -5981,6 +6130,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQNetworkReply_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQNetworkReply_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQNetworkReply_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQNetworkReply_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQNetworkReply_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQNetworkReply_TimerEvent(this, event); };
 };
@@ -5991,7 +6141,9 @@ int QNetworkReply_QNetworkReply_QRegisterMetaType(){qRegisterMetaType<QNetworkRe
 
 void* QNetworkReply_NewQNetworkReply(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkReply(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkReply(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkReply(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -6009,6 +6161,8 @@ void* QNetworkReply_NewQNetworkReply(void* parent)
 		return new MyQNetworkReply(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkReply(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkReply(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkReply(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -6021,6 +6175,8 @@ void* QNetworkReply_NewQNetworkReply(void* parent)
 		return new MyQNetworkReply(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkReply(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkReply(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkReply(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -6203,7 +6359,7 @@ void* QNetworkReply_RawHeader(void* ptr, void* headerName)
 
 struct QtNetwork_PackedList QNetworkReply_RawHeaderList(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QNetworkReply*>(ptr)->rawHeaderList()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValue25fd91 = new QList<QByteArray>(static_cast<QNetworkReply*>(ptr)->rawHeaderList()); QtNetwork_PackedList { tmpValue25fd91, tmpValue25fd91->size() }; });
 }
 
 long long QNetworkReply_ReadBufferSize(void* ptr)
@@ -6639,6 +6795,11 @@ char QNetworkReply_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QNetworkReply*>(ptr)->QNetworkReply::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QNetworkReply_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QNetworkReply*>(ptr)->QNetworkReply::metaObject());
+}
+
 void QNetworkReply_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QNetworkReply*>(ptr)->QNetworkReply::timerEvent(static_cast<QTimerEvent*>(event));
@@ -6696,7 +6857,7 @@ void* QNetworkRequest_RawHeader(void* ptr, void* headerName)
 
 struct QtNetwork_PackedList QNetworkRequest_RawHeaderList(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QNetworkRequest*>(ptr)->rawHeaderList()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValue903df8 = new QList<QByteArray>(static_cast<QNetworkRequest*>(ptr)->rawHeaderList()); QtNetwork_PackedList { tmpValue903df8, tmpValue903df8->size() }; });
 }
 
 void QNetworkRequest_SetAttribute(void* ptr, long long code, void* value)
@@ -6807,6 +6968,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQNetworkSession_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQNetworkSession_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQNetworkSession_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQNetworkSession_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQNetworkSession_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQNetworkSession_TimerEvent(this, event); };
 };
@@ -6817,7 +6979,9 @@ int QNetworkSession_QNetworkSession_QRegisterMetaType(){qRegisterMetaType<QNetwo
 
 void* QNetworkSession_NewQNetworkSession(void* connectionConfig, void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QDBusPendingCallWatcher*>(parent));
@@ -6835,6 +6999,8 @@ void* QNetworkSession_NewQNetworkSession(void* connectionConfig, void* parent)
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -6847,6 +7013,8 @@ void* QNetworkSession_NewQNetworkSession(void* connectionConfig, void* parent)
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQNetworkSession(*static_cast<QNetworkConfiguration*>(connectionConfig), static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -7225,6 +7393,11 @@ char QNetworkSession_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QNetworkSession*>(ptr)->QNetworkSession::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QNetworkSession_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QNetworkSession*>(ptr)->QNetworkSession::metaObject());
+}
+
 void QNetworkSession_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QNetworkSession*>(ptr)->QNetworkSession::timerEvent(static_cast<QTimerEvent*>(event));
@@ -7297,22 +7470,22 @@ void* QSslCertificate_ExpiryDate(void* ptr)
 
 struct QtNetwork_PackedList QSslCertificate_Extensions(void* ptr)
 {
-	return ({ QList<QSslCertificateExtension>* tmpValue = new QList<QSslCertificateExtension>(static_cast<QSslCertificate*>(ptr)->extensions()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificateExtension>* tmpValuee9e52f = new QList<QSslCertificateExtension>(static_cast<QSslCertificate*>(ptr)->extensions()); QtNetwork_PackedList { tmpValuee9e52f, tmpValuee9e52f->size() }; });
 }
 
 struct QtNetwork_PackedList QSslCertificate_QSslCertificate_FromData(void* data, long long format)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(QSslCertificate::fromData(*static_cast<QByteArray*>(data), static_cast<QSsl::EncodingFormat>(format))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValueec873e = new QList<QSslCertificate>(QSslCertificate::fromData(*static_cast<QByteArray*>(data), static_cast<QSsl::EncodingFormat>(format))); QtNetwork_PackedList { tmpValueec873e, tmpValueec873e->size() }; });
 }
 
 struct QtNetwork_PackedList QSslCertificate_QSslCertificate_FromDevice(void* device, long long format)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(QSslCertificate::fromDevice(static_cast<QIODevice*>(device), static_cast<QSsl::EncodingFormat>(format))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValue2882dd = new QList<QSslCertificate>(QSslCertificate::fromDevice(static_cast<QIODevice*>(device), static_cast<QSsl::EncodingFormat>(format))); QtNetwork_PackedList { tmpValue2882dd, tmpValue2882dd->size() }; });
 }
 
 struct QtNetwork_PackedList QSslCertificate_QSslCertificate_FromPath(struct QtNetwork_PackedString path, long long format, long long syntax)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(QSslCertificate::fromPath(QString::fromUtf8(path.data, path.len), static_cast<QSsl::EncodingFormat>(format), static_cast<QRegExp::PatternSyntax>(syntax))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValue73edf7 = new QList<QSslCertificate>(QSslCertificate::fromPath(QString::fromUtf8(path.data, path.len), static_cast<QSsl::EncodingFormat>(format), static_cast<QRegExp::PatternSyntax>(syntax))); QtNetwork_PackedList { tmpValue73edf7, tmpValue73edf7->size() }; });
 }
 
 char QSslCertificate_QSslCertificate_ImportPkcs12(void* device, void* key, void* certificate, void* caCertificates, void* passPhrase)
@@ -7352,7 +7525,7 @@ struct QtNetwork_PackedString QSslCertificate_IssuerInfo2(void* ptr, void* attri
 
 struct QtNetwork_PackedList QSslCertificate_IssuerInfoAttributes(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QSslCertificate*>(ptr)->issuerInfoAttributes()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValue552db1 = new QList<QByteArray>(static_cast<QSslCertificate*>(ptr)->issuerInfoAttributes()); QtNetwork_PackedList { tmpValue552db1, tmpValue552db1->size() }; });
 }
 
 void* QSslCertificate_PublicKey(void* ptr)
@@ -7367,7 +7540,7 @@ void* QSslCertificate_SerialNumber(void* ptr)
 
 struct QtNetwork_PackedList QSslCertificate_SubjectAlternativeNames(void* ptr)
 {
-	return ({ QMultiMap<QSsl::AlternativeNameEntryType, QString>* tmpValue = new QMultiMap<QSsl::AlternativeNameEntryType, QString>(static_cast<QSslCertificate*>(ptr)->subjectAlternativeNames()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMultiMap<QSsl::AlternativeNameEntryType, QString>* tmpValuee67c86 = new QMultiMap<QSsl::AlternativeNameEntryType, QString>(static_cast<QSslCertificate*>(ptr)->subjectAlternativeNames()); QtNetwork_PackedList { tmpValuee67c86, tmpValuee67c86->size() }; });
 }
 
 struct QtNetwork_PackedString QSslCertificate_SubjectDisplayName(void* ptr)
@@ -7387,7 +7560,7 @@ struct QtNetwork_PackedString QSslCertificate_SubjectInfo2(void* ptr, void* attr
 
 struct QtNetwork_PackedList QSslCertificate_SubjectInfoAttributes(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QSslCertificate*>(ptr)->subjectInfoAttributes()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValue0a6cf3 = new QList<QByteArray>(static_cast<QSslCertificate*>(ptr)->subjectInfoAttributes()); QtNetwork_PackedList { tmpValue0a6cf3, tmpValue0a6cf3->size() }; });
 }
 
 void QSslCertificate_Swap(void* ptr, void* other)
@@ -7412,7 +7585,7 @@ struct QtNetwork_PackedString QSslCertificate_ToText(void* ptr)
 
 struct QtNetwork_PackedList QSslCertificate_QSslCertificate_Verify(void* certificateChain, struct QtNetwork_PackedString hostName)
 {
-	return ({ QList<QSslError>* tmpValue = new QList<QSslError>(QSslCertificate::verify(({ QList<QSslCertificate>* tmpP = static_cast<QList<QSslCertificate>*>(certificateChain); QList<QSslCertificate> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }), QString::fromUtf8(hostName.data, hostName.len))); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslError>* tmpValue6dbb92 = new QList<QSslError>(QSslCertificate::verify(({ QList<QSslCertificate>* tmpP = static_cast<QList<QSslCertificate>*>(certificateChain); QList<QSslCertificate> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }), QString::fromUtf8(hostName.data, hostName.len))); QtNetwork_PackedList { tmpValue6dbb92, tmpValue6dbb92->size() }; });
 }
 
 void* QSslCertificate_Version(void* ptr)
@@ -7539,7 +7712,7 @@ void* QSslCertificate___subjectAlternativeNames_newList(void* ptr)
 
 struct QtNetwork_PackedList QSslCertificate___subjectAlternativeNames_keyList(void* ptr)
 {
-	return ({ QList<QSsl::AlternativeNameEntryType>* tmpValue = new QList<QSsl::AlternativeNameEntryType>(static_cast<QMultiMap<QSsl::AlternativeNameEntryType, QString>*>(ptr)->keys()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSsl::AlternativeNameEntryType>* tmpValuec3ad92 = new QList<QSsl::AlternativeNameEntryType>(static_cast<QMultiMap<QSsl::AlternativeNameEntryType, QString>*>(ptr)->keys()); QtNetwork_PackedList { tmpValuec3ad92, tmpValuec3ad92->size() }; });
 }
 
 void* QSslCertificate___subjectInfoAttributes_atList(void* ptr, int i)
@@ -7738,22 +7911,22 @@ void* QSslConfiguration_NewQSslConfiguration2(void* other)
 
 struct QtNetwork_PackedList QSslConfiguration_AllowedNextProtocols(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QSslConfiguration*>(ptr)->allowedNextProtocols()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValueb0056e = new QList<QByteArray>(static_cast<QSslConfiguration*>(ptr)->allowedNextProtocols()); QtNetwork_PackedList { tmpValueb0056e, tmpValueb0056e->size() }; });
 }
 
 struct QtNetwork_PackedList QSslConfiguration_BackendConfiguration(void* ptr)
 {
-	return ({ QMap<QByteArray, QVariant>* tmpValue = new QMap<QByteArray, QVariant>(static_cast<QSslConfiguration*>(ptr)->backendConfiguration()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QMap<QByteArray, QVariant>* tmpValue94f7bd = new QMap<QByteArray, QVariant>(static_cast<QSslConfiguration*>(ptr)->backendConfiguration()); QtNetwork_PackedList { tmpValue94f7bd, tmpValue94f7bd->size() }; });
 }
 
 struct QtNetwork_PackedList QSslConfiguration_CaCertificates(void* ptr)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(static_cast<QSslConfiguration*>(ptr)->caCertificates()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValue26f26b = new QList<QSslCertificate>(static_cast<QSslConfiguration*>(ptr)->caCertificates()); QtNetwork_PackedList { tmpValue26f26b, tmpValue26f26b->size() }; });
 }
 
 struct QtNetwork_PackedList QSslConfiguration_Ciphers(void* ptr)
 {
-	return ({ QList<QSslCipher>* tmpValue = new QList<QSslCipher>(static_cast<QSslConfiguration*>(ptr)->ciphers()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCipher>* tmpValue6f1f94 = new QList<QSslCipher>(static_cast<QSslConfiguration*>(ptr)->ciphers()); QtNetwork_PackedList { tmpValue6f1f94, tmpValue6f1f94->size() }; });
 }
 
 void* QSslConfiguration_QSslConfiguration_DefaultConfiguration()
@@ -7783,7 +7956,7 @@ void* QSslConfiguration_LocalCertificate(void* ptr)
 
 struct QtNetwork_PackedList QSslConfiguration_LocalCertificateChain(void* ptr)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(static_cast<QSslConfiguration*>(ptr)->localCertificateChain()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValuea33763 = new QList<QSslCertificate>(static_cast<QSslConfiguration*>(ptr)->localCertificateChain()); QtNetwork_PackedList { tmpValuea33763, tmpValuea33763->size() }; });
 }
 
 void* QSslConfiguration_NextNegotiatedProtocol(void* ptr)
@@ -7808,7 +7981,7 @@ void* QSslConfiguration_PeerCertificate(void* ptr)
 
 struct QtNetwork_PackedList QSslConfiguration_PeerCertificateChain(void* ptr)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(static_cast<QSslConfiguration*>(ptr)->peerCertificateChain()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValuea6ed84 = new QList<QSslCertificate>(static_cast<QSslConfiguration*>(ptr)->peerCertificateChain()); QtNetwork_PackedList { tmpValuea6ed84, tmpValuea6ed84->size() }; });
 }
 
 int QSslConfiguration_PeerVerifyDepth(void* ptr)
@@ -7948,7 +8121,7 @@ void QSslConfiguration_SetSslOption(void* ptr, long long option, char on)
 
 struct QtNetwork_PackedList QSslConfiguration_QSslConfiguration_SupportedCiphers()
 {
-	return ({ QList<QSslCipher>* tmpValue = new QList<QSslCipher>(QSslConfiguration::supportedCiphers()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCipher>* tmpValueeec6c1 = new QList<QSslCipher>(QSslConfiguration::supportedCiphers()); QtNetwork_PackedList { tmpValueeec6c1, tmpValueeec6c1->size() }; });
 }
 
 void QSslConfiguration_Swap(void* ptr, void* other)
@@ -7958,7 +8131,7 @@ void QSslConfiguration_Swap(void* ptr, void* other)
 
 struct QtNetwork_PackedList QSslConfiguration_QSslConfiguration_SystemCaCertificates()
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(QSslConfiguration::systemCaCertificates()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValue2a78c1 = new QList<QSslCertificate>(QSslConfiguration::systemCaCertificates()); QtNetwork_PackedList { tmpValue2a78c1, tmpValue2a78c1->size() }; });
 }
 
 char QSslConfiguration_TestSslOption(void* ptr, long long option)
@@ -8005,7 +8178,7 @@ void* QSslConfiguration___backendConfiguration_newList(void* ptr)
 
 struct QtNetwork_PackedList QSslConfiguration___backendConfiguration_keyList(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QMap<QByteArray, QVariant>*>(ptr)->keys()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValued4e6db = new QList<QByteArray>(static_cast<QMap<QByteArray, QVariant>*>(ptr)->keys()); QtNetwork_PackedList { tmpValued4e6db, tmpValued4e6db->size() }; });
 }
 
 void* QSslConfiguration___caCertificates_atList(void* ptr, int i)
@@ -8122,7 +8295,7 @@ void* QSslConfiguration___setBackendConfiguration_backendConfiguration_newList(v
 
 struct QtNetwork_PackedList QSslConfiguration___setBackendConfiguration_backendConfiguration_keyList(void* ptr)
 {
-	return ({ QList<QByteArray>* tmpValue = new QList<QByteArray>(static_cast<QMap<QByteArray, QVariant>*>(ptr)->keys()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QByteArray>* tmpValued4e6db = new QList<QByteArray>(static_cast<QMap<QByteArray, QVariant>*>(ptr)->keys()); QtNetwork_PackedList { tmpValued4e6db, tmpValued4e6db->size() }; });
 }
 
 void* QSslConfiguration___setCaCertificates_certificates_atList(void* ptr, int i)
@@ -8549,7 +8722,7 @@ public:
 	void setReadBufferSize(qint64 size) { callbackQAbstractSocket_SetReadBufferSize(this, size); };
 	void setSocketOption(QAbstractSocket::SocketOption option, const QVariant & value) { callbackQAbstractSocket_SetSocketOption(this, option, const_cast<QVariant*>(&value)); };
 	QVariant socketOption(QAbstractSocket::SocketOption option) { return *static_cast<QVariant*>(callbackQAbstractSocket_SocketOption(this, option)); };
-	void Signal_SslErrors2(const QList<QSslError> & errors) { callbackQSslSocket_SslErrors2(this, ({ QList<QSslError>* tmpValue = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_SslErrors2(const QList<QSslError> & errors) { callbackQSslSocket_SslErrors2(this, ({ QList<QSslError>* tmpValue570043 = new QList<QSslError>(errors); QtNetwork_PackedList { tmpValue570043, tmpValue570043->size() }; })); };
 	void startClientEncryption() { callbackQSslSocket_StartClientEncryption(this); };
 	void startServerEncryption() { callbackQSslSocket_StartServerEncryption(this); };
 	bool waitForBytesWritten(int msecs) { return callbackQAbstractSocket_WaitForBytesWritten(this, msecs) != 0; };
@@ -8588,6 +8761,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQAbstractSocket_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQAbstractSocket_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQAbstractSocket_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractSocket_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQAbstractSocket_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQAbstractSocket_TimerEvent(this, event); };
 };
@@ -8598,7 +8772,9 @@ int QSslSocket_QSslSocket_QRegisterMetaType(){qRegisterMetaType<QSslSocket*>(); 
 
 void* QSslSocket_NewQSslSocket(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQSslSocket(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQSslSocket(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQSslSocket(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -8616,6 +8792,8 @@ void* QSslSocket_NewQSslSocket(void* parent)
 		return new MyQSslSocket(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQSslSocket(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQSslSocket(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQSslSocket(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -8628,6 +8806,8 @@ void* QSslSocket_NewQSslSocket(void* parent)
 		return new MyQSslSocket(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQSslSocket(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQSslSocket(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQSslSocket(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -8744,7 +8924,7 @@ void* QSslSocket_LocalCertificate(void* ptr)
 
 struct QtNetwork_PackedList QSslSocket_LocalCertificateChain(void* ptr)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(static_cast<QSslSocket*>(ptr)->localCertificateChain()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValue2adf53 = new QList<QSslCertificate>(static_cast<QSslSocket*>(ptr)->localCertificateChain()); QtNetwork_PackedList { tmpValue2adf53, tmpValue2adf53->size() }; });
 }
 
 long long QSslSocket_Mode(void* ptr)
@@ -8769,7 +8949,7 @@ void QSslSocket_ModeChanged(void* ptr, long long mode)
 
 struct QtNetwork_PackedList QSslSocket_OcspResponses(void* ptr)
 {
-	return ({ QVector<QOcspResponse>* tmpValue = new QVector<QOcspResponse>(static_cast<QSslSocket*>(ptr)->ocspResponses()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QVector<QOcspResponse>* tmpValueb30b8c = new QVector<QOcspResponse>(static_cast<QSslSocket*>(ptr)->ocspResponses()); QtNetwork_PackedList { tmpValueb30b8c, tmpValueb30b8c->size() }; });
 }
 
 void* QSslSocket_PeerCertificate(void* ptr)
@@ -8779,7 +8959,7 @@ void* QSslSocket_PeerCertificate(void* ptr)
 
 struct QtNetwork_PackedList QSslSocket_PeerCertificateChain(void* ptr)
 {
-	return ({ QList<QSslCertificate>* tmpValue = new QList<QSslCertificate>(static_cast<QSslSocket*>(ptr)->peerCertificateChain()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslCertificate>* tmpValue11e917 = new QList<QSslCertificate>(static_cast<QSslSocket*>(ptr)->peerCertificateChain()); QtNetwork_PackedList { tmpValue11e917, tmpValue11e917->size() }; });
 }
 
 int QSslSocket_PeerVerifyDepth(void* ptr)
@@ -8904,7 +9084,7 @@ void* QSslSocket_SslConfiguration(void* ptr)
 
 struct QtNetwork_PackedList QSslSocket_SslErrors(void* ptr)
 {
-	return ({ QList<QSslError>* tmpValue = new QList<QSslError>(static_cast<QSslSocket*>(ptr)->sslErrors()); QtNetwork_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<QSslError>* tmpValued3510b = new QList<QSslError>(static_cast<QSslSocket*>(ptr)->sslErrors()); QtNetwork_PackedList { tmpValued3510b, tmpValued3510b->size() }; });
 }
 
 void QSslSocket_ConnectSslErrors2(void* ptr)
@@ -9304,6 +9484,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQTcpServer_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQTcpServer_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQTcpServer_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQTcpServer_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQTcpServer_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQTcpServer_TimerEvent(this, event); };
 };
@@ -9314,7 +9495,9 @@ int QTcpServer_QTcpServer_QRegisterMetaType(){qRegisterMetaType<QTcpServer*>(); 
 
 void* QTcpServer_NewQTcpServer(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQTcpServer(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpServer(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpServer(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -9332,6 +9515,8 @@ void* QTcpServer_NewQTcpServer(void* parent)
 		return new MyQTcpServer(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpServer(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQTcpServer(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpServer(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -9344,6 +9529,8 @@ void* QTcpServer_NewQTcpServer(void* parent)
 		return new MyQTcpServer(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpServer(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQTcpServer(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpServer(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9605,6 +9792,11 @@ char QTcpServer_EventFilterDefault(void* ptr, void* watched, void* event)
 		return static_cast<QTcpServer*>(ptr)->QTcpServer::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
+void* QTcpServer_MetaObjectDefault(void* ptr)
+{
+		return const_cast<QMetaObject*>(static_cast<QTcpServer*>(ptr)->QTcpServer::metaObject());
+}
+
 void QTcpServer_TimerEventDefault(void* ptr, void* event)
 {
 		static_cast<QTcpServer*>(ptr)->QTcpServer::timerEvent(static_cast<QTimerEvent*>(event));
@@ -9660,6 +9852,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQAbstractSocket_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQAbstractSocket_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQAbstractSocket_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractSocket_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQAbstractSocket_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQAbstractSocket_TimerEvent(this, event); };
 };
@@ -9670,7 +9863,9 @@ int QTcpSocket_QTcpSocket_QRegisterMetaType(){qRegisterMetaType<QTcpSocket*>(); 
 
 void* QTcpSocket_NewQTcpSocket(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQTcpSocket(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpSocket(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpSocket(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -9688,6 +9883,8 @@ void* QTcpSocket_NewQTcpSocket(void* parent)
 		return new MyQTcpSocket(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpSocket(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQTcpSocket(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpSocket(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -9700,6 +9897,8 @@ void* QTcpSocket_NewQTcpSocket(void* parent)
 		return new MyQTcpSocket(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpSocket(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQTcpSocket(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQTcpSocket(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
@@ -9770,6 +9969,7 @@ public:
 	void disconnectNotify(const QMetaMethod & sign) { callbackQAbstractSocket_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
 	bool event(QEvent * e) { return callbackQAbstractSocket_Event(this, e) != 0; };
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackQAbstractSocket_EventFilter(this, watched, event) != 0; };
+	const QMetaObject * metaObject() const { return static_cast<QMetaObject*>(callbackQAbstractSocket_MetaObject(const_cast<void*>(static_cast<const void*>(this)))); };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); QtNetwork_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQAbstractSocket_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackQAbstractSocket_TimerEvent(this, event); };
 };
@@ -9780,7 +9980,9 @@ int QUdpSocket_QUdpSocket_QRegisterMetaType(){qRegisterMetaType<QUdpSocket*>(); 
 
 void* QUdpSocket_NewQUdpSocket(void* parent)
 {
-	if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
+	if (dynamic_cast<QAudioSystemPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQUdpSocket(static_cast<QAudioSystemPlugin*>(parent));
+	} else if (dynamic_cast<QCameraImageCapture*>(static_cast<QObject*>(parent))) {
 		return new MyQUdpSocket(static_cast<QCameraImageCapture*>(parent));
 	} else if (dynamic_cast<QDBusPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQUdpSocket(static_cast<QDBusPendingCallWatcher*>(parent));
@@ -9798,6 +10000,8 @@ void* QUdpSocket_NewQUdpSocket(void* parent)
 		return new MyQUdpSocket(static_cast<QMediaPlaylist*>(parent));
 	} else if (dynamic_cast<QMediaRecorder*>(static_cast<QObject*>(parent))) {
 		return new MyQUdpSocket(static_cast<QMediaRecorder*>(parent));
+	} else if (dynamic_cast<QMediaServiceProviderPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQUdpSocket(static_cast<QMediaServiceProviderPlugin*>(parent));
 	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
 		return new MyQUdpSocket(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
@@ -9810,6 +10014,8 @@ void* QUdpSocket_NewQUdpSocket(void* parent)
 		return new MyQUdpSocket(static_cast<QRadioData*>(parent));
 	} else if (dynamic_cast<QRemoteObjectPendingCallWatcher*>(static_cast<QObject*>(parent))) {
 		return new MyQUdpSocket(static_cast<QRemoteObjectPendingCallWatcher*>(parent));
+	} else if (dynamic_cast<QScriptExtensionPlugin*>(static_cast<QObject*>(parent))) {
+		return new MyQUdpSocket(static_cast<QScriptExtensionPlugin*>(parent));
 	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
 		return new MyQUdpSocket(static_cast<QWidget*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {

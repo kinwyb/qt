@@ -11,6 +11,10 @@ import (
 )
 
 func GenModule(m, target string, mode int) {
+	if os.Getenv("QT_DUMP") == "true" {
+		defer parser.Dump()
+	}
+
 	if !parser.ShouldBuildForTarget(m, target) {
 		utils.Log.WithField("module", m).Debug("skip generation")
 		return
@@ -70,7 +74,11 @@ func GenModule(m, target string, mode int) {
 
 	if utils.QT_DOCKER() {
 		if idug, ok := os.LookupEnv("IDUG"); ok {
-			utils.RunCmd(exec.Command("chown", "-R", idug, utils.GoQtPkgPath(strings.ToLower(m))), "chown files to user")
+			if path := utils.GoQtPkgPath(strings.ToLower(m)); utils.UseGOMOD(path) {
+				utils.RunCmd(exec.Command("chown", "-R", idug, filepath.Dir(utils.GOMOD(path))), "chown files to user")
+			} else {
+				utils.RunCmd(exec.Command("chown", "-R", idug, path), "chown files to user")
+			}
 		}
 	}
 }

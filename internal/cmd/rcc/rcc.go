@@ -31,13 +31,28 @@ func Rcc(path, target, tagsCustom, output_dir string, useuic, quickcompiler, dep
 			cmd.Dir = path
 			utils.RunCmd(cmd, "go mod vendor")
 		}
+		if utils.QT_DOCKER() {
+			cmd := exec.Command("go", "get", "-v", "-d", "github.com/therecipe/qt/internal/binding/files/docs/"+utils.QT_API(utils.QT_VERSION())) //TODO: needs to pull 5.8.0 if QT_WEBKIT
+			cmd.Dir = path
+			utils.RunCmdOptional(cmd, "go get docs") //TODO: this can fail if QT_PKG_CONFIG
+
+			if strings.HasPrefix(target, "sailfish") || strings.HasPrefix(target, "android") { //TODO: generate android and sailfish minimal instead
+				cmd := exec.Command(filepath.Join(utils.GOBIN(), "qtsetup"), "generate", target)
+				cmd.Dir = path
+				utils.RunCmd(cmd, "run setup")
+			}
+		}
 	}
 
 	rcc(path, target, tagsCustom, output_dir, quickcompiler, useuic, true)
 
 	if !deploying && utils.QT_DOCKER() {
 		if idug, ok := os.LookupEnv("IDUG"); ok {
-			utils.RunCmd(exec.Command("chown", "-R", idug, path), "chown files to user")
+			if utils.UseGOMOD(path) {
+				utils.RunCmd(exec.Command("chown", "-R", idug, filepath.Dir(utils.GOMOD(path))), "chown files to user")
+			} else {
+				utils.RunCmd(exec.Command("chown", "-R", idug, path), "chown files to user")
+			}
 		}
 	}
 }
@@ -85,7 +100,9 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 	}
 
 	if hasUIFiles {
-		if uic := utils.ToolPath("uic", target); utils.ExistsFile(uic) {
+		uic := utils.ToolPath("uic", target)
+		if (target == "windows" && utils.ExistsFile(uic+".exe")) || utils.ExistsFile(uic) {
+
 			path := filepath.Join(path, "ui")
 
 			files, err = ioutil.ReadDir(filepath.Join(path))
@@ -104,7 +121,7 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 			for _, filePath := range fileList {
 
 				utils.RunCmd(exec.Command(uic, "-o", filepath.Join(path, "uic_tmp.cpp"), filePath), fmt.Sprintf("execute uic for %v on %v", target, runtime.GOOS))
-				file := utils.Load(filepath.Join(path, "uic_tmp.cpp"))
+				file := strings.Replace(utils.Load(filepath.Join(path, "uic_tmp.cpp")), "\r\n", "\n", -1)
 				defer utils.RemoveAll(filepath.Join(path, "uic_tmp.cpp"))
 
 				name := strings.TrimSpace(strings.Split(strings.Split(file, "class Ui_")[1], "{")[0])
@@ -308,6 +325,9 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 						l = strings.Replace(l, "QIcon::hasThemeIcon", "gui.QIcon_HasThemeIcon", -1)
 						l = strings.Replace(l, "QIcon::fromTheme", "gui.QIcon_FromTheme", -1)
 
+						l = strings.Replace(l, "QTabWidget::North", "widgets.QTabWidget__North", -1)
+						l = strings.Replace(l, "QTabWidget::Rounded", "widgets.QTabWidget__Rounded", -1)
+
 						for _, n := range []string{"QPalette", "QFont", "QIcon"} {
 							l = strings.Replace(l, n+"::", "gui."+n+"__", -1)
 						}
@@ -430,7 +450,7 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 
 						if strings.Contains(l, ".AddItem(") {
 							if strings.Contains(l, "QString()") {
-								l = strings.TrimSuffix(l, ")") + ", core.NewQVariant7(0))"
+								l = strings.TrimSuffix(l, ")") + ", core.NewQVariant1(0))"
 							} else if !strings.Contains(l, "(w.") || strings.Count(l, ",") >= 4 {
 								l = strings.TrimSuffix(l, ")") + ", 0)"
 							}
@@ -447,6 +467,13 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 						if strings.Contains(l, ".SetTextAlignment(") {
 							l = strings.Replace(l, ".SetTextAlignment(", ".SetTextAlignment(int(", -1)
 							l = strings.TrimSuffix(l, ")") + "))"
+						}
+
+						if strings.Contains(l, ".SetAlignment(") {
+							if strings.Contains(typeForName(l), "QGroupBox") {
+								l = strings.Replace(l, ".SetAlignment(", ".SetAlignment(int(", -1)
+								l = strings.TrimSuffix(l, ")") + "))"
+							}
 						}
 
 						if strings.Contains(l, ".AddAction(") {
@@ -477,11 +504,7 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 						}
 
 						if strings.Contains(l, "QVariant(") {
-							if strings.Contains(l, "QUrl") {
-								l = strings.Replace(l, "QVariant(", "core.NewQVariant38(", -1)
-							} else {
-								l = strings.Replace(l, "QVariant(", "core.NewQVariant11(", -1)
-							}
+							l = strings.Replace(l, "QVariant(", "core.NewQVariant1(", -1)
 						}
 
 						if strings.Contains(l, "QDateTime(QDate(") {
@@ -526,7 +549,11 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 						l = strings.Replace(l, ".IsEmpty()", "== \"\"", -1)
 
 						if strings.Contains(l, "QPixmap(") {
-							l = strings.Replace(l, "QPixmap(", "gui.NewQPixmap5(", -1)
+							if utils.QT_API_NUM(utils.QT_VERSION()) >= 5130 {
+								l = strings.Replace(l, "QPixmap(", "gui.NewQPixmap3(", -1)
+							} else {
+								l = strings.Replace(l, "QPixmap(", "gui.NewQPixmap5(", -1)
+							}
 							ls := strings.Split(l, ")")
 							ls[0] += ", \"\", 0"
 							l = strings.Join(ls, ")")
@@ -714,7 +741,7 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 		tags = append(tags, strings.Split(tagsCustom, " ")...)
 	}
 
-	pkgCmd := utils.GoList("{{.Name}}", "-find", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
+	pkgCmd := utils.GoList("{{.Name}}", "-find", utils.BuildTags(tags))
 	pkgCmd.Dir = path
 	for k, v := range env {
 		pkgCmd.Env = append(pkgCmd.Env, fmt.Sprintf("%v=%v", k, v))
@@ -765,7 +792,7 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 		}
 	}
 
-	nameCmd := utils.GoList("{{.ImportPath}}", "-find", fmt.Sprintf("-tags=\"%v\"", strings.Join(tags, "\" \"")))
+	nameCmd := utils.GoList("{{.ImportPath}}", "-find", utils.BuildTags(tags))
 	nameCmd.Dir = path
 	for k, v := range env {
 		nameCmd.Env = append(nameCmd.Env, fmt.Sprintf("%v=%v", k, v))
@@ -776,7 +803,8 @@ func rcc(path, target, tagsCustom, output_dir string, quickcompiler bool, useuic
 		name = strings.Replace(name, s, "_", -1)
 	}
 
-	if cachgen := utils.ToolPath("qmlcachegen", target); utils.ExistsFile(cachgen) && quickcompiler {
+	cachgen := utils.ToolPath("qmlcachegen", target)
+	if ((target == "windows" && utils.ExistsFile(cachgen+".exe")) || utils.ExistsFile(cachgen)) && quickcompiler {
 		utils.RemoveAll(rccCpp)
 
 		var filteredFiles []string
